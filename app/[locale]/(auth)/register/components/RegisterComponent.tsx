@@ -34,7 +34,7 @@ export function RegisterComponent() {
 
       {/* Message */}
       <p className="text-sm font-medium text-gray-700 mb-2">
-        L&apos;accès à cet ERP est réservé aux membres de KEKELI GROUP.
+        L&apos;accès à ce SGIO est réservé aux membres de KEKELI GROUP SARL-U.
       </p>
       <p className="text-sm text-gray-500 mb-8">
         Les comptes sont créés uniquement par l&apos;administrateur.

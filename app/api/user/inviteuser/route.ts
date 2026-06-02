@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
     const gmailUser = process.env.GMAIL_USER;
     const gmailPass = process.env.GMAIL_APP_PASSWORD;
-    const appName = process.env.NEXT_PUBLIC_APP_NAME ?? 'ERP';
+    const appName = process.env.NEXT_PUBLIC_APP_NAME ?? 'SGIO';
 
     if (gmailUser && gmailPass) {
       try {

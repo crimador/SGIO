@@ -68,7 +68,7 @@ const SignInPage = () => (
           KEKELI Group
         </h1>
         <p className="mt-2 text-sm font-medium tracking-wide text-white/50">
-          {process.env.NEXT_PUBLIC_APP_NAME ?? 'ERP'}
+          {process.env.NEXT_PUBLIC_APP_NAME ?? 'SGIO'}
         </p>
 
         {/* Valeurs */}
