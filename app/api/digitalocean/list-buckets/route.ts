@@ -11,8 +11,11 @@ export async function GET() {
     return NextResponse.json('Unauthorized', { status: 401 });
   }
 
+  if (!s3Client) {
+    return NextResponse.json({ error: 'S3 storage not configured' }, { status: 503 });
+  }
+
   const buckets = await s3Client.send(new ListBucketsCommand({}));
-  console.log(buckets, 's3 buckets');
 
   return NextResponse.json({ buckets, success: true }, { status: 200 });
 }

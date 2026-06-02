@@ -21,10 +21,13 @@ export async function GET(
     return NextResponse.json('No bucketId ', { status: 400 });
   }
 
+  if (!s3Client) {
+    return NextResponse.json({ error: 'S3 storage not configured' }, { status: 503 });
+  }
+
   const bucketParams = { Bucket: bucketId };
 
   const data = await s3Client.send(new ListObjectsCommand(bucketParams));
-  console.log('Success', data);
 
   return NextResponse.json({ files: data, success: true }, { status: 200 });
 }
