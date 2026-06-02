@@ -22,7 +22,10 @@ const _ResponseSchema = z.object({
 
 export type ResponseSchemaType = z.infer<typeof _ResponseSchema>;
 
-export async function GET({ params }: { params: { definitionId: string } }) {
+export async function GET(
+  _request: Request,
+  { params }: { params: { definitionId: string } }
+) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
