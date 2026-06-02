@@ -7,6 +7,8 @@ import NewTaskFromCRMEmail from '@/emails/NewTaskFromCRM';
 import NewTaskFromCRMToWatchersEmail from '@/emails/NewTaskFromCRMToWatchers';
 import resendHelper from '@/lib/resend';
 
+export const dynamic = 'force-dynamic';
+
 //Create new task from CRM in project route
 export async function POST(req: Request) {
   /*

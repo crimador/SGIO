@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import type { TreasuryAccountType } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 // PATCH — modifier un compte
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);

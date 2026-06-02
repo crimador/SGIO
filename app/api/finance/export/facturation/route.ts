@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 const STATUS_LABELS: Record<string, string> = {
   BROUILLON: 'Brouillon',
   EMISE:     'Émise',

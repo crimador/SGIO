@@ -8,6 +8,8 @@ import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import InviteUserEmail from '@/emails/InviteUser';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return new NextResponse('Unauthenticated', { status: 401 });

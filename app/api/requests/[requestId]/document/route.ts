@@ -8,6 +8,8 @@ import React from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+export const dynamic = 'force-dynamic';
+
 const DOC_LABELS: Record<string, string> = {
   attestation_travail: 'Attestation_Travail',
   attestation_salaire: 'Attestation_Salaire',

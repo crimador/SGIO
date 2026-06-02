@@ -7,6 +7,8 @@ import { render } from '@react-email/render';
 import { InvoiceReminderEmail } from '@/emails/InvoiceReminder';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 function fmtDate(d: Date | string | null): string {
   if (!d) return '';
   return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });

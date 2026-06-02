@@ -3,6 +3,8 @@ import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 //Delete task API endpoint - for CRM tasks
 export async function DELETE(req: Request) {
   const session = await getServerSession(authOptions);

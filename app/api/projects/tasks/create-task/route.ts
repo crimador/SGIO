@@ -7,6 +7,8 @@ import { render } from '@react-email/render';
 import React from 'react';
 import NewTaskFromProject from '@/emails/NewTaskFromProject';
 
+export const dynamic = 'force-dynamic';
+
 //Create new task in project route
 /*
 TODO: there is second route for creating task in board, but it is the same as this one. Consider merging them (/api/projects/tasks/create-task/[boardId]). 

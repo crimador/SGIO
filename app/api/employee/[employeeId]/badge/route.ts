@@ -6,6 +6,8 @@ import { readFile } from "fs/promises";
 import path from "path";
 import BadgePDF from "@/app/[locale]/(routes)/hr/components/BadgePDF";
 
+export const dynamic = 'force-dynamic';
+
 async function photoToDataUrl(photoPath: string | null): Promise<string | null> {
   if (!photoPath) return null;
   try {

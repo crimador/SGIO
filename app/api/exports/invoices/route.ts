@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { format, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 function escapeCSV(val: string | number | null | undefined): string {
   if (val === null || val === undefined) return '';
   const str = String(val);

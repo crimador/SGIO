@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import nodemailer from 'nodemailer';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request, { params }: { params: { teamId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json('Non autorisé', { status: 401 });

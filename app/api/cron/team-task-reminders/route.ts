@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sendTeamTaskReminders } from '@/actions/cron/team-task-reminders';
 
+export const dynamic = 'force-dynamic';
+
 // Appeler via un cron externe (ex: Vercel Cron, cron-job.org) chaque matin
 // GET /api/cron/team-task-reminders?secret=CRON_SECRET
 export async function GET(req: Request) {

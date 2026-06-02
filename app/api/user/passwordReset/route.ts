@@ -7,6 +7,8 @@ import { hash } from 'bcryptjs';
 import PasswordResetEmail from '@/emails/PasswordReset';
 import resendHelper from '@/lib/resend';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   /*
   Resend.com function init - this is a helper function that will be used to send emails

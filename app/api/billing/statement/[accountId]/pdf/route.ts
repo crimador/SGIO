@@ -6,6 +6,8 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { StatementPDF } from '@/app/[locale]/(routes)/finance/releve/[accountId]/StatementPDF';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _req: Request,
   { params }: { params: { accountId: string } }

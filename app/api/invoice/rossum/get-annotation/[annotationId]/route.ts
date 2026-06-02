@@ -11,6 +11,8 @@ import { PutObjectAclCommand } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   { params }: { params: { annotationId: string } }
 ) {

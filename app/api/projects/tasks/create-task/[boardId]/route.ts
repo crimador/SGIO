@@ -6,6 +6,8 @@ import { authOptions } from '@/lib/auth';
 import NewTaskFromProject from '@/emails/NewTaskFromProject';
 import resendHelper from '@/lib/resend';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: Request,
   { params }: { params: { boardId: string } }

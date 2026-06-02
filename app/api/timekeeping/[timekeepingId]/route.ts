@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { prismadb } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 //Timekeeping delete route
 export async function DELETE(
   req: Request,

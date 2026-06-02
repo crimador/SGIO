@@ -6,6 +6,8 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { ReceiptPDF } from '@/app/[locale]/(routes)/finance/invoices/[id]/components/ReceiptPDF';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _req: Request,
   { params }: { params: { id: string; paymentId: string } }

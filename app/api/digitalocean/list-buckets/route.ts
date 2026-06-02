@@ -4,6 +4,8 @@ import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const session = await getServerSession(authOptions);
 

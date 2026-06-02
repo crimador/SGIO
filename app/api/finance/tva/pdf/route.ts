@@ -7,6 +7,8 @@ import { getTvaReport, type TvaPeriodType } from '@/actions/finance/get-tva-repo
 import { TvaReportPDF } from '@/app/[locale]/(routes)/finance/tva/TvaReportPDF';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return new NextResponse('Unauthenticated', { status: 401 });

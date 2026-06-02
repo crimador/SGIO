@@ -5,6 +5,8 @@ import { authOptions } from '@/lib/auth';
 import { canWrite } from '@/lib/permissions';
 import sendEmail from '@/lib/sendmail';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) {

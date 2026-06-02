@@ -3,6 +3,8 @@ import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 //Route to unlink contact from opportunity
 export async function PUT(
   req: Request,

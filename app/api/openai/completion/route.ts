@@ -8,6 +8,8 @@ import { fr } from 'date-fns/locale';
 import { getServerSession } from 'next-auth';
 import type { UserRole } from '@/lib/permissions';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return new Response('Unauthorized', { status: 401 });

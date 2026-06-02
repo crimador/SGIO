@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth';
 import { prismadb } from '@/lib/prisma';
 import { authOptions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   req: Request,
   { params }: { params: { userId: string } }

@@ -3,6 +3,8 @@ import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(req: Request, { params }: { params: { teamId: string; taskId: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json('Non autorisé', { status: 401 });

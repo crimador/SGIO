@@ -6,6 +6,8 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { PayslipPDF } from '@/app/[locale]/(routes)/hr/components/PayslipPDF';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _req: Request,
   { params }: { params: { payslipId: string } }

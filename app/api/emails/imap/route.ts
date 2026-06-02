@@ -3,6 +3,8 @@ import Imap from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
 
+export const dynamic = 'force-dynamic';
+
 interface Email {
   body?: string;
   subject?: string;

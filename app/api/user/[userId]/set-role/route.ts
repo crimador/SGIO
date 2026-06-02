@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import type { UserRole } from '@/lib/permissions';
 
+export const dynamic = 'force-dynamic';
+
 const VALID_ROLES: UserRole[] = ['DG', 'COMPTABLE', 'COMMERCIAL', 'RH'];
 
 export async function PATCH(

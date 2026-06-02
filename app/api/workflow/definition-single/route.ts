@@ -4,6 +4,8 @@ import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const _ResponseSchema = z.object({
   id: z.string(),
   name: z.string(),

@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 const ENTITY_MAP = {
   account: 'crm_Accounts',
   contact: 'crm_Contacts',

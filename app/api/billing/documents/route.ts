@@ -5,6 +5,8 @@ import { prismadb } from '@/lib/prisma';
 import { generateDocumentNumber } from '@/lib/billing/generate-number';
 import type { BillingDocumentType, TvaRegime, PaymentMethod } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 // GET — liste tous les documents de facturation
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);

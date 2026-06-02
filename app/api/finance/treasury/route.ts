@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import type { TreasuryAccountType } from '@prisma/client';
 
+export const dynamic = 'force-dynamic';
+
 // GET — liste des comptes actifs
 export async function GET() {
   const session = await getServerSession(authOptions);

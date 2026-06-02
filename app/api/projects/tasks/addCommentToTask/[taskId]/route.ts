@@ -6,6 +6,8 @@ import { authOptions } from '@/lib/auth';
 import NewTaskCommentEmail from '@/emails/NewTaskComment';
 import resendHelper from '@/lib/resend';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   req: Request,
   { params }: { params: { taskId: string } }

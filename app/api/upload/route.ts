@@ -6,6 +6,8 @@ import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 //const fs = require("fs");
 const fetch = require('node-fetch');
 const FormData = require('form-data');

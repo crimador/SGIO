@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
 
+export const dynamic = 'force-dynamic';
+
 async function deleteLocalFile(key: string | null) {
   if (!key) return;
   try {

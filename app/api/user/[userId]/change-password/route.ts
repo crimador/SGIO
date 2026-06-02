@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
+export const dynamic = 'force-dynamic';
+
 export async function PATCH(
   req: Request,
   { params }: { params: { userId: string } }
