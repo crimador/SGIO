@@ -56,9 +56,9 @@ export function CommandComponent() {
         </kbd>
       </p>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder="Taper une commande ou rechercher..." />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>Aucun résultat.</CommandEmpty>
           {/*           <CommandGroup heading="Suggestions">
             <CommandItem>
               <Calendar className="mr-2 h-4 w-4" />
@@ -74,20 +74,20 @@ export function CommandComponent() {
             </CommandItem>
           </CommandGroup> */}
           <CommandSeparator />
-          <CommandGroup heading="Settings">
+          <CommandGroup heading="Navigation">
             <CommandItem onClick={() => redirect('/')}>
               <User className="mr-2 h-4 w-4" />
-              <span>Dashboard</span>
+              <span>Tableau de bord</span>
               <CommandShortcut>Shift + ⌘ + D</CommandShortcut>
             </CommandItem>
             <CommandItem onClick={() => redirect('/profile')}>
               <Settings className="mr-2 h-4 w-4" />
-              <span>Profile settings</span>
+              <span>Mon profil</span>
               <CommandShortcut>Shift + ⌘ + P</CommandShortcut>
             </CommandItem>
             <CommandItem onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Logout</span>
+              <span>Se déconnecter</span>
               <CommandShortcut>⌘k</CommandShortcut>
             </CommandItem>
           </CommandGroup>

@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   CalendarDays,
   CoinsIcon,
@@ -12,7 +6,6 @@ import {
   Instagram,
   LayoutGrid,
   Linkedin,
-  MoreHorizontal,
   Twitter,
   User,
   Youtube,
@@ -26,434 +19,147 @@ interface OppsViewProps {
   data: any;
 }
 
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value?: React.ReactNode;
+}) {
+  if (!value) return null;
+  return (
+    <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-[#FF7E00]/[0.05]">
+      <Icon className="mt-px h-5 w-5 shrink-0" style={{ color: '#FF7E00' }} />
+      <div className="space-y-1">
+        <p className="text-sm font-medium leading-none" style={{ color: '#1E1D3D' }}>{label}</p>
+        <p className="text-sm text-gray-500">{value}</p>
+      </div>
+    </div>
+  );
+}
+
 export async function BasicView({ data }: OppsViewProps) {
-  //console.log(data, "data");
   const users = await prismadb.users.findMany();
-  if (!data) return <div>Contact not found</div>;
+  if (!data) return <div>Contact introuvable</div>;
+
+  const responsable = users.find((u) => u.id === data.assigned_to)?.name ?? '—';
+  const createdBy   = users.find((u) => u.id === data.createdBy)?.name ?? '—';
+  const updatedBy   = users.find((u) => u.id === data.updatedBy)?.name ?? '—';
+
   return (
     <div className="space-y-5 pb-3">
-      {/*       <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex w-full justify-between">
-            <div>
-              <CardTitle>
-                {data.first_name} {data.last_name}
-              </CardTitle>
-              <CardDescription>ID:{data.id}</CardDescription>
-            </div>
-            <div>
-              {
-                //TODO: Add menu
-                //TODO: Add edit button
-              }
-              <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </div>
+      {/* Carte principale */}
+      <Card className="overflow-hidden">
+        <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+        <CardHeader className="pb-3 pt-5">
+          <p className="text-lg font-bold" style={{ color: '#1E1D3D' }}>
+            {data.first_name} {data.last_name}
+          </p>
+          {data.position && (
+            <p className="mt-0.5 text-sm text-gray-400">{data.position}</p>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid w-full grid-cols-2">
+            {/* Colonne gauche */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Account</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.assigned_accounts?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Position</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.position ? data.position : 'N/A'}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Birthday</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.birthday
-                      ? moment(data.birthday).format('MMM DD YYYY')
-                      : 'N/A'}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Description
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.description ? data.description : 'N/A'}
-                  </p>
-                </div>
-              </div>
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Informations
+              </p>
+              <InfoRow icon={CoinsIcon} label="Société" value={data.assigned_accounts?.name} />
+              <InfoRow icon={CoinsIcon} label="Fonction" value={data.position} />
+              <InfoRow
+                icon={CoinsIcon}
+                label="Date de naissance"
+                value={data.birthday ? moment(data.birthday).format('DD/MM/YYYY') : null}
+              />
+              <InfoRow icon={CoinsIcon} label="Description" value={data.description} />
             </div>
+
+            {/* Colonne droite */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <User className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Assigned to
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.assigned_to)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created</p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.created_on).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created by</p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.createdBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.updatedAt).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update by
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.updatedBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Status</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.status ? 'Active' : 'Inactive'}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Type</p>
-                  <p className="text-sm text-muted-foreground">{data.type}</p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Member of</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.member_of}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Industry</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.industry}
-                  </p>
-                </div>
-              </div>
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Suivi
+              </p>
+              <InfoRow icon={User} label="Responsable" value={responsable} />
+              <InfoRow
+                icon={CalendarDays}
+                label="Créé le"
+                value={data.created_on ? `${moment(data.created_on).format('DD/MM/YYYY')} par ${createdBy}` : null}
+              />
+              <InfoRow
+                icon={CalendarDays}
+                label="Dernière mise à jour"
+                value={data.updatedAt ? `${moment(data.updatedAt).format('DD/MM/YYYY')} par ${updatedBy}` : null}
+              />
+              <InfoRow icon={CoinsIcon} label="Statut" value={data.status ? 'Actif' : 'Inactif'} />
+              <InfoRow icon={CoinsIcon} label="Type" value={data.type} />
             </div>
           </div>
         </CardContent>
       </Card>
+
       <div className="grid w-full grid-cols-2 gap-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>Contacts</CardTitle>
+        {/* Coordonnées */}
+        <Card className="overflow-hidden">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <CardHeader className="pb-3 pt-5">
+            <p className="text-sm font-semibold" style={{ color: '#1E1D3D' }}>Coordonnées</p>
           </CardHeader>
           <CardContent className="gap-1">
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">E-mail</p>
-                {data?.email ? (
-                  <Link
-                    href={`mailto:${data.email}`}
-                    className="flex items-center gap-5 text-sm text-muted-foreground"
-                  >
+            <InfoRow
+              icon={EnvelopeClosedIcon as React.ElementType}
+              label="E-mail"
+              value={
+                data.email ? (
+                  <Link href={`mailto:${data.email}`} className="hover:underline" style={{ color: '#FF7E00' }}>
                     {data.email}
-                    <EnvelopeClosedIcon />
                   </Link>
-                ) : null}
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Personal e-mail
-                </p>
-                {data?.personal_email ? (
-                  <Link
-                    href={`mailto:${data.personal_email}`}
-                    className="flex items-center gap-5 text-sm text-muted-foreground"
-                  >
+                ) : null
+              }
+            />
+            <InfoRow
+              icon={EnvelopeClosedIcon as React.ElementType}
+              label="E-mail personnel"
+              value={
+                data.personal_email ? (
+                  <Link href={`mailto:${data.personal_email}`} className="hover:underline" style={{ color: '#FF7E00' }}>
                     {data.personal_email}
-                    <EnvelopeClosedIcon />
                   </Link>
-                ) : null}
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Office phone</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.office_phone}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Mobile phone</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.mobile_phone}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Website</p>
-                <p className="text-sm text-muted-foreground">
-                  {data?.website ? (
-                    <Link href={data.website}>{data.website}</Link>
-                  ) : (
-                    'N/A'
-                  )}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Billing country
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_country}
-                </p>
-              </div>
-            </div>
+                ) : null
+              }
+            />
+            <InfoRow icon={CoinsIcon} label="Tél. bureau" value={data.office_phone} />
+            <InfoRow icon={CoinsIcon} label="Tél. mobile" value={data.mobile_phone} />
+            <InfoRow icon={CoinsIcon} label="Site web" value={data.website} />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>Social networks</CardTitle>
+
+        {/* Réseaux sociaux */}
+        <Card className="overflow-hidden">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <CardHeader className="pb-3 pt-5">
+            <p className="text-sm font-semibold" style={{ color: '#1E1D3D' }}>Réseaux sociaux</p>
           </CardHeader>
           <CardContent className="gap-1">
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <Twitter className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Twitter</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_twitter}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <Facebook className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Facebook</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_facebook}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <Linkedin className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">LinkedIn</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_linkedin}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <LayoutGrid className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Skype</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_skype}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <Instagram className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Instagram</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_instagram}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <Youtube className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">YouTube</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_youtube}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <LayoutGrid className="mt-px h-5 w-5" />
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">TikTok</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.social_tiktok}
-                </p>
-              </div>
-            </div>
+            <InfoRow icon={Twitter} label="Twitter" value={data.social_twitter} />
+            <InfoRow icon={Facebook} label="Facebook" value={data.social_facebook} />
+            <InfoRow icon={Linkedin} label="LinkedIn" value={data.social_linkedin} />
+            <InfoRow icon={LayoutGrid} label="Skype" value={data.social_skype} />
+            <InfoRow icon={Instagram} label="Instagram" value={data.social_instagram} />
+            <InfoRow icon={Youtube} label="YouTube" value={data.social_youtube} />
+            <InfoRow icon={LayoutGrid} label="TikTok" value={data.social_tiktok} />
           </CardContent>
         </Card>
       </div>
     </div>
-    /*     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle>{data.name}</CardTitle>
-        <CardDescription>ID:{data.id}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 gap-1">
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-        <div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                Opportunity amount
-              </p>
-              <p className="text-sm text-muted-foreground">{data.budget}</p>
-            </div>
-          </div>
-
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <SquareStack className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Sales stage</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Combine className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Next step</p>
-              <p className="text-sm text-muted-foreground">{data.next_step}</p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <ClipboardList className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Description</p>
-              <p className="text-sm text-muted-foreground">
-                {data.description}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <User className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Assigned to</p>
-              <p className="text-sm text-muted-foreground">
-                {data.assigned_to_user.name}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Landmark className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Account name</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                Expected close date
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.close_date).format("MMM DD YYYY")}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Created</p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.created_on).format("MMM DD YYYY")}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Created by</p>
-              <p className="text-sm text-muted-foreground">
-                {users.find((user) => user.id === data.created_by)?.name}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Last update</p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.last_activity).format("MMM DD YYYY")}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Last update by</p>
-              <p className="text-sm text-muted-foreground">
-                {users.find((user) => user.id === data.last_activity_by)?.name}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <List className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Type</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Landmark className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Lead source</p>
-              <p className="text-sm text-muted-foreground">
-                Will be added in the future
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Clapperboard className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Campaign</p>
-              <p className="text-sm text-muted-foreground">
-                Will be added in the future
-              </p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card> */
   );
 }

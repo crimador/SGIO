@@ -8,6 +8,8 @@ import { getOpportunitiesFullByAccountId } from '@/actions/crm/get-opportunities
 import { getContactsByAccountId } from '@/actions/crm/get-contacts-by-accountId';
 import { getLeadsByAccountId } from '@/actions/crm/get-leads-by-accountId';
 import { getDocumentsByAccountId } from '@/actions/documents/get-documents-by-accountId';
+import { getBillingByAccount } from '@/actions/billing/get-billing-by-account';
+import { BillingView } from './components/BillingView';
 
 import OpportunitiesView from '../../components/OpportunitiesView';
 import LeadsView from '../../components/LeadsView';
@@ -34,23 +36,27 @@ interface AccountDetailPageProps {
 const AccountDetailPage = async ({ params }: AccountDetailPageProps) => {
   const { accountId } = params;
   const account: crm_Accounts | null = await getAccount(accountId);
-  const opportunities: crm_Opportunities[] =
-    await getOpportunitiesFullByAccountId(accountId);
-  const contacts: crm_Contacts[] = await getContactsByAccountId(accountId);
-  const leads: crm_Leads[] = await getLeadsByAccountId(accountId);
-  const documents: Documents[] = await getDocumentsByAccountId(accountId);
-  const tasks: crm_Accounts_Tasks[] = await getAccountsTasks(accountId);
-  const crmData = await getAllCrmData();
+  const [opportunities, contacts, leads, documents, tasks, crmData, billingData] =
+    await Promise.all([
+      getOpportunitiesFullByAccountId(accountId),
+      getContactsByAccountId(accountId),
+      getLeadsByAccountId(accountId),
+      getDocumentsByAccountId(accountId),
+      getAccountsTasks(accountId),
+      getAllCrmData(),
+      getBillingByAccount(accountId),
+    ]);
 
   if (!account) return <div>Account not found</div>;
 
   return (
     <Container
-      title={`Account: ${account?.name}`}
-      description={'Everything you need to know about sales potential'}
+      title={account?.name ?? 'Compte client'}
+      description="Informations, opportunités, contacts et documents liés à ce compte"
     >
       <div className="space-y-5">
         <BasicView data={account} />
+        <BillingView data={billingData} accountId={accountId} />
         <AccountsTasksView data={tasks} account={account} />
         <OpportunitiesView
           data={opportunities}

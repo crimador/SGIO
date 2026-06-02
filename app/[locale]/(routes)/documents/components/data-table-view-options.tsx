@@ -4,7 +4,6 @@ import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,6 +11,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+
+const COLUMN_LABELS: Record<string, string> = {
+  document_system_type: 'Type',
+  document_name: 'Nom du document',
+  size: 'Taille',
+  created_by: 'Créé par',
+  tasks: 'Tâches liées',
+  accounts: 'Comptes CRM',
+  assigned_to_user: 'Assigné à',
+  description: 'Description',
+};
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -23,17 +33,16 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+        <button
+          className="ml-auto hidden h-8 items-center gap-1.5 rounded-md border px-2 text-sm font-medium transition-colors hover:bg-gray-50 lg:flex lg:px-3"
+          style={{ color: '#1E1D3D' }}
         >
           <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          View
-        </Button>
+          Colonnes
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-[180px]">
+        <DropdownMenuLabel>Afficher / masquer</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
@@ -48,7 +57,7 @@ export function DataTableViewOptions<TData>({
               checked={column.getIsVisible()}
               onCheckedChange={(value) => column.toggleVisibility(!!value)}
             >
-              {column.id}
+              {COLUMN_LABELS[column.id] ?? column.id}
             </DropdownMenuCheckboxItem>
           ))}
       </DropdownMenuContent>

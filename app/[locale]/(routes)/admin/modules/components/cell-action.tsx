@@ -12,7 +12,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 
 import type { ModuleColumn } from './Columns';
 
@@ -28,18 +27,10 @@ export const CellAction = ({ data }: CellActionProps) => {
     try {
       await axios.post(`/api/admin/activateModule/${data.id}`);
       router.refresh();
-      toast({
-        title: 'Success',
-        description: 'Module has been activated.',
-      });
+      toast({ title: 'Module activé', description: `Le module "${data.name}" est maintenant actif.` });
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description:
-            'Something went wrong while activating module. Please try again.',
-        });
+        toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible d\'activer le module.' });
       }
     }
   };
@@ -48,18 +39,10 @@ export const CellAction = ({ data }: CellActionProps) => {
     try {
       await axios.post(`/api/admin/deactivateModule/${data.id}`);
       router.refresh();
-      toast({
-        title: 'Success',
-        description: 'Module has been deactivated.',
-      });
+      toast({ title: 'Module désactivé', description: `Le module "${data.name}" a été désactivé.` });
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description:
-            'Something went wrong while deactivating module. Please try again.',
-        });
+        toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de désactiver le module.' });
       }
     }
   };
@@ -68,20 +51,20 @@ export const CellAction = ({ data }: CellActionProps) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'ghost'} className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <span className="sr-only">Ouvrir le menu</span>
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => onActivate()}>
             <PowerIcon className="mr-2 h-4 w-4" />
-            Activate
+            Activer
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onDeactivate()}>
             <PowerOffIcon className="mr-2 h-4 w-4" />
-            Deactivate
+            Désactiver
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

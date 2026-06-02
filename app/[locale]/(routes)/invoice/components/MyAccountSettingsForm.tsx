@@ -11,8 +11,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 
-import { Button } from '@/components/ui/button';
-
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -210,7 +208,7 @@ export function MyAccountSettingsForm({ initialData }: UpdateAccountFormProps) {
                       <FormControl>
                         <Input
                           disabled={isLoading}
-                          placeholder="SaasHQ Inc."
+                          placeholder="KEKELI GROUP SARL"
                           {...field}
                         />
                       </FormControl>
@@ -702,9 +700,14 @@ export function MyAccountSettingsForm({ initialData }: UpdateAccountFormProps) {
           </div>
         </div>
         <div className="grid gap-2 py-5">
-          <Button disabled={isLoading} type="submit">
+          <button
+            disabled={isLoading}
+            type="submit"
+            className="flex h-9 items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
             {initialData?.id ? 'Update' : 'Create'}
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

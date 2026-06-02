@@ -1,10 +1,4 @@
 export const visibility = [
-  {
-    value: 'public',
-    label: 'Public',
-  },
-  {
-    value: 'private',
-    label: 'Private',
-  },
+  { value: 'public',  label: 'Public' },
+  { value: 'private', label: 'Privé' },
 ];

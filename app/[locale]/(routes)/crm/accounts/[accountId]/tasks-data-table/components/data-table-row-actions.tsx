@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import type { Row } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { MoreHorizontal } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -14,7 +14,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import AlertModal from '@/components/modals/alert-modal';
 
@@ -45,15 +44,15 @@ export function DataTableRowActions<TData>({
         },
       });
       toast({
-        title: 'Task deleted',
-        description: 'Task deleted successfully',
+        title: 'Tâche supprimée',
+        description: 'La tâche a été supprimée.',
       });
     } catch (error) {
       console.log(error);
       toast({
         variant: 'destructive',
-        title: 'Task deleted',
-        description: 'Something went wrong, during deleting task',
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors de la suppression de la tâche.',
       });
       setIsLoading(false);
       setOpen(false);
@@ -74,38 +73,21 @@ export function DataTableRowActions<TData>({
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Ouvrir le menu</span>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuItem
             onClick={() => router.push(`/crm/tasks/viewtask/${task?.id}`)}
           >
-            View
+            Voir
           </DropdownMenuItem>
-          {/*           <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem> */}
           <DropdownMenuSeparator />
-          {/*  <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Delete
+            Supprimer
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,13 +1,10 @@
 'use client';
 import type { Comment } from '@/app/[locale]/(routes)/projects/dashboard/components/ProjectDasboard';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
@@ -52,21 +49,17 @@ export function TeamConversations({
     setIsLoading(true);
     try {
       await axios.post(`/api/projects/tasks/addCommentToTask/${taskId}`, data);
-      toast({
-        title: 'Success, comment added.',
-      });
+      toast({ title: 'Commentaire ajouté.' });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong while sending comment to the DB',
+          title: 'Erreur',
+          description: "Impossible d'envoyer le commentaire.",
         });
       }
     } finally {
-      form.reset({
-        comment: '',
-      });
+      form.reset({ comment: '' });
       router.refresh();
       setIsLoading(false);
     }
@@ -87,7 +80,7 @@ export function TeamConversations({
                 <FormControl>
                   <Input
                     disabled={isLoading}
-                    placeholder="Your comment ..."
+                    placeholder="Votre commentaire..."
                     {...field}
                   />
                 </FormControl>
@@ -96,46 +89,49 @@ export function TeamConversations({
             )}
           />
 
-          <Button className="w-[80px]" disabled={isLoading} type="submit">
-            {isLoading ? <Icons.spinner className="animate-spin" /> : 'Add'}
-          </Button>
+          <button
+            className="flex h-9 w-[80px] items-center justify-center rounded-lg text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            disabled={isLoading}
+            type="submit"
+          >
+            {isLoading ? <Icons.spinner className="animate-spin" /> : 'Envoyer'}
+          </button>
         </form>
       </Form>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Team conversation</CardTitle>
-          <CardDescription>
-            Invite your team members to collaborate.
-          </CardDescription>
+      <Card className="w-full overflow-hidden">
+        <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+        <CardHeader className="pb-3 pt-5">
+          <p className="text-base font-bold" style={{ color: '#1E1D3D' }}>
+            Discussion d&apos;équipe
+          </p>
+          <p className="mt-0.5 text-xs text-gray-400">
+            Échangez avec les membres de votre équipe sur cette tâche.
+          </p>
         </CardHeader>
         <CardContent className="grid gap-6">
           {comments?.map((comment: any) => (
-            <>
-              {/*               <pre>
-                <code>{JSON.stringify(comment, null, 2)}</code>
-              </pre> */}
-              <div key={comment.id} className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage
-                    src={comment.assigned_user?.avatar || '/images/nouser.png'}
-                  />
-                  <AvatarFallback>{comment.assigned_user?.name}</AvatarFallback>
-                </Avatar>
+            <div key={comment.id} className="flex items-center space-x-4">
+              <Avatar>
+                <AvatarImage
+                  src={comment.assigned_user?.avatar || '/images/nouser.png'}
+                />
+                <AvatarFallback>{comment.assigned_user?.name}</AvatarFallback>
+              </Avatar>
+              <div>
                 <div>
-                  <div>
-                    <p className="text-sm font-medium leading-none">
-                      {comment.assigned_user?.name}
-                    </p>
-                    <p className="py-2 text-xs text-muted-foreground">
-                      {comment.comment}
-                    </p>
-                  </div>
-                  <div className="text-xs opacity-50">
-                    {moment(comment.createdAt).format('YYYY-MM-DD-HH:mm')}
-                  </div>
+                  <p className="text-sm font-medium leading-none">
+                    {comment.assigned_user?.name}
+                  </p>
+                  <p className="py-2 text-xs text-gray-400">
+                    {comment.comment}
+                  </p>
+                </div>
+                <div className="text-xs opacity-50">
+                  {moment(comment.createdAt).format('YYYY-MM-DD-HH:mm')}
                 </div>
               </div>
-            </>
+            </div>
           ))}
         </CardContent>
       </Card>

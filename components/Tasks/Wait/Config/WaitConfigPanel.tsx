@@ -3,7 +3,6 @@ import type { FC } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Button } from '@/components/ui/button';
 import { useReactFlow } from 'reactflow';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,7 +23,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import type { Option } from '@/components/ui/multiple-selector';
 import MultipleSelector from '@/components/ui/multiple-selector';
@@ -166,18 +164,21 @@ const WaitConfigPanel: FC<Props> = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler as any)}>
             <SheetTrigger asChild>
-              <Button variant="outline" onClick={handleConfigPanelOpen}>
+              <button
+                type="button"
+                onClick={handleConfigPanelOpen}
+                className="relative flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+                style={{ color: '#1E1D3D' }}
+              >
                 Configure
-                <span>
-                  {Object.keys(form?.formState.errors).length > 0 ? (
-                    <span className="absolute -right-2 -top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-red-100">
-                      {Object.keys(form?.formState.errors).length +
-                        (labelUniqueError ? 1 : 0) +
-                        (taskNamesUnknownError ? 1 : 0)}
-                    </span>
-                  ) : null}
-                </span>
-              </Button>
+                {Object.keys(form?.formState.errors).length > 0 ? (
+                  <span className="absolute -right-2 -top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-red-100">
+                    {Object.keys(form?.formState.errors).length +
+                      (labelUniqueError ? 1 : 0) +
+                      (taskNamesUnknownError ? 1 : 0)}
+                  </span>
+                ) : null}
+              </button>
             </SheetTrigger>
             <SheetContent className="sm:max-w-[540px]">
               <SheetHeader>
@@ -188,7 +189,7 @@ const WaitConfigPanel: FC<Props> = ({
                   Make changes to Wait Configuration panel.
                 </SheetDescription>
               </SheetHeader>
-              <Separator className="mt-6" />
+              <div className="mt-6 h-px bg-gray-100" />
               <div className="grid gap-4 py-4">
                 <div className="w-full space-y-2">
                   <FormField
@@ -238,7 +239,7 @@ const WaitConfigPanel: FC<Props> = ({
               </div>
               <SheetFooter className="mt-25">
                 <SheetClose asChild>
-                  <Button
+                  <button
                     type="submit"
                     onClick={() => {
                       toast({
@@ -246,18 +247,20 @@ const WaitConfigPanel: FC<Props> = ({
                         description: 'Task changed successfully.',
                       });
                     }}
+                    className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
                   >
                     Submit
-                  </Button>
+                  </button>
                 </SheetClose>
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    deleteNode();
-                  }}
+                <button
+                  type="button"
+                  onClick={() => { deleteNode(); }}
+                  className="flex h-9 items-center rounded-lg border border-red-200 px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                  style={{ color: '#dc2626' }}
                 >
                   Delete Task
-                </Button>
+                </button>
               </SheetFooter>
             </SheetContent>
           </form>

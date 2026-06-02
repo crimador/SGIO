@@ -1,11 +1,4 @@
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import { z } from 'zod';
 
@@ -26,9 +19,6 @@ const OpenAiCard = async () => {
       id: formData.get('id'),
       serviceKey: formData.get('serviceKey'),
     });
-
-    //console.log(parsed.id, "id");
-    //console.log(parsed.serviceKey, "serviceKey");
 
     if (!parsed.id) {
       await prismadb.systemServices.create({
@@ -58,42 +48,54 @@ const OpenAiCard = async () => {
   });
 
   return (
-    <Card className="min-w-[350px] max-w-[450px]">
-      <CardHeader className="text-lg">
-        <CardTitle>OpenAi - API Key</CardTitle>
-        <CardDescription className="text-xs">
-          {/*  Here will be actual settings */}
-          <p>ENV API key:</p>
+    <Card className="min-w-[350px] max-w-[450px] overflow-hidden">
+      <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+      <CardHeader className="pb-3 pt-5">
+        <p className="text-sm font-semibold" style={{ color: '#1E1D3D' }}>OpenAI — Clé API</p>
+        <div className="mt-1 space-y-1 text-xs text-gray-400">
+          <p>Clé depuis .env :</p>
           <p>
             {process.env.OPENAI_API_KEY ? (
               <CopyKeyComponent
                 envValue={process.env.OPENAI_API_KEY}
-                message="OpenAi - API Key"
+                message="OpenAI - API Key"
               />
             ) : (
-              'not enabled'
+              'Non configurée'
             )}
           </p>
-          <p>API key from DB:</p>
+          <p>Clé depuis la base de données :</p>
           {openAi_key?.serviceKey ? (
             <CopyKeyComponent
               keyValue={openAi_key.serviceKey}
-              message="OpenAi - API Key"
+              message="OpenAI - API Key"
             />
           ) : (
-            'not enabled'
+            'Non configurée'
           )}
-        </CardDescription>
+        </div>
       </CardHeader>
       <CardContent className="space-y-2">
         <form action={setOpenAiKey}>
           <div>
             <input type="hidden" name="id" value={openAi_key?.id} />
-            <Input type="text" name="serviceKey" placeholder="Your API key" />
+            <Input type="text" name="serviceKey" placeholder="Votre clé API OpenAI" />
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type={'reset'}>Reset</Button>
-            <Button type="submit">Set OpenAi key</Button>
+          <div className="flex justify-end gap-2 pt-3">
+            <button
+              type="reset"
+              className="flex h-9 items-center rounded-lg border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+              style={{ color: '#1E1D3D' }}
+            >
+              Réinitialiser
+            </button>
+            <button
+              type="submit"
+              className="flex h-9 items-center rounded-lg px-3 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+              style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            >
+              Enregistrer
+            </button>
           </div>
         </form>
       </CardContent>

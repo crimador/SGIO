@@ -27,17 +27,17 @@ const ProfilePage = async () => {
   if (process.env.OPENAI_API_KEY && !openAiKeyUser && !openAiKeySystem)
     return (
       <Container
-        title="Ai assistant"
-        description={'Ask anything you need to know'}
+        title="Assistant IA"
+        description="Posez vos questions à l'assistant"
       >
         <div>
-          <h1>Open AI key not found</h1>
-          <p>
-            Please add your open ai key in your{' '}
-            <Link href={'/profile'} className="text-blue-500">
-              profile settings page{' '}
-            </Link>
-            to use the assistant
+          <h1 className="text-lg font-semibold">Clé API OpenAI introuvable</h1>
+          <p className="mt-2 text-muted-foreground">
+            Veuillez ajouter votre clé API OpenAI dans vos{' '}
+            <Link href={'/profile'} className="text-blue-500 underline">
+              paramètres de profil
+            </Link>{' '}
+            pour utiliser l&apos;assistant.
           </p>
         </div>
       </Container>
@@ -45,10 +45,10 @@ const ProfilePage = async () => {
 
   return (
     <Container
-      title="Ai assistant"
-      description={'Ask anything you need to know'}
+      title="Assistant IA"
+      description="Posez vos questions à l'assistant"
     >
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="text-muted-foreground">Chargement…</div>}>
         <Chat />
       </Suspense>
     </Container>

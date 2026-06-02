@@ -1,43 +1,18 @@
 import { prismadb } from '@/lib/prisma';
 import type { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import GithubProvider from 'next-auth/providers/github';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
 import { newUserNotify } from './new-user-notify';
 
-function getGoogleCredentials(): { clientId: string; clientSecret: string } {
-  const clientId = process.env.GOOGLE_ID;
-  const clientSecret = process.env.GOOGLE_SECRET;
-  if (!clientId || clientId.length === 0) {
-    throw new Error('Missing GOOGLE_ID');
-  }
-
-  if (!clientSecret || clientSecret.length === 0) {
-    throw new Error('Missing GOOGLE_SECRET');
-  }
-
-  return { clientId, clientSecret };
-}
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.JWT_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   //adapter: PrismaAdapter(prismadb),
   session: {
     strategy: 'jwt',
   },
 
   providers: [
-    GoogleProvider({
-      clientId: getGoogleCredentials().clientId,
-      clientSecret: getGoogleCredentials().clientSecret,
-    }),
-
-    GithubProvider({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
-    }),
-
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -79,6 +54,17 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (user?.email) {
+        // Update lastLoginAt only on actual sign-in, not on every session refresh
+        await prismadb.users.updateMany({
+          where: { email: user.email },
+          data: { lastLoginAt: new Date() },
+        });
+      }
+      return true;
+    },
+
     //TODO: fix this any
     async session({ token, session }: any) {
       const user = await prismadb.users.findFirst({
@@ -89,16 +75,22 @@ export const authOptions: NextAuthOptions = {
 
       if (!user) {
         try {
+          const existingCount = await prismadb.users.count();
+          const isFirstUser = existingCount === 0;
+
           const newUser = await prismadb.users.create({
             data: {
               email: token.email as string,
               name: token.name,
               avatar: token.picture,
-              is_admin: false,
-              is_account_admin: false,
+              is_admin: isFirstUser,
+              is_account_admin: isFirstUser,
               lastLoginAt: new Date(),
-              userStatus:
-                process.env.NEXT_PUBLIC_APP_URL === 'https://demo.saashq.org'
+              userRole: isFirstUser ? 'DG' : 'COMMERCIAL',
+              mustChangePassword: false,
+              userStatus: isFirstUser
+                ? 'ACTIVE'
+                : process.env.NEXT_PUBLIC_APP_URL === 'https://demo.saashq.org'
                   ? 'ACTIVE'
                   : 'PENDING',
             },
@@ -106,30 +98,23 @@ export const authOptions: NextAuthOptions = {
 
           await newUserNotify(newUser);
 
-          //Put new created user data in session
           session.user.id = newUser.id;
           session.user.name = newUser.name;
           session.user.email = newUser.email;
           session.user.avatar = newUser.avatar;
           session.user.image = newUser.avatar;
-          session.user.isAdmin = false;
+          session.user.isAdmin = isFirstUser;
           session.user.userLanguage = newUser.userLanguage;
           session.user.userStatus = newUser.userStatus;
           session.user.lastLoginAt = newUser.lastLoginAt;
+          session.user.userRole = newUser.userRole;
+          session.user.mustChangePassword = newUser.mustChangePassword;
           return session;
         } catch (error) {
           return console.log(error);
         }
       } else {
-        await prismadb.users.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            lastLoginAt: new Date(),
-          },
-        });
-        //User allready exist in localDB, put user data in session
+        // User already exists — populate session from DB, no lastLoginAt update here
         session.user.id = user.id;
         session.user.name = user.name;
         session.user.email = user.email;
@@ -139,9 +124,10 @@ export const authOptions: NextAuthOptions = {
         session.user.userLanguage = user.userLanguage;
         session.user.userStatus = user.userStatus;
         session.user.lastLoginAt = user.lastLoginAt;
+        session.user.userRole = user.userRole;
+        session.user.mustChangePassword = user.mustChangePassword;
       }
 
-      //console.log(session, "session");
       return session;
     },
   },

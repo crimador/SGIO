@@ -15,7 +15,6 @@ import {
   FormDescription,
   FormMessage,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
 
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
@@ -76,7 +75,7 @@ const FeedbackForm = ({ setOpen }: FeedbackFormProps) => {
                   {...field}
                 />
               </FormControl>
-              <FormDescription className="text-xs text-muted-foreground">
+              <FormDescription className="text-xs text-gray-400">
                 We appreciate every feedback. Thank you for helping us make this
                 app better
               </FormDescription>
@@ -85,14 +84,21 @@ const FeedbackForm = ({ setOpen }: FeedbackFormProps) => {
           )}
         />
         <div className="flex justify-end space-x-2">
-          <Button
-            variant={'outline'}
+          <button
+            type="button"
             onClick={() => setOpen(false)}
             disabled={loading}
+            className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-60"
+            style={{ color: '#1E1D3D' }}
           >
             Cancel
-          </Button>
-          <Button type="submit" variant={'secondary'} disabled={loading}>
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex h-9 items-center gap-1.5 rounded-md bg-gray-100 px-4 text-sm font-medium transition-colors hover:bg-gray-200 disabled:opacity-60"
+            style={{ color: '#1E1D3D' }}
+          >
             {loading ? (
               <div className="flex space-x-2">
                 <Icons.spinner className="h-4 w-4 animate-spin" />
@@ -101,7 +107,7 @@ const FeedbackForm = ({ setOpen }: FeedbackFormProps) => {
             ) : (
               'Submit'
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

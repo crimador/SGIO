@@ -20,10 +20,9 @@ export async function DELETE(
   }
 
   try {
-    await prismadb.crm_Contacts.delete({
-      where: {
-        id: params.contactId,
-      },
+    await prismadb.crm_Contacts.update({
+      where: { id: params.contactId },
+      data: { deletedAt: new Date() },
     });
 
     return NextResponse.json({ message: 'Contact deleted' }, { status: 200 });

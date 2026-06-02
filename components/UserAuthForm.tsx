@@ -4,8 +4,6 @@ import { cn } from '@/lib/utils';
 import { signIn } from 'next-auth/react';
 import * as React from 'react';
 import type { FC } from 'react';
-import { Button } from '@/components/ui/button';
-
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
@@ -27,9 +25,9 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
 
   return (
     <div className={cn('flex justify-center', className)} {...props}>
-      <Button
+      <button
         type="button"
-        className="w-full max-w-sm bg-slate-200"
+        className="flex w-full max-w-sm items-center justify-center gap-2 rounded-lg bg-slate-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-300 disabled:opacity-60"
         onClick={loginWithGoogle}
         disabled={isLoading}
       >
@@ -64,7 +62,7 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
           </svg>
         )}
         Google
-      </Button>
+      </button>
     </div>
   );
 };

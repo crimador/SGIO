@@ -23,7 +23,6 @@ import { Nav } from '@/app/[locale]/(routes)/emails/components/nav';
 import type { Mail } from '@/app/[locale]/(routes)/emails/data';
 import { useMail } from '@/app/[locale]/(routes)/emails/use-mail';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -90,7 +89,7 @@ export function MailComponent({
               <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
             </div>
           </div>
-          <Separator />
+          <div className="h-px bg-gray-100" />
           <div className={cn(isCollapsed ? 'block' : 'hidden')}>
             <Nav
               isCollapsed={isCollapsed}
@@ -145,7 +144,7 @@ export function MailComponent({
               },
             ]}
           />
-          <Separator />
+          <div className="h-px bg-gray-100" />
           <Nav
             isCollapsed={isCollapsed}
             links={[
@@ -202,7 +201,7 @@ export function MailComponent({
                 </TabsTrigger>
               </TabsList>
             </div>
-            <Separator />
+            <div className="h-px bg-gray-100" />
             <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <form>
                 <div className="relative">

@@ -29,7 +29,6 @@ import {
 
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
-import { PanelTopClose, PanelTopOpen } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,8 +46,6 @@ export function ContactsDataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  const [hide, setHide] = React.useState(false);
 
   const table = useReactTable({
     data,
@@ -74,89 +71,61 @@ export function ContactsDataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between gap-3">
-        <div></div>
-        {/*         <RightViewModal
-          label={"Create account"}
-          title="Create account"
-          description=""
-        >
-          <NewAccountForm industries={industries} users={users} />
-        </RightViewModal> */}
-
-        <div className="flex justify-end space-x-2">
-          {hide ? (
-            <PanelTopOpen
-              onClick={() => setHide(!hide)}
-              className="text-muted-foreground"
-            />
-          ) : (
-            <PanelTopClose
-              onClick={() => setHide(!hide)}
-              className="text-muted-foreground"
-            />
-          )}
-        </div>
-      </div>
-
-      {hide ? (
-        <div className="flex gap-2">
-          This content is hidden now. Click on <PanelTopOpen /> to show content
-        </div>
-      ) : (
-        <>
-          <DataTableToolbar table={table} />
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
+      <DataTableToolbar table={table} />
+      <div className="rounded-xl border overflow-hidden">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="bg-gray-50/80 hover:bg-gray-50/80">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: '#1E1D3D' }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
                 ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className="transition-colors hover:bg-[#FF7E00]/[0.04]"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <DataTablePagination table={table} />
-        </>
-      )}
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Aucun résultat.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <DataTablePagination table={table} />
     </div>
   );
 }

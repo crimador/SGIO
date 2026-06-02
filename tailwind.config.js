@@ -17,65 +17,77 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-montserrat)', 'Montserrat', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      },
       colors: {
-        //Tremor theme
+        /* KEKELI Group Brand Colors */
+        kekeli: {
+          navy:     '#1E1D3D',
+          orange:   '#FF7E00',
+          yellow:   '#FAC731',
+          'navy-mid': '#36355F',
+          cream:    '#F4F2F2',
+        },
+        //Tremor theme — KEKELI Group colors
         tremor: {
           brand: {
-            faint: '#eff6ff', // blue-50
-            muted: '#bfdbfe', // blue-200
-            subtle: '#60a5fa', // blue-400
-            DEFAULT: '#3b82f6', // blue-500
-            emphasis: '#1d4ed8', // blue-700
-            inverted: '#ffffff', // white
+            faint: '#fff8ee',   // orange très clair
+            muted: '#ffd599',   // orange clair
+            subtle: '#ffaa33',  // orange moyen
+            DEFAULT: '#FF7E00', // orange KEKELI
+            emphasis: '#cc6500',// orange foncé
+            inverted: '#ffffff',
           },
           background: {
-            muted: '#f9fafb', // gray-50
-            subtle: '#f3f4f6', // gray-100
-            DEFAULT: '#ffffff', // white
-            emphasis: '#374151', // gray-700
+            muted: '#F4F2F2',   // cream KEKELI
+            subtle: '#f0eeee',
+            DEFAULT: '#ffffff',
+            emphasis: '#1E1D3D',// navy KEKELI
           },
           border: {
-            DEFAULT: '#e5e7eb', // gray-200
+            DEFAULT: '#e5e3e3',
           },
           ring: {
-            DEFAULT: '#e5e7eb', // gray-200
+            DEFAULT: '#e5e3e3',
           },
           content: {
-            subtle: '#9ca3af', // gray-400
-            DEFAULT: '#6b7280', // gray-500
-            emphasis: '#374151', // gray-700
-            strong: '#111827', // gray-900
-            inverted: '#ffffff', // white
+            subtle: '#9ca3af',
+            DEFAULT: '#36355F', // navy-mid KEKELI
+            emphasis: '#1E1D3D',// navy KEKELI
+            strong: '#1E1D3D',
+            inverted: '#ffffff',
           },
         },
         // dark mode
         'dark-tremor': {
           brand: {
-            faint: '#0B1229', // custom
-            muted: '#172554', // blue-950
-            subtle: '#1e40af', // blue-800
-            DEFAULT: '#3b82f6', // blue-500
-            emphasis: '#60a5fa', // blue-400
-            inverted: '#030712', // gray-950
+            faint: '#1a1330',
+            muted: '#2d2550',
+            subtle: '#FF7E00',
+            DEFAULT: '#FAC731', // yellow KEKELI en dark
+            emphasis: '#ffdd77',
+            inverted: '#1E1D3D',
           },
           background: {
-            muted: '#131A2B', // custom
-            subtle: '#1f2937', // gray-800
-            DEFAULT: '#111827', // gray-900
-            emphasis: '#d1d5db', // gray-300
+            muted: '#16152e',
+            subtle: '#1E1D3D',
+            DEFAULT: '#16152e',
+            emphasis: '#F4F2F2',
           },
           border: {
-            DEFAULT: '#1f2937', // gray-800
+            DEFAULT: '#2d2a52',
           },
           ring: {
-            DEFAULT: '#1f2937', // gray-800
+            DEFAULT: '#2d2a52',
           },
           content: {
-            subtle: '#4b5563', // gray-600
-            DEFAULT: '#6b7280', // gray-600
-            emphasis: '#e5e7eb', // gray-200
-            strong: '#f9fafb', // gray-50
-            inverted: '#000000', // black
+            subtle: '#6b6a9a',
+            DEFAULT: '#a0a0c0',
+            emphasis: '#e5e3f0',
+            strong: '#F4F2F2',
+            inverted: '#1E1D3D',
           },
         },
         //End Tremor theme

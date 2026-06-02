@@ -1,25 +1,32 @@
+'use client';
+
 import { GitFork } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
-import React from 'react';
+import { cn } from '@/lib/utils';
 
 type Props = {
   open: boolean;
-  title: string;
+  title?: string;
 };
 
 const WorkflowsModuleMenu = ({ open }: Props) => {
   const pathname = usePathname();
   const isPath = pathname.includes('workflows');
+
   return (
-    <div className="mx-auto flex flex-row items-center p-2">
+    <div className="my-0.5 px-2">
       <Link
         href={'/workflows'}
-        className={`flex gap-2 p-2 ${isPath ? 'text-muted-foreground' : null}`}
+        className={cn(
+          'relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(0.32,0.72,0,1)]',
+          isPath
+            ? 'border-l-2 border-[#FF7E00] bg-[#FF7E00]/[0.12] pl-[10px] text-white'
+            : 'pl-3 text-white/65 hover:bg-white/[0.08] hover:text-white'
+        )}
       >
-        <GitFork className="w-6" />
-        <span className={open ? '' : 'hidden'}>Workflows</span>
+        <GitFork className="h-[18px] w-[18px] shrink-0" />
+        {open && <span className="truncate">Workflows</span>}
       </Link>
     </div>
   );

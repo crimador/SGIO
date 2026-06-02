@@ -1,5 +1,5 @@
 import { getNotions } from '@/actions/get-notions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 import { LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -13,11 +13,11 @@ const NotionsBox = async () => {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Notions</CardTitle>
-          <LightbulbIcon className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm font-medium" style={{ color: '#1E1D3D' }}>Notions</p>
+          <LightbulbIcon className="h-4 w-4 text-gray-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-gray-400">
             Not connected to Notion DB. Here is how to connect:{' '}
             <Link href={'/secondBrain'} className="text-blue-500">
               settings
@@ -32,8 +32,8 @@ const NotionsBox = async () => {
     <Link href={'/secondBrain'}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Notions</CardTitle>
-          <LightbulbIcon className="h-4 w-4 text-muted-foreground" />
+          <p className="text-sm font-medium" style={{ color: '#1E1D3D' }}>Notions</p>
+          <LightbulbIcon className="h-4 w-4 text-gray-400" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-medium">

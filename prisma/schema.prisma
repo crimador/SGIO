@@ -31,6 +31,11 @@ model crm_Accounts {
   industry             String?
   member_of            String?
   name                 String
+  nif                  String?              @unique
+  rccm                 String?
+  regimeFiscal          String?
+  centreImpots          String?
+  dateCloture           DateTime?
   office_phone         String?
   shipping_city        String?
   shipping_country     String?
@@ -52,6 +57,9 @@ model crm_Accounts {
   crm_accounts_tasks   crm_Accounts_Tasks[]
   watchers             String[]
   watching_users       Users[]              @relation(name: "watching_accounts")
+  expenses             Expense[]
+  billingDocuments     BillingDocument[]
+  deletedAt            DateTime?
 }
 
 model crm_Leads {
@@ -73,6 +81,7 @@ model crm_Leads {
   status             String?       @default("NEW")
   type               String?       @default("DEMO")
   assigned_to        String?
+  deletedAt          DateTime?
   assigned_to_user   Users?        @relation(fields: [assigned_to], references: [id])
   accountsIDs        String?
   assigned_accounts  crm_Accounts? @relation(fields: [accountsIDs], references: [id])
@@ -121,6 +130,7 @@ model crm_Opportunities {
   created_by_user      Users?                          @relation(name: "created_by_user_relation", fields: [created_by], references: [id])
   assigned_account     crm_Accounts?                   @relation(fields: [account], references: [id])
   assigned_campaings   crm_campaigns?                  @relation(fields: [campaign], references: [id])
+  deletedAt            DateTime?
   connected_documents  String[]
   documents            Documents[]
   connected_contacts   String[]
@@ -139,6 +149,7 @@ model crm_campaigns {
   name          String
   description   String?
   status        String?
+  deletedAt     DateTime?
   opportunities crm_Opportunities[]
 }
 
@@ -188,6 +199,7 @@ model crm_Contacts {
   social_youtube         String?
   social_tiktok          String?
   type                   String?             @default("Customer")
+  deletedAt              DateTime?
   assigned_to_user       Users?              @relation(name: "assigned_contacts", fields: [assigned_to], references: [id])
   crate_by_user          Users?              @relation(name: "created_contacts", fields: [created_by], references: [id])
   opportunitiesIDs       String[]
@@ -266,6 +278,10 @@ model MyAccount {
   bank_code            String?
   bank_IBAN            String?
   bank_SWIFT           String?
+  services             String?
+  logoUrl              String?
+  signer_name          String?
+  signer_title         String?
 }
 
 model Invoices {
@@ -293,6 +309,8 @@ model Invoices {
   invoice_type                  String?
   invoice_currency              String?
   invoice_language              String?
+  tva                          Int?
+  nifClient                    String?
   partner                       String?
   partner_street                String?
   partner_city                  String?
@@ -374,8 +392,8 @@ model Documents {
   crm_accounts_tasksIDs  String?
   leadsIDs               String[]
   accountsIDs            String[]
-  localFile              String
-  employeeID             String
+  localFile              String?
+  employeeID             String?
   invoices               Invoices[]
   opportunities          crm_Opportunities[]
   contacts               crm_Contacts[]
@@ -383,7 +401,7 @@ model Documents {
   crm_accounts_tasks     crm_Accounts_Tasks? @relation(fields: [crm_accounts_tasksIDs], references: [id])
   leads                  crm_Leads[]
   accounts               crm_Accounts[]
-  employee               Employee            @relation(fields: [employeeID], references: [id])
+  employee               Employee?           @relation(fields: [employeeID], references: [id])
   created_by             Users?              @relation(name: "created_by_user", fields: [created_by_user], references: [id])
   assigned_to_user       Users?              @relation(name: "assigned_to_user", fields: [assigned_user], references: [id])
   documents_type         Documents_Types?    @relation(fields: [document_type], references: [id])
@@ -548,6 +566,8 @@ model Users {
   watching_accountsIDs String[]
   watching_accounts    crm_Accounts[]        @relation(name: "watching_accounts")
   role                 Role                  @default(guest)
+  userRole             UserRole              @default(COMMERCIAL)
+  mustChangePassword   Boolean               @default(false)
   employee             Employee[]
   userWorkflowDef      Definitions[]
 }
@@ -559,6 +579,7 @@ enum Language {
   uk
   ko
   tr
+  fr
 }
 
 model system_Modules_Enabled {
@@ -616,6 +637,13 @@ enum Role {
   guest
 }
 
+enum UserRole {
+  DG
+  COMPTABLE
+  COMMERCIAL
+  RH
+}
+
 enum CompanyRole {
   Admin
   Employee
@@ -633,10 +661,11 @@ model Employee {
   role             CompanyRole   @default(Employee)
   position         String?
   salary           Float         @default(0.00)
+  dateOfBirth      DateTime?
   onBoarding       DateTime?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-  IBAN             String
+  IBAN             String?
   photo            String?
   taxid            String?
   address          String?
@@ -651,24 +680,28 @@ model Employee {
   PaySlip     PaySlip[]
   PaySlipData PaySlipData[]
   Request     Request[]
-  Teams       Teams?        @relation(fields: [teamsId], references: [id])
-  teamsId     String?
+  teams       Teams[]         @relation("EmployeeTeams")
 
   sent        Message[]       @relation("sender")
   from        Message[]       @relation("receiver")
   TeamMessage TeamMessage[]   @relation("sender")
   Comments    tasksComments[]
+
+  responsibleFor    Teams[]     @relation("TeamResponsible")
+  teamTasksAssigned TeamTask[]  @relation("TeamTaskAssignee")
 }
 
 model Teams {
-  id          String        @id @default(uuid())
-  name        String
-  tasks       String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  members     Employee[]
-  TeamMessage TeamMessage[] @relation("receiver")
-  TeamTask    TeamTask[]
+  id            String        @id @default(uuid())
+  name          String
+  tasks         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  members       Employee[]    @relation("EmployeeTeams")
+  responsible   Employee?     @relation("TeamResponsible", fields: [responsibleId], references: [id])
+  responsibleId String?
+  TeamMessage   TeamMessage[] @relation("receiver")
+  TeamTask      TeamTask[]
 }
 
 model Timekeeping {
@@ -689,9 +722,12 @@ model TeamTask {
   task         String
   description  String?
   done         Boolean         @default(false)
+  priority     String          @default("NORMAL")
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   deadline     DateTime
+  assignedTo   Employee?       @relation("TeamTaskAssignee", fields: [assignedToId], references: [id])
+  assignedToId String?
   TaskComments tasksComments[]
 }
 
@@ -730,13 +766,26 @@ model Training {
 }
 
 model PaySlip {
-  id         String   @id @default(uuid())
-  employee   Employee @relation(fields: [employeeID], references: [id])
+  id         String        @id @default(uuid())
+  employee   Employee      @relation(fields: [employeeID], references: [id])
   employeeID String
-  month      DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  localFile  String
+  period     String        // format "YYYY-MM" ex: "2026-05"
+  baseSalary Float
+  bonuses      Float         @default(0)
+  deductions   Float         @default(0)
+  cnssEmployee Float         @default(0)
+  cnssEmployer Float         @default(0)
+  netSalary    Float
+  status       PaySlipStatus @default(BROUILLON)
+  notes        String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum PaySlipStatus {
+  BROUILLON
+  EMIS
+  PAYE
 }
 
 model PaySlipData {
@@ -753,21 +802,35 @@ model PaySlipData {
 }
 
 model Request {
-  id         String      @id @default(uuid())
-  employee   Employee    @relation(fields: [employeeID], references: [id])
-  employeeID String
-  type       RequestType
-  approved   Boolean     @default(false)
-  message    String
-  date       DateTime
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id              String        @id @default(uuid())
+  employee        Employee      @relation(fields: [employeeID], references: [id])
+  employeeID      String
+  type            RequestType
+  status          RequestStatus @default(EN_ATTENTE)
+  message         String
+  startDate       DateTime      @db.Date
+  endDate         DateTime?     @db.Date
+  numberOfDays    Int?
+  requestedAmount Float?        // montant demandé pour les augmentations
+  documentType    String?       // type de document demandé (ex: attestation_travail)
+  legalDays       Int?          // jours accordés par la loi (congés exceptionnels) — non déduits du solde
+  leaveSubType    String?       // sous-type de congé exceptionnel (ex: mariage, demenagement...)
+  returnedAt      DateTime?     // date de retour confirmée par le manager
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum RequestStatus {
+  EN_ATTENTE
+  APPROUVE
+  REJETE
 }
 
 enum RequestType {
   Documents
   Vacation
   Leave
+  Maternity
   Training
   Raise
   Department
@@ -836,4 +899,208 @@ model Runtimes {
   definitions          Definitions   @relation(fields: [workflowDefinitionId], references: [id])
   createdAt            DateTime?     @default(now()) @db.Date
   updatedAt            DateTime?     @updatedAt @db.Date
+}
+
+/// Expense model for company expenses (Togo/Ohada)
+model Expense {
+  id                String           @id @default(cuid())
+  description       String
+  amount            Float
+  category          String
+  date              DateTime
+  receipt           String?
+  paymentMethod     PaymentMethod    @default(ESPECES)
+  accountId         String?
+  account           crm_Accounts?    @relation(fields: [accountId], references: [id])
+  treasuryAccountId String?
+  treasuryAccount   TreasuryAccount? @relation(fields: [treasuryAccountId], references: [id])
+  createdBy         String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+// ─── MODULE FACTURATION OHADA ────────────────────────────────────────────────
+
+/// Séquence de numérotation par type / mois / année
+/// Garantit l'unicité et la continuité des numéros (FAC/05/2026/001)
+model BillingSequence {
+  id         String              @id @default(cuid())
+  type       BillingDocumentType
+  year       Int
+  month      Int
+  lastNumber Int                 @default(0)
+
+  @@unique([type, year, month])
+}
+
+/// Client occasionnel facturé sans fiche CRM complète
+model OccasionalClient {
+  id        String            @id @default(cuid())
+  name      String
+  address   String?
+  city      String?
+  country   String?           @default("Togo")
+  nif       String?
+  phone     String?
+  email     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  documents BillingDocument[]
+}
+
+/// Document commercial émis : devis, facture ou avoir
+model BillingDocument {
+  id     String              @id @default(cuid())
+  type   BillingDocumentType
+  number String              @unique
+  status String
+
+  // Client : soit un compte CRM, soit un client occasionnel
+  crmAccountId       String?
+  crmAccount         crm_Accounts?     @relation(fields: [crmAccountId], references: [id])
+  occasionalClientId String?
+  occasionalClient   OccasionalClient? @relation(fields: [occasionalClientId], references: [id])
+
+  // Régime TVA appliqué à l'ensemble du document
+  tvaRegime TvaRegime @default(NORMAL)
+  tvaRate   Float     @default(18)
+
+  // Dates
+  issueDate DateTime  @default(now()) @db.Date
+  dueDate   DateTime? @db.Date
+
+  // Totaux calculés à la sauvegarde
+  totalHT  Float @default(0)
+  totalTVA Float @default(0)
+  totalTTC Float @default(0)
+
+  // Lien devis → facture (un devis peut générer une facture)
+  quoteId           String?
+  sourceQuote       BillingDocument?  @relation("QuoteToInvoice", fields: [quoteId], references: [id])
+  generatedInvoices BillingDocument[] @relation("QuoteToInvoice")
+
+  // Lien facture → avoir (un avoir est lié à sa facture d'origine)
+  creditedInvoiceId String?
+  creditedInvoice   BillingDocument?  @relation("InvoiceToAvoir", fields: [creditedInvoiceId], references: [id])
+  creditNotes       BillingDocument[] @relation("InvoiceToAvoir")
+
+  // Avoir : mode (TOTAL | PARTIEL) et motif
+  creditNoteMode  String?
+  creditNoteMotif String?
+
+  notes String?
+
+  // Paiement (factures uniquement)
+  paidAt          DateTime?
+  paymentMethod   PaymentMethod?
+  treasuryEntryId String?
+  treasuryEntry   TreasuryEntry? @relation(fields: [treasuryEntryId], references: [id])
+
+  // Relances
+  lastReminderAt  DateTime?
+
+  lines    BillingLine[]
+  payments BillingPayment[]
+
+  createdBy String?
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BillingDocumentType {
+  DEVIS
+  FACTURE
+  AVOIR
+}
+
+enum TvaRegime {
+  NORMAL   // 18% — assujetti TVA
+  EXONERE  // 0%  — ONG, hôpitaux, associations exonérées
+  TPU      // non applicable — client sous régime TPU
+}
+
+enum PaymentMethod {
+  VIREMENT
+  ESPECES
+  FLOOZ
+  T_MONEY
+}
+
+/// Ligne d'un document commercial
+model BillingLine {
+  id          String          @id @default(cuid())
+  documentId  String
+  document    BillingDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  position    Int
+  designation String
+  quantity    Float
+  unitPrice   Float
+  totalHT     Float
+  totalTVA    Float
+  totalTTC    Float
+}
+
+/// Acompte ou paiement partiel sur une facture
+model BillingPayment {
+  id                String           @id @default(cuid())
+  documentId        String
+  document          BillingDocument  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  amount            Float
+  date              DateTime         @db.Date
+  paymentMethod     PaymentMethod
+  treasuryAccountId String?
+  treasuryAccount   TreasuryAccount? @relation(fields: [treasuryAccountId], references: [id])
+  notes             String?
+  createdBy         String?
+  createdAt         DateTime         @default(now())
+}
+
+// ─── MODULE TRÉSORERIE ───────────────────────────────────────────────────────
+
+/// Compte de trésorerie : banque, caisse ou mobile money
+/// Le solde est calculé dynamiquement (SUM entrées - SUM sorties)
+model TreasuryAccount {
+  id            String              @id @default(cuid())
+  name          String
+  type          TreasuryAccountType
+  currency      String              @default("XOF")
+  accountNumber String?
+  isActive      Boolean             @default(true)
+  entries         TreasuryEntry[]
+  expenses        Expense[]
+  billingPayments BillingPayment[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+enum TreasuryAccountType {
+  BANQUE
+  CAISSE
+  MOBILE_MONEY
+}
+
+/// Mouvement de trésorerie (entrée ou sortie)
+model TreasuryEntry {
+  id            String            @id @default(cuid())
+  accountId     String
+  account       TreasuryAccount   @relation(fields: [accountId], references: [id])
+  type          TreasuryEntryType
+  amount        Float
+  description   String
+  date          DateTime          @db.Date
+  paymentMethod PaymentMethod
+  reference     String?
+
+  // Document qui a déclenché ce mouvement (optionnel)
+  billingDocuments BillingDocument[]
+
+  createdBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TreasuryEntryType {
+  ENTREE
+  SORTIE
 }

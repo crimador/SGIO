@@ -3,8 +3,6 @@
 import {
   Card,
   CardHeader,
-  CardTitle,
-  CardDescription,
   CardFooter,
 } from '@/components/ui/card';
 import type { FC } from 'react';
@@ -61,7 +59,7 @@ const EndTask: FC<NodeProps<DataProps>> = ({ data, id }) => {
     <Card className="shadow-md">
       <Handle type="target" position={Position.Top} id={data.inputBoundId} />
       <CardHeader>
-        <CardTitle className="flex gap-2">
+        <p className="flex gap-2 text-base font-bold" style={{ color: '#1E1D3D' }}>
           {data.label}
           <TooltipProvider>
             <Tooltip>
@@ -73,10 +71,8 @@ const EndTask: FC<NodeProps<DataProps>> = ({ data, id }) => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </CardTitle>
-        <CardDescription className="text-md text-muted-foreground">
-          {'End'}
-        </CardDescription>
+        </p>
+        <p className="text-sm text-gray-400">{'End'}</p>
       </CardHeader>
       <CardFooter>
         <EndConfigPanel

@@ -3,8 +3,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross1Icon } from '@radix-ui/react-icons';
 
@@ -44,12 +42,26 @@ const RightViewModal = ({
     return null;
   }
 
+  const isOutline = buttonVariant === 'outline' || buttonVariant === 'ghost' || buttonVariant === 'secondary';
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <Button className="mb-5" variant={buttonVariant}>
-          {label}
-        </Button>
+        {isOutline ? (
+          <button
+            className="mb-5 flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: '#1E1D3D' }}
+          >
+            {label}
+          </button>
+        ) : (
+          <button
+            className="mb-5 flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            {label}
+          </button>
+        )}
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=closed]:animate-[dialog-overlay-hide_1000ms] data-[state=open]:animate-[dialog-overlay-show_1000ms]" />
@@ -78,9 +90,13 @@ const RightViewModal = ({
             <div className="flex w-full justify-end p-3">
               {' '}
               <Dialog.Close asChild>
-                <Button variant={'destructive'} onClick={() => setOpen(false)}>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="flex h-9 items-center rounded-lg border border-red-200 px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                  style={{ color: '#dc2626' }}
+                >
                   Close
-                </Button>
+                </button>
               </Dialog.Close>
             </div>
           </div>

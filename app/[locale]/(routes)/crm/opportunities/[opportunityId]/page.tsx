@@ -18,18 +18,20 @@ const OpportunityView = async ({
 }: {
   params: { opportunityId: string };
 }) => {
-  const opportunity: any = await getOpportunity(opportunityId);
-  const crmData = await getAllCrmData();
-  const accounts = await getAccountsByOpportunityId(opportunityId);
-  const contacts = await getContactsByOpportunityId(opportunityId);
-  const documents = await getDocumentsByOpportunityId(opportunityId);
+  const [opportunity, crmData, accounts, contacts, documents] = await Promise.all([
+    getOpportunity(opportunityId) as Promise<any>,
+    getAllCrmData(),
+    getAccountsByOpportunityId(opportunityId),
+    getContactsByOpportunityId(opportunityId),
+    getDocumentsByOpportunityId(opportunityId),
+  ]);
 
   if (!opportunity) return <div>Opportunity not found</div>;
 
   return (
     <Container
-      title={`Opportunity ${opportunity.name} - detail view`}
-      description={'Description - ' + opportunity.description}
+      title={opportunity.name}
+      description={opportunity.description ?? "Détails de l'opportunité commerciale"}
     >
       <div className="space-y-5">
         <BasicView data={opportunity} />

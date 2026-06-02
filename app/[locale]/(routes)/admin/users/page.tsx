@@ -2,28 +2,27 @@ import { getUsers } from '@/actions/get-users';
 import React from 'react';
 import Container from '../../components/ui/Container';
 import { InviteForm } from './components/InviteForm';
-import { Separator } from '@/components/ui/separator';
 
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { AdminUserDataTable } from './table-components/data-table';
 import { columns } from './table-components/columns';
-import type { Users } from '@prisma/client';
 import SendMailToAll from './components/send-mail-to-all';
 
 const AdminUsersPage = async () => {
-  const users: Users[] = await getUsers();
+  const [users, session] = await Promise.all([
+    getUsers(),
+    getServerSession(authOptions),
+  ]);
 
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.isAdmin) {
+  if (session?.user?.userRole !== 'DG') {
     return (
       <Container
         title="Administration"
-        description="You are not admin, access not allowed"
+        description="Accès réservé au Dirigeant"
       >
         <div className="flex h-full w-full items-center justify-center">
-          Access not allowed
+          Accès non autorisé
         </div>
       </Container>
     );
@@ -31,22 +30,38 @@ const AdminUsersPage = async () => {
 
   return (
     <Container
-      title="Users administration"
-      description={'Here you can manage your SaasHQ users'}
+      title="Gestion des utilisateurs"
+      description="Invitez des collaborateurs et gérez leurs accès et rôles."
     >
-      <div className="flex-col1">
-        <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
-          Invite new user to SaasHQ
-        </h4>
-        <InviteForm />
-      </div>
-      <Separator />
-      <div>
-        <SendMailToAll />
-      </div>
-      <Separator />
+      <div className="space-y-6">
+        <section className="overflow-hidden rounded-xl border">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <div className="p-5">
+            <p
+              className="mb-4 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+              style={{ borderColor: '#FF7E00' }}
+            >
+              Inviter un nouvel utilisateur
+            </p>
+            <InviteForm />
+          </div>
+        </section>
 
-      <AdminUserDataTable columns={columns} data={users} />
+        <section className="overflow-hidden rounded-xl border">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <div className="p-5">
+            <p
+              className="mb-4 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+              style={{ borderColor: '#FF7E00' }}
+            >
+              Communication groupée
+            </p>
+            <SendMailToAll />
+          </div>
+        </section>
+
+        <AdminUserDataTable columns={columns} data={users} />
+      </div>
     </Container>
   );
 };

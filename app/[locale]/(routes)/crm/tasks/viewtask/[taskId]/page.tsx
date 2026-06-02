@@ -5,14 +5,17 @@ import { getDocuments } from '@/actions/documents/get-documents';
 import { getTaskComments } from '@/actions/projects/get-task-comments';
 import { getTaskDocuments } from '@/actions/projects/get-task-documents';
 
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-
 import { TeamConversations } from './components/team-conversation';
 import { TaskDataTable } from './components/data-table';
 import { columns } from './components/columns';
 import { columnsTask } from './components/columns-task';
 import { getCrMTask } from '@/actions/crm/account/get-task';
+
+const PRIORITY_CLASSES: Record<string, string> = {
+  high: 'bg-red-100 text-red-700',
+  medium: 'bg-orange-100 text-orange-700',
+  low: 'bg-green-100 text-green-700',
+};
 
 type TaskPageProps = {
   params: {
@@ -25,27 +28,23 @@ const CRMTaskPage = async ({ params }: TaskPageProps) => {
   const task: any = await getCrMTask(taskId);
   const taskDocuments: any = await getTaskDocuments(taskId);
   const documents: any = await getDocuments();
-  //Info: This is the same as the one in the CRM task page
   const comments: any = await getTaskComments(taskId);
 
   return (
     <div className="flex w-full flex-col space-x-2 px-2 md:flex-row">
       <div className="flex w-full flex-col md:w-2/3">
         <h4 className="scroll-m-20 py-5 text-xl font-semibold tracking-tight">
-          Task details
+          Détails de la tâche
         </h4>
         <div className="mb-5 w-full rounded-lg border">
-          {/*          <pre>
-            <code>{JSON.stringify(task, null, 2)}</code>
-          </pre> */}
           <table className="min-w-full text-sm">
             <thead>
               <tr>
                 <th className="border-b px-4 py-2 font-semibold">
-                  <span className="flex justify-start">Property</span>
+                  <span className="flex justify-start">Propriété</span>
                 </th>
                 <th className="border-b px-4 py-2 font-semibold">
-                  <span className="flex justify-start">Value</span>
+                  <span className="flex justify-start">Valeur</span>
                 </th>
               </tr>
             </thead>
@@ -55,62 +54,57 @@ const CRMTaskPage = async ({ params }: TaskPageProps) => {
                 <td className="border-b px-4 py-2">{task.id}</td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Date created</td>
+                <td className="border-b px-4 py-2">Date de création</td>
                 <td className="border-b px-4 py-2">
                   {moment(task.createdAt).format('YYYY-MM-DD')}
                 </td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Date due</td>
+                <td className="border-b px-4 py-2">Date d&apos;échéance</td>
                 <td className="border-b px-4 py-2">
                   {moment(task.dueDateAt).format('YYYY-MM-DD')}
                 </td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Date modified</td>
+                <td className="border-b px-4 py-2">Dernière modification</td>
                 <td className="border-b px-4 py-2">
                   {moment(task.lastEditedAt).format('YYYY-MM-DD')}
                 </td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Priority</td>
+                <td className="border-b px-4 py-2">Priorité</td>
                 <td className="border-b px-4 py-2">
-                  <Badge
-                    variant={
-                      task.priority === 'high' ? `destructive` : `outline`
-                    }
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${PRIORITY_CLASSES[task.priority] ?? 'bg-gray-100 text-gray-700'}`}
                   >
                     {task.priority}
-                  </Badge>
+                  </span>
                 </td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Title</td>
+                <td className="border-b px-4 py-2">Titre</td>
                 <td className="border-b px-4 py-2">{task.title}</td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Content</td>
+                <td className="border-b px-4 py-2">Contenu</td>
                 <td className="border-b px-4 py-2">{task.content}</td>
               </tr>
               <tr>
-                <td className="border-b px-4 py-2">Assigned to</td>
+                <td className="border-b px-4 py-2">Assigné à</td>
                 <td className="border-b px-4 py-2">
-                  {task.assigned_user?.name || 'Not assigned'}
+                  {task.assigned_user?.name || 'Non assigné'}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        {/*         <pre>
-          <code>{JSON.stringify(taskDocuments, null, 2)}</code>
-        </pre> */}
         <h4 className="scroll-m-20 py-5 text-xl font-semibold tracking-tight">
-          Task documents ({taskDocuments.length})
+          Documents de la tâche ({taskDocuments.length})
         </h4>
         <TaskDataTable data={taskDocuments} columns={columnsTask} />
-        <Separator />
+        <div className="my-4 h-px bg-gray-100" />
         <h4 className="scroll-m-20 py-5 text-xl font-semibold tracking-tight">
-          Available documents ({documents.length})
+          Documents disponibles ({documents.length})
         </h4>
         <TaskDataTable data={documents} columns={columns} />
       </div>

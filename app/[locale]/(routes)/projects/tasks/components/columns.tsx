@@ -2,7 +2,6 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { Badge } from '@/components/ui/badge';
 
 import { labels, priorities, statuses } from '../data/data';
 import type { Task } from '../data/schema';
@@ -35,7 +34,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'dueDateAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Due date" />
+      <DataTableColumnHeader column={column} title="Échéance" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">
@@ -48,15 +47,14 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'assigned_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Assigné à" />
     ),
 
     cell: ({ row }) => (
       <div className="w-[180px]">
         {
           //@ts-ignore
-          //TODO: fix this
-          row.getValue('assigned_user')?.name ?? 'Unassigned'
+          row.getValue('assigned_user')?.name ?? 'Non assigné'
         }
       </div>
     ),
@@ -66,7 +64,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Titre" />
     ),
     cell: ({ row }) => {
       const label = labels.find(
@@ -75,7 +73,11 @@ export const columns: ColumnDef<Task>[] = [
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+          {label && (
+            <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium" style={{ color: '#1E1D3D' }}>
+              {label.label}
+            </span>
+          )}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue('title')}
           </span>
@@ -86,7 +88,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'taskStatus',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = statuses.find(
@@ -100,7 +102,7 @@ export const columns: ColumnDef<Task>[] = [
       return (
         <div className="flex w-[100px] items-center">
           {status.icon && (
-            <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+            <status.icon className="mr-2 h-4 w-4 text-gray-400" />
           )}
           <span>{status.label}</span>
         </div>
@@ -111,7 +113,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'priority',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
+      <DataTableColumnHeader column={column} title="Priorité" />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(
@@ -125,7 +127,7 @@ export const columns: ColumnDef<Task>[] = [
       return (
         <div className="flex items-center">
           {priority.icon && (
-            <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+            <priority.icon className="mr-2 h-4 w-4 text-gray-400" />
           )}
           <span>{priority.label}</span>
         </div>

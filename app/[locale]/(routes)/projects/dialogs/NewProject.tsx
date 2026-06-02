@@ -1,7 +1,6 @@
 'use client';
 
 import LoadingComponent from '@/components/LoadingComponent';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -39,49 +38,33 @@ import { z } from 'zod';
 const NewProjectDialog = () => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
   const { toast } = useToast();
 
   const formSchema = z.object({
-    title: z.string().min(3).max(255),
+    title:      z.string().min(3).max(255),
     description: z.string().min(3).max(500),
     visibility: z.string().min(3).max(255),
   });
 
-  type NewAccountFormValues = z.infer<typeof formSchema>;
+  type NewProjectFormValues = z.infer<typeof formSchema>;
 
-  const form = useForm<NewAccountFormValues>({
+  const form = useForm<NewProjectFormValues>({
     resolver: zodResolver(formSchema),
   });
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
-  if (!isMounted) {
-    return null;
-  }
-
-  //Actions
-
-  const onSubmit = async (data: NewAccountFormValues) => {
-    console.log(data);
+  const onSubmit = async (data: NewProjectFormValues) => {
     setIsLoading(true);
     try {
       await axios.post('/api/projects/', data);
-      toast({
-        title: 'Success',
-        description: `New project: ${data.title}, created successfully`,
-      });
+      toast({ title: 'Projet créé', description: `Le projet "${data.title}" a été créé avec succès.` });
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error?.response?.data,
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: error?.response?.data });
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -92,13 +75,18 @@ const NewProjectDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="px-2">New project</Button>
+        <button
+          className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          Nouveau projet
+        </button>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="p-2">New Project</DialogTitle>
+          <DialogTitle className="p-2">Nouveau projet</DialogTitle>
           <DialogDescription className="p-2">
-            Fill out the form below to create a new project.
+            Remplissez le formulaire ci-dessous pour créer un nouveau projet.
           </DialogDescription>
         </DialogHeader>
         {isLoading ? (
@@ -106,23 +94,16 @@ const NewProjectDialog = () => {
         ) : (
           <div className="flex w-full">
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="h-full w-full space-y-3"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full space-y-3">
                 <div className="flex flex-col space-y-3">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>New project name</FormLabel>
+                        <FormLabel>Nom du projet</FormLabel>
                         <FormControl>
-                          <Input
-                            disabled={isLoading}
-                            placeholder="Enter project name"
-                            {...field}
-                          />
+                          <Input disabled={isLoading} placeholder="Saisir le nom du projet" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -133,13 +114,9 @@ const NewProjectDialog = () => {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project description</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea
-                            disabled={isLoading}
-                            placeholder="Enter project description"
-                            {...field}
-                          />
+                          <Textarea disabled={isLoading} placeholder="Décrire le projet" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -150,21 +127,16 @@ const NewProjectDialog = () => {
                     name="visibility"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project visibility</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                        <FormLabel>Visibilité</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select projects visibility" />
+                              <SelectValue placeholder="Choisir la visibilité" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value={'public'}>{`Public`}</SelectItem>
-                            <SelectItem
-                              value={'private'}
-                            >{`Private`}</SelectItem>
+                            <SelectItem value="public">Public</SelectItem>
+                            <SelectItem value="private">Privé</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -174,9 +146,21 @@ const NewProjectDialog = () => {
                 </div>
                 <div className="flex w-full justify-end space-x-2 pt-2">
                   <DialogTrigger asChild>
-                    <Button variant={'destructive'}>Cancel</Button>
+                    <button
+                      type="button"
+                      className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                      style={{ color: '#dc2626' }}
+                    >
+                      Annuler
+                    </button>
                   </DialogTrigger>
-                  <Button type="submit">Create</Button>
+                  <button
+                    type="submit"
+                    className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+                    style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                  >
+                    Créer
+                  </button>
                 </div>
               </form>
             </Form>

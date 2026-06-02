@@ -5,6 +5,7 @@ import {
   CircleIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
+  CheckCircledIcon,
 } from '@radix-ui/react-icons';
 
 export const labels = [
@@ -14,7 +15,7 @@ export const labels = [
   },
   {
     value: 'feature',
-    label: 'Feature',
+    label: 'Fonctionnalité',
   },
   {
     value: 'documentation',
@@ -25,44 +26,44 @@ export const labels = [
 export const statuses = [
   {
     value: 'ACTIVE',
-    label: 'Active',
+    label: 'Actif',
     icon: QuestionMarkCircledIcon,
   },
   {
     value: 'PENDING',
-    label: 'Pending',
+    label: 'En attente',
     icon: CircleIcon,
   },
   {
     value: 'COMPLETE',
-    label: 'Complete',
-    icon: StopwatchIcon,
+    label: 'Terminé',
+    icon: CheckCircledIcon,
   },
 ];
 
 export const priorities = [
   {
-    label: 'Low',
+    label: 'Basse',
     value: 'low',
     icon: ArrowDownIcon,
   },
   {
-    label: 'Normal',
+    label: 'Normale',
     value: 'normal',
     icon: ArrowRightIcon,
   },
   {
-    label: 'Medium',
+    label: 'Moyenne',
     value: 'medium',
     icon: ArrowRightIcon,
   },
   {
-    label: 'High',
+    label: 'Haute',
     value: 'high',
     icon: ArrowUpIcon,
   },
   {
-    label: 'Critical',
+    label: 'Critique',
     value: 'critical',
     icon: ArrowUpIcon,
   },

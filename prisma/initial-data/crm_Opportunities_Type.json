@@ -1,18 +1,18 @@
 [
     {
-      "name": "Business from partners",
-      "order": 2
-    },
-    {
-      "name": "Upsale",
-      "order": 3
-    },
-    {
-      "name": "New deal",
+      "name": "Nouveau contrat",
       "order": 1
     },
     {
-      "name": "Cross sale",
+      "name": "Affaire via partenaires",
+      "order": 2
+    },
+    {
+      "name": "Vente additionnelle",
+      "order": 3
+    },
+    {
+      "name": "Vente croisée",
       "order": 4
     }
   ]

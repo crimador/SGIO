@@ -3,7 +3,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -193,31 +192,28 @@ export function DataTableRowActions<TData>({
       </RightViewModalNoTrigger>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
+          <button className="flex h-8 w-8 items-center justify-center rounded-md p-0 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100">
             <DotsHorizontalIcon className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[260px]">
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>Actions</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
               <DropdownMenuItem onClick={() => setOpenView(true)}>
-                Preview invoice
+                Aperçu facture
               </DropdownMenuItem>
 
               <DropdownMenuItem
                 onClick={() => router.push(`/invoice/detail/${invoice.id}`)}
               >
-                Invoice detail
+                Détails facture
               </DropdownMenuItem>
 
               <Link href={invoice.invoice_file_url} target={'_blank'}>
                 <DropdownMenuItem>
-                  Preview invoice in new window
+                  Aperçu facture dans nouvelle fenêtre
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuItem

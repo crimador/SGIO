@@ -1,110 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-
-import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { useToast } from '@/components/ui/use-toast';
-import { FingerprintIcon } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import axios from 'axios';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
-import LoadingComponent from '@/components/LoadingComponent';
+import {
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
+} from '@/components/ui/form';
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+
+const formSchema = z.object({
+  email:    z.string().email('Email invalide'),
+  password: z.string().min(1, 'Mot de passe requis'),
+});
+
+type LoginFormValues = z.infer<typeof formSchema>;
 
 export function LoginComponent() {
   const [isLoading, setIsLoading] = useState(false);
-  const [show, setShow] = useState(false);
-  //State for dialog to be by opened and closed by DialogTrigger
-  const [open, setOpen] = useState(false);
-
-  const [email, setEmail] = useState('');
+  const [show, setShow]     = useState(false);
+  const [open, setOpen]     = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
   const { toast } = useToast();
-
   const router = useRouter();
-
-  const formSchema = z.object({
-    email: z.string().min(3).max(50),
-    password: z.string().min(8).max(50),
-  });
-
-  type LoginFormValues = z.infer<typeof formSchema>;
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
-  const loginWithGoogle = async () => {
-    setIsLoading(true);
-    try {
-      await signIn('google', {
-        callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
-        //callbackUrl: "/",
-      });
-    } catch (error) {
-      console.log(error, 'error');
-      toast({
-        variant: 'destructive',
-        description:
-          'Something went wrong while logging into your Google account.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loginWithGithub = async () => {
-    setIsLoading(true);
-    try {
-      await signIn('github', {
-        callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
-      });
-    } catch (error) {
-      console.log(error);
-      toast({
-        variant: 'destructive',
-        description:
-          'Something went wrong while logging into your Github account.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  //Login with username(email)/password
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true);
     try {
@@ -112,58 +45,27 @@ export function LoginComponent() {
         redirect: false,
         email: data.email,
         password: data.password,
-        callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
       });
-      //console.log(status, "status");
       if (status?.error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: status.error,
-        });
+        toast({ variant: 'destructive', title: 'Identifiants incorrects', description: 'Vérifiez votre email et mot de passe.' });
+      } else {
+        router.push('/');
+        router.refresh();
       }
-      if (status?.ok) {
-        //console.log("Status OK");
-        toast({
-          description: 'Login successful.',
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description:
-          error instanceof Error
-            ? error?.message
-            : typeof error === 'string'
-              ? error
-              : '',
-      });
+    } catch {
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Une erreur est survenue.' });
     } finally {
       setIsLoading(false);
-      router.push('/');
     }
   }
 
   async function onPasswordReset(email: string) {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await axios.post('/api/user/passwordReset', {
-        email,
-      });
-      toast({
-        title: 'Success',
-        description: 'Password reset email has been sent.',
-      });
-    } catch (error) {
-      if (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong while resetting the password.',
-        });
-      }
+      await axios.post('/api/user/passwordReset', { email });
+      toast({ title: 'Email envoyé', description: 'Vérifiez votre boîte mail.' });
+    } catch {
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible d\'envoyer l\'email de réinitialisation.' });
     } finally {
       setIsLoading(false);
       setOpen(false);
@@ -171,167 +73,123 @@ export function LoginComponent() {
   }
 
   return (
-    <Card className="my-5 shadow-lg">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>Click here to login with: </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        <div className="grid grid-cols-2 gap-6">
-          <Button
-            variant="outline"
-            onClick={loginWithGithub}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Icons.gitHub className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Icons.gitHub className="mr-2 h-4 w-4" />
-            )}{' '}
-            Github
-          </Button>
-          <Button
-            variant="outline"
-            onClick={loginWithGoogle}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <Icons.google className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Icons.google className="mr-2 h-4 w-4" />
-            )}{' '}
-            Google
-          </Button>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid gap-2">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>E-mail</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="John Doe"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="flex w-full items-center">
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="w-full"
-                          disabled={isLoading}
-                          placeholder="Password"
-                          type={show ? 'text' : 'password'}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <span
-                  className="flex w-16 px-4 pt-7"
-                  onClick={() => setShow(!show)}
-                >
-                  <FingerprintIcon size={25} className="text-gray-400" />
-                </span>
-              </div>
-            </div>
-            <div className="grid gap-2 py-8">
-              <Button
-                disabled={isLoading}
-                type="submit"
-                className="flex h-12 gap-2"
-              >
-                <span
-                  className={
-                    isLoading
-                      ? 'animate-spin rounded-full border px-3 py-2'
-                      : 'hidden'
-                  }
-                >
-                  Q
-                </span>
-                <span className={isLoading ? ' ' : 'hidden'}>Loading ...</span>
-                <span className={isLoading ? 'hidden' : ''}>Login</span>
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-      <CardFooter className="flex flex-col space-y-5">
-        <div className="text-sm text-gray-500">
-          Need account? Register{' '}
-          <Link href={'/register'} className="text-blue-500">
-            here
-          </Link>
-        </div>
-        <div className="text-sm text-gray-500">
-          Need password reset? Click
-          {/* Dialog start */}
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger className="text-blue-500">
-              <span className="px-2">here</span>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="p-5">Password Reset</DialogTitle>
-                <DialogDescription className="p-5">
-                  Enter your email address and we will send new password to your
-                  e-mail.
-                </DialogDescription>
-              </DialogHeader>
-              {isLoading ? (
-                <LoadingComponent />
-              ) : (
-                <div className="flex space-x-5 px-2 py-5">
+    <div className="w-full">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+
+          {/* Email */}
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold" style={{ color: '#1E1D3D' }}>
+                  Adresse email
+                </FormLabel>
+                <FormControl>
                   <Input
+                    disabled={isLoading}
+                    placeholder="vous@kekeligroup.com"
                     type="email"
-                    placeholder="name@domain.com"
-                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-11 border-gray-200 bg-white text-sm transition-all duration-200
+                               focus:border-[#FF7E00] focus-visible:ring-1 focus-visible:ring-[#FF7E00]
+                               focus-visible:ring-offset-0 placeholder:text-gray-400"
+                    {...field}
                   />
-                  <Button
-                    disabled={email === ''}
-                    onClick={() => {
-                      onPasswordReset(email);
-                    }}
-                  >
-                    Reset
-                  </Button>
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          {/* Mot de passe */}
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel className="text-sm font-semibold" style={{ color: '#1E1D3D' }}>
+                    Mot de passe
+                  </FormLabel>
+                  <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                      <button
+                        type="button"
+                        className="text-xs font-medium text-gray-400 transition-colors hover:text-[#FF7E00]"
+                      >
+                        Mot de passe oublié ?
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Réinitialisation du mot de passe</DialogTitle>
+                        <DialogDescription>
+                          Entrez votre email et nous vous enverrons un lien de réinitialisation.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex gap-3 pt-2">
+                        <Input
+                          type="email"
+                          placeholder="vous@kekeligroup.com"
+                          onChange={e => setResetEmail(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          disabled={!resetEmail || isLoading}
+                          onClick={() => onPasswordReset(resetEmail)}
+                          className="shrink-0 flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60 hover:opacity-90"
+                          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                        >
+                          Envoyer
+                        </button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-              )}
-              <DialogTrigger className="w-full pt-5 text-right">
-                <Button variant={'destructive'}>Cancel</Button>
-              </DialogTrigger>
-            </DialogContent>
-          </Dialog>
-          {/* Dialog end */}
-        </div>
-      </CardFooter>
-    </Card>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      disabled={isLoading}
+                      placeholder="••••••••"
+                      type={show ? 'text' : 'password'}
+                      className="h-11 border-gray-200 bg-white pr-10 text-sm transition-all duration-200
+                                 focus:border-[#FF7E00] focus-visible:ring-1 focus-visible:ring-[#FF7E00]
+                                 focus-visible:ring-offset-0 placeholder:text-gray-400"
+                      {...field}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-[#FF7E00]"
+                      onClick={() => setShow(s => !s)}
+                      aria-label={show ? 'Masquer' : 'Afficher'}
+                    >
+                      {show
+                        ? <EyeOff className="h-4 w-4" />
+                        : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          {/* Bouton submit */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg text-sm font-semibold text-white
+                       transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+            style={{ background: isLoading ? '#cc6500' : 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            {isLoading
+              ? <><Loader2 className="h-4 w-4 animate-spin" /> Connexion en cours…</>
+              : 'Se connecter'}
+          </button>
+
+        </form>
+      </Form>
+    </div>
   );
 }

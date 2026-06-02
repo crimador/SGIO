@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import type { Row } from '@tanstack/react-table';
 import { Copy, Edit, LinkIcon, MoreHorizontal, Trash } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,10 +83,10 @@ export function DataTableRowActions<TData>({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={'ghost'} className="h-8 w-8 p-0">
+          <button className="flex h-8 w-8 items-center justify-center rounded-md p-0 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100">
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>

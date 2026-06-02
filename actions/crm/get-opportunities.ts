@@ -2,6 +2,7 @@ import { prismadb } from '@/lib/prisma';
 
 export const getOpportunities = async () => {
   const data = await prismadb.crm_Opportunities.findMany({
+    where: { deletedAt: null },
     include: {
       assigned_to_user: {
         select: {
@@ -17,6 +18,7 @@ export const getOpportunities = async () => {
 //Get opportunities by month for chart
 export const getOpportunitiesByMonth = async () => {
   const opportunities = await prismadb.crm_Opportunities.findMany({
+    where: { deletedAt: null },
     select: {
       created_on: true,
     },
@@ -55,6 +57,7 @@ export const getOpportunitiesByMonth = async () => {
 //Get opportunities by sales_stage name for chart
 export const getOpportunitiesByStage = async () => {
   const opportunities = await prismadb.crm_Opportunities.findMany({
+    where: { deletedAt: null },
     select: {
       assigned_sales_stage: {
         select: {

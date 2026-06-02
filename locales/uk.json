@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ — це CRM/ERP з відкритим вихідним кодом, створена на основі NextJS."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Корпоративна ERP-система."
   },
   "ModuleMenu": {
     "dashboard": "Панель приладів",
@@ -16,6 +16,7 @@
     "emails": "електронні листи",
     "tasks": "завдання",
     "invoices": "Рахунки-фактури",
+    "employees": "Співробітники",
     "reports": "Звіти",
     "documents": "Документи",
     "storage": "Зберігання",
@@ -24,7 +25,7 @@
   "DashboardPage": {
     "containerTitle": "Панель приладів",
     "totalRevenue": "Загальна виручка",
-    "containerDescription": "Ласкаво просимо до SaasHQ, тут Ви можете побачити всю важливу інформацію про ваш бізнес.",
+    "containerDescription": "Ласкаво просимо до KEKELI GROUP, тут Ви можете побачити всю важливу інформацію про ваш бізнес.",
     "expectedRevenue": "Очікуваний дохід",
     "activeUsers": "Активні користувачі",
     "accounts": "Компанії",
@@ -46,5 +47,51 @@
   },
   "CrmModuleMenuComponent": {
     "menuTitle": "Продажі"
+  },
+  "InvoicePage": {
+    "uploadPdf": "Завантажити PDF",
+    "myInvoices": "Мої рахунки-фактури",
+    "settings": "Налаштування",
+    "companySettings": "Налаштування компанії",
+    "companySettingsDescription": "Ці дані будуть використані як значення за замовчуванням для ваших рахунків-фактур. Ви можете змінити їх у будь-який час. Дуже важливо встановити email облікового запису, який буде отримувати файли для імпорту в ERP",
+    "filterByInvoiceNumber": "Фільтрувати за номером рахунка...",
+    "dueDate": "Термін оплати",
+    "number": "Номер",
+    "amount": "Сума",
+    "partner": "Партнер",
+    "rossumState": "Стан Rossum",
+    "status": "Статус",
+    "noResults": "Немає результатів.",
+    "rowsSelected": "рядок(ів) вибрано.",
+    "rowsPerPage": "Рядків на сторінку",
+    "view": "Переглянути"
+  },
+  "EmployeePage": {
+    "title": "Співробітники",
+    "firstName": "Ім'я",
+    "lastName": "Прізвище",
+    "officePhone": "Робочий телефон",
+    "email": "E-mail",
+    "position": "Посада",
+    "salary": "Зарплата",
+    "onBoarding": "Онбординг",
+    "pickExpectedCloseDate": "Вибрати очікувану дату завершення",
+    "iban": "IBAN",
+    "assignedUser": "Призначений користувач",
+    "taxId": "Податковий номер",
+    "insurance": "Страхування",
+    "address": "Адреса",
+    "close": "Закрити",
+    "createEmployee": "Створити працівника",
+    "noEmployeesFound": "Призначених співробітників не знайдено"
+  },
+  "TimekeepingPage": {
+    "title": "Облік робочого часу",
+    "employee": "Працівник",
+    "timeIn": "Час приходу",
+    "timeOut": "Час виходу",
+    "verified": "Перевірено",
+    "createTimekeeping": "Додати запис",
+    "noTimekeepingFound": "Записів обліку не знайдено"
   }
 }

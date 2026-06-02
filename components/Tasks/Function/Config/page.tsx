@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { Button } from '@/components/ui/button';
 import ParamsMonaco from './ParamsMonaco/ParamsMonaco';
 import ExecMonaco from './ExecMonaco/ExecMonaco';
 import { useReactFlow } from 'reactflow';
@@ -29,7 +28,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -176,19 +174,22 @@ async function handler(){
         <Form {...form}>
           <form onSubmit={form.handleSubmit(submitHandler as any)}>
             <SheetTrigger asChild>
-              <Button variant="outline" onClick={handleConfigPanelOpen}>
+              <button
+                type="button"
+                onClick={handleConfigPanelOpen}
+                className="relative flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+                style={{ color: '#1E1D3D' }}
+              >
                 Configure
-                <span>
-                  {Object.keys(form?.formState.errors).length > 0 ? (
-                    <span className="absolute -right-2 -top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-red-100">
-                      {Object.keys(form?.formState.errors).length +
-                        (labelUniqueError ? 1 : 0) +
-                        (execEditorError ? 1 : 0) +
-                        (paramsEditorError ? 1 : 0)}
-                    </span>
-                  ) : null}
-                </span>
-              </Button>
+                {Object.keys(form?.formState.errors).length > 0 ? (
+                  <span className="absolute -right-2 -top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-red-100">
+                    {Object.keys(form?.formState.errors).length +
+                      (labelUniqueError ? 1 : 0) +
+                      (execEditorError ? 1 : 0) +
+                      (paramsEditorError ? 1 : 0)}
+                  </span>
+                ) : null}
+              </button>
             </SheetTrigger>
             <SheetContent className="sm:max-w-[540px]">
               <SheetHeader>
@@ -199,7 +200,7 @@ async function handler(){
                   Make changes to Function Configuration panel.
                 </SheetDescription>
               </SheetHeader>
-              <Separator className="mt-6" />
+              <div className="mt-6 h-px bg-gray-100" />
               <div className="grid gap-4 py-4">
                 {activeStep === 0 && (
                   <>
@@ -237,15 +238,14 @@ async function handler(){
                       setValue={setValue}
                       setError={handleParamsEditorError}
                     />
-                    <Button
+                    <button
                       type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        setActiveStep(() => 1);
-                      }}
+                      onClick={() => { setActiveStep(() => 1); }}
+                      className="flex h-9 items-center gap-1.5 rounded-lg bg-gray-100 px-4 text-sm font-medium transition-colors hover:bg-gray-200"
+                      style={{ color: '#1E1D3D' }}
                     >
-                      Next&nbsp; <ChevronRight />
-                    </Button>
+                      Next&nbsp; <ChevronRight className="h-4 w-4" />
+                    </button>
                   </>
                 )}
                 {activeStep === 1 && (
@@ -264,19 +264,19 @@ async function handler(){
                       setError={handleExecEditorError}
                       params={paramsObjectValue}
                     />
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setActiveStep(() => 0);
-                      }}
+                    <button
+                      type="button"
+                      onClick={() => { setActiveStep(() => 0); }}
+                      className="flex h-9 items-center gap-1.5 rounded-lg bg-gray-100 px-4 text-sm font-medium transition-colors hover:bg-gray-200"
+                      style={{ color: '#1E1D3D' }}
                     >
-                      <ChevronLeft /> &nbsp;Prev
-                    </Button>
+                      <ChevronLeft className="h-4 w-4" /> &nbsp;Prev
+                    </button>
                   </>
                 )}
                 <SheetFooter>
                   <SheetClose asChild>
-                    <Button
+                    <button
                       type="submit"
                       onClick={() => {
                         toast({
@@ -284,18 +284,20 @@ async function handler(){
                           description: 'Task changed successfully.',
                         });
                       }}
+                      className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                      style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
                     >
                       Submit
-                    </Button>
+                    </button>
                   </SheetClose>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      deleteNode();
-                    }}
+                  <button
+                    type="button"
+                    onClick={() => { deleteNode(); }}
+                    className="flex h-9 items-center rounded-lg border border-red-200 px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                    style={{ color: '#dc2626' }}
                   >
                     Delete Task
-                  </Button>
+                  </button>
                 </SheetFooter>
               </div>
             </SheetContent>

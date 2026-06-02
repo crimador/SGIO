@@ -2,59 +2,39 @@
 
 import dayjs from 'dayjs';
 import axios from 'axios';
+import nodemailer from 'nodemailer';
 
 import { prismadb } from '@/lib/prisma';
-import resendHelper from '@/lib/resend';
-import AiTasksReportEmail from '@/emails/AiTasksReport';
 import { Session } from 'next-auth';
 
 export async function getUserAiTasks(session: Session) {
-  /*
-  Resend.com function init - this is a helper function that will be used to send emails
-  */
-  const resend = await resendHelper();
-
   const today = dayjs().startOf('day');
   const nextWeek = dayjs().add(7, 'day').startOf('day');
 
   let prompt = '';
 
   const user = await prismadb.users.findUnique({
-    where: {
-      id: session.user.id,
-    },
+    where: { id: session.user.id },
   });
 
   if (!user) return { message: 'No user found' };
 
   const getTaskPastDue = await prismadb.tasks.findMany({
     where: {
-      AND: [
-        {
-          id: session.user.id,
-          taskStatus: 'ACTIVE',
-          dueDateAt: {
-            lte: new Date(),
-          },
-        },
-      ],
+      user: session.user.id,
+      taskStatus: 'ACTIVE',
+      dueDateAt: { lte: new Date() },
     },
   });
 
   const getTaskPastDueInSevenDays = await prismadb.tasks.findMany({
     where: {
-      AND: [
-        {
-          //@ts-ignore-next-line
-          user: session.user.is,
-          taskStatus: 'ACTIVE',
-          dueDateAt: {
-            //lte: dayjs().add(7, "day").toDate(),
-            gt: today.toDate(), // Due date is greater than or equal to today
-            lt: nextWeek.toDate(), // Due date is less than next week (not including today)
-          },
-        },
-      ],
+      user: session.user.id,
+      taskStatus: 'ACTIVE',
+      dueDateAt: {
+        gt: today.toDate(),
+        lt: nextWeek.toDate(),
+      },
     },
   });
 
@@ -62,59 +42,34 @@ export async function getUserAiTasks(session: Session) {
     return { message: 'No tasks found' };
   }
 
+  const tasksAujourdhui = JSON.stringify(getTaskPastDue, null, 2);
+  const tasksSemaine = JSON.stringify(getTaskPastDueInSevenDays, null, 2);
+
   switch (user.userLanguage) {
+    case 'fr':
+    default:
+      prompt = `Tu es un assistant personnel de gestion de projet pour ${process.env.NEXT_PUBLIC_APP_NAME}.
+\n\nL'utilisateur a ${getTaskPastDue.length} tâche(s) en retard et ${getTaskPastDueInSevenDays.length} tâche(s) à échéance dans les 7 prochains jours.
+\n\nTâches en retard :\n${tasksAujourdhui}
+\n\nTâches à venir (7 jours) :\n${tasksSemaine}
+\n\nRédige un récapitulatif professionnel en français, en mentionnant les tâches prioritaires, leurs échéances et un conseil de gestion du temps. Termine par une note d'encouragement. Lien vers le tableau de bord : ${process.env.NEXT_PUBLIC_APP_URL}/projects/dashboard
+\n\nFormat de réponse : texte simple, sans balises Markdown.`;
+      break;
     case 'en':
-      prompt = `Hi, Iam ${process.env.NEXT_PUBLIC_APP_URL} API Bot.
-      \n\n
-      There are ${getTaskPastDue.length} tasks past due and ${
-        getTaskPastDueInSevenDays.length
-      } tasks due in the next 7 days.
-      \n\n
-      Details today tasks: ${JSON.stringify(getTaskPastDue, null, 2)}
-      \n\n
-      Details next 7 days tasks: ${JSON.stringify(
-        getTaskPastDueInSevenDays,
-        null,
-        2
-      )}
-      \n\n
-      As a personal assistant, write a message  to remind tasks and write detail summary. And also do not forget to send them a some positive vibes.
-      \n\n
-      Final result must be in MDX format.
-      `;
+      prompt = `You are a personal project management assistant for ${process.env.NEXT_PUBLIC_APP_NAME}.
+\n\nThe user has ${getTaskPastDue.length} overdue task(s) and ${getTaskPastDueInSevenDays.length} task(s) due in the next 7 days.
+\n\nOverdue tasks:\n${tasksAujourdhui}
+\n\nUpcoming tasks (7 days):\n${tasksSemaine}
+\n\nWrite a professional summary in English, highlighting priority tasks, their deadlines, and a time management tip. End with an encouraging note. Dashboard link: ${process.env.NEXT_PUBLIC_APP_URL}/projects/dashboard
+\n\nResponse format: plain text.`;
       break;
     case 'de':
-      prompt = `Als professionelle Assistentin ist Emma mit perfekten Kenntnissen im Projektmanagement für die Projekte vor Ort verantwortlich${
-        process.env.NEXT_PUBLIC_APP_URL
-      }, Erstellen Sie eine Managementzusammenfassung der Aufgaben, einschließlich ihrer Details und Fristen. Alles muss perfekt tschechisch und prägnant sein.
-      \n\n
-      Hier finden Sie Informationen zu den Aufgaben:
-      \n\n
-      Projektinformationen: Anzahl der heute zu lösenden Aufgaben: ${
-        getTaskPastDue.length
-      }, Die Anzahl der Aufgaben, die innerhalb von spätestens sieben Tagen gelöst werden müssen: ${
-        getTaskPastDueInSevenDays.length
-      }.
-      \n\n
-      Detaillierte Informationen im JSON-Format für Aufgaben, die heute erledigt werden müssen: ${JSON.stringify(
-        getTaskPastDue,
-        null,
-        2
-      )}
-      \n\n
-      Detaillierte Informationen zu Aufgaben, die innerhalb der nächsten sieben Tage erledigt werden müssen: ${JSON.stringify(
-        getTaskPastDueInSevenDays,
-        null,
-        2
-      )}
-    
-      \n\n
-      Schreiben Sie am Ende eine Managementzusammenfassung und fügen Sie einen Link hinzu ${
-        process.env.NEXT_PUBLIC_APP_URL + '/projects/dashboard'
-      } als Link zum Aufgabendetail. Am Ende der Zusammenfassung hinzufügen. 1 Management-Skill-Tipp im Bereich Projektmanagement und Zeitmanagement, 2-3 Sätze mit positiver Einstellung und Unterstützung, abschließend einen schönen Arbeitstag wünschen und mitteilen, dass diese Nachricht durch die künstliche Intelligenz von OpenAi generiert wurde.
-      \n\n
-      Das Endergebnis muss im MDX-Format vorliegen.
-      `;
+      prompt = `Du bist ein persönlicher Projektmanagement-Assistent für ${process.env.NEXT_PUBLIC_APP_NAME}.
+\n\nDer Benutzer hat ${getTaskPastDue.length} überfällige Aufgabe(n) und ${getTaskPastDueInSevenDays.length} Aufgabe(n) in den nächsten 7 Tagen.
+\n\nÜberfällige Aufgaben:\n${tasksAujourdhui}
+\n\nKommende Aufgaben (7 Tage):\n${tasksSemaine}
+\n\nSchreibe eine professionelle Zusammenfassung auf Deutsch. Dashboard-Link: ${process.env.NEXT_PUBLIC_APP_URL}/projects/dashboard
+\n\nAntwortformat: einfacher Text.`;
       break;
   }
 
@@ -123,43 +78,41 @@ export async function getUserAiTasks(session: Session) {
   const getAiResponse = await axios
     .post(
       `${process.env.NEXT_PUBLIC_APP_URL}/api/openai/create-chat-completion`,
-      {
-        prompt: prompt,
-        userId: session.user.id,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
+      { prompt, userId: session.user.id },
+      { headers: { 'Content-Type': 'application/json' } }
     )
     .then((res) => res.data);
 
-  //console.log(getAiResponse, "getAiResponse");
-  //console.log(getAiResponse.response.message.content, "getAiResponse");
-
-  //skip if api response is error
   if (getAiResponse.error) {
-    console.log('Error from OpenAI API');
-  } else {
-    try {
-      const data = await resend.emails.send({
-        from: process.env.EMAIL_FROM!,
-        to: user.email!,
-        subject: `${process.env.NEXT_PUBLIC_APP_NAME} OpenAI Project manager assistant from: ${process.env.NEXT_PUBLIC_APP_URL}`,
-        text: getAiResponse.response.message.content,
-        react: AiTasksReportEmail({
-          //@ts-ignore-next-line
-          username: session.user.name,
-          avatar: session.user.avatar,
-          userLanguage: session.user.userLanguage,
-          data: getAiResponse.response.message.content,
-        }),
-      });
-      //console.log(data, "Email sent");
-    } catch (error) {
-      console.log(error, 'Error from get-user-ai-tasks');
-    }
+    console.log('[AI REPORT] Erreur OpenAI/Groq');
+    return { message: 'AI error' };
+  }
+
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!gmailUser || !gmailPass) {
+    console.log('[AI REPORT] Gmail non configuré');
+    return { message: 'Email not configured' };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: gmailUser, pass: gmailPass },
+    });
+
+    await transporter.sendMail({
+      from: `${process.env.NEXT_PUBLIC_APP_NAME} <${gmailUser}>`,
+      replyTo: gmailUser,
+      to: user.email!,
+      subject: `Rapport IA — Tableau de bord projets`,
+      text: getAiResponse.response.message.content,
+    });
+
+    console.log('[AI REPORT] Email envoyé via Gmail à:', user.email);
+  } catch (error) {
+    console.log('[AI REPORT] Erreur envoi Gmail:', error);
   }
 
   return { user: user.email };

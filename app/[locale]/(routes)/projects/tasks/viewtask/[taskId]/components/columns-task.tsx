@@ -2,7 +2,6 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { Badge } from '@/components/ui/badge';
 
 import { labels } from '../data/data';
 import type { Task } from '../data/schema';
@@ -13,7 +12,7 @@ export const columnsTask: ColumnDef<Task>[] = [
   {
     accessorKey: 'assigned_to_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Assigné à" />
     ),
 
     cell: ({ row }) => (
@@ -31,7 +30,7 @@ export const columnsTask: ColumnDef<Task>[] = [
   {
     accessorKey: 'document_name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Document name" />
+      <DataTableColumnHeader column={column} title="Nom du document" />
     ),
     cell: ({ row }) => {
       const label = labels.find(
@@ -40,7 +39,11 @@ export const columnsTask: ColumnDef<Task>[] = [
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+          {label && (
+            <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium" style={{ color: '#1E1D3D' }}>
+              {label.label}
+            </span>
+          )}
           <span className="max-w-[500px] truncate font-medium">
             {row.original.document_name}
           </span>

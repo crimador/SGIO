@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -42,16 +41,16 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
       await axios.put(`/api/user/${userId}/setnewpass`, data);
       //TODO: send data to the server
       toast({
-        title: 'Password changed  successfully',
+        title: 'Mot de passe modifié avec succès.',
       });
       router.refresh();
     } catch (error: any) {
       console.log(error.response.data);
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erreur',
         description:
-          'Something went wrong while changing your password: ' +
+          'Une erreur est survenue lors du changement de mot de passe : ' +
           error.response.data,
       });
     } finally {
@@ -70,7 +69,7 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
           name="password"
           render={({ field }) => (
             <FormItem className="w-1/3">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Nouveau mot de passe</FormLabel>
               <FormControl>
                 <Input
                   disabled={isLoading}
@@ -88,7 +87,7 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
           name="cpassword"
           render={({ field }) => (
             <FormItem className="w-1/3">
-              <FormLabel>Confirm password</FormLabel>
+              <FormLabel>Confirmer le mot de passe</FormLabel>
               <FormControl>
                 <Input
                   disabled={isLoading}
@@ -101,9 +100,14 @@ export function PasswordChangeForm({ userId }: { userId: string }) {
             </FormItem>
           )}
         />
-        <Button className="w-[250px]" type="submit">
-          Change password
-        </Button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex h-9 w-[250px] items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          Changer le mot de passe
+        </button>
       </form>
     </Form>
   );

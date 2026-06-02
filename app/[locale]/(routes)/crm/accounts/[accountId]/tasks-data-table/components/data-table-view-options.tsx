@@ -4,7 +4,6 @@ import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { MixerHorizontalIcon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,17 +22,16 @@ export function DataTableViewOptions<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+        <button
+          className="ml-auto hidden h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium transition-colors hover:bg-[#FF7E00]/[0.06] lg:flex"
+          style={{ color: '#1E1D3D' }}
         >
-          <MixerHorizontalIcon className="mr-2 h-4 w-4" />
-          View
-        </Button>
+          <MixerHorizontalIcon className="h-4 w-4" />
+          Colonnes
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>Afficher/masquer colonnes</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

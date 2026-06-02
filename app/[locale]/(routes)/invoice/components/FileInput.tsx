@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
@@ -58,7 +57,11 @@ export function FileInput({ onClose }: Props) {
         onChange={(e) => setFile(e.target.files?.[0])}
       />
       {file ? <span>{file.name}</span> : null}
-      <Button type="submit">
+      <button
+        type="submit"
+        className="flex h-9 items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+        style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+      >
         {isLoading ? (
           <div className="flex space-x-5">
             <Icons.spinner className="animate-spin" />
@@ -67,7 +70,7 @@ export function FileInput({ onClose }: Props) {
         ) : (
           <span>Upload</span>
         )}
-      </Button>
+      </button>
     </form>
   );
 }

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -56,9 +55,13 @@ const PendingPage = async () => {
           ))}
       </div>
       <div className="flex flex-col items-center justify-center space-x-2 md:flex-row">
-        <Button asChild>
-          <Link href="/sign-in">Log-in with another account</Link>
-        </Button>
+        <Link
+          href="/sign-in"
+          className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          Log-in with another account
+        </Link>
         <p>or</p>
         <TryAgain />
       </div>

@@ -2,106 +2,70 @@
 
 import { getServerSession } from 'next-auth';
 import { render } from '@react-email/render';
+import nodemailer from 'nodemailer';
 
 import { SendMailToAll } from './schema';
-import { InputType, ReturnType } from './types';
+import type { InputType, ReturnType } from './types';
 
 import { prismadb } from '@/lib/prisma';
-import resendHelper from '@/lib/resend';
 import { authOptions } from '@/lib/auth';
 import { createSafeAction } from '@/lib/create-safe-action';
 import MessageToAllUsers from '@/emails/admin/MessageToAllUser';
-import sendEmail from '@/lib/sendmail';
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return {
-      error: 'You must be authenticated.',
-    };
+    return { error: 'Vous devez être connecté.' };
   }
 
-  //Only admin can send mail to all users
-  if (!session.user.isAdmin) {
-    return {
-      error: 'You are not authorized to perform this action.',
-    };
+  if (session.user.userRole !== 'DG') {
+    return { error: 'Accès réservé au Dirigeant.' };
   }
-
-  const resend = await resendHelper();
 
   const { title, message } = data;
 
   if (!title || !message) {
-    return {
-      error: 'Title and message are required.',
-    };
+    return { error: 'Titre et message requis.' };
+  }
+
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+  const appName = process.env.NEXT_PUBLIC_APP_NAME ?? 'ERP';
+
+  if (!gmailUser || !gmailPass) {
+    return { error: 'Configuration email manquante.' };
   }
 
   try {
     const users = await prismadb.users.findMany({
-      where: {
-        email: {
-          //contains: "pavel@softbase.cz",
-          equals: 'pavel@softbase.cz',
-        },
-      },
+      where: { userStatus: 'ACTIVE' },
+      select: { email: true, name: true },
     });
-    console.log(users.length, 'user.length');
 
-    //For each user, send mail
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: gmailUser, pass: gmailPass },
+    });
+
     for (const user of users) {
-      const resendKey = await prismadb.systemServices.findFirst({
-        where: {
-          name: 'resend_smtp',
-        },
-      });
-
-      if (!resendKey?.serviceKey || !process.env.RESEND_API_KEY) {
-        const emailHtml = render(
-          MessageToAllUsers({
-            title: title,
-            message: message,
-            username: user?.name!,
-          })
-        );
-
-        //send via sendmail
-        await sendEmail({
-          from: process.env.EMAIL_FROM as string,
-          to: user.email || 'info@softbase.cz',
-          subject: title,
-          text: message,
-          html: emailHtml,
-        });
-      }
-
-      //send via Resend.com
-      await resend.emails.send({
-        from:
-          process.env.NEXT_PUBLIC_APP_NAME +
-          ' <' +
-          process.env.EMAIL_FROM +
-          '>',
-        to: user?.email!,
+      if (!user.email) continue;
+      const html = await render(
+        MessageToAllUsers({ title, message, username: user.name ?? '' })
+      );
+      await transporter.sendMail({
+        from: `${appName} <${gmailUser}>`,
+        to: user.email,
         subject: title,
-        text: message, // Add this line to fix the types issue
-        react: MessageToAllUsers({
-          title: title,
-          message: message,
-          username: user?.name!,
-        }),
+        html,
       });
     }
   } catch (error) {
     console.log(error);
-    return {
-      error: 'Failed to send mail to all users.',
-    };
+    return { error: 'Échec de l\'envoi des emails.' };
   }
 
-  return { data: { title: title, message: message } };
+  return { data: { title, message } };
 };
 
 export const sendMailToAll = createSafeAction(SendMailToAll, handler);

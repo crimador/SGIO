@@ -3,7 +3,6 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,16 +42,15 @@ export function DataTableRowActions<TData>({
     try {
       await axios.delete(`/api/employee/${employee?.id}`);
       toast({
-        title: 'Success',
-        description: 'Employee has been deleted',
+        title: 'Succès',
+        description: 'Employé supprimé avec succès',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description:
-            'Something went wrong while deleting employee. Please try again.',
+          title: 'Erreur',
+          description: 'Une erreur est survenue lors de la suppression.',
         });
       }
     } finally {
@@ -72,13 +70,13 @@ export function DataTableRowActions<TData>({
       />
       <RightViewModalNoTrigger
         title={
-          'Update Employee' +
+          'Modifier employé' +
           ' - ' +
           employee?.firstName +
           ' ' +
           employee?.lastName
         }
-        description="Update employee details"
+        description="Mettre à jour les informations de l'employé"
         open={updateOpen}
         setOpen={setUpdateOpen}
       >
@@ -89,26 +87,25 @@ export function DataTableRowActions<TData>({
       </RightViewModalNoTrigger>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-md p-0 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100"
           >
             <DotsHorizontalIcon className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuItem
             onClick={() => router.push(`/employees/${employee?.id}`)}
           >
-            View
+            Voir
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setUpdateOpen(true)}>
-            Update
+            Modifier
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Delete
+            Supprimer
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

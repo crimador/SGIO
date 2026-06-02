@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import ModalDocumentView from '../ui/modal-document-view';
 
 interface AlertModalProps {
@@ -38,9 +37,14 @@ const InvoiceViewModal = ({
           /> */}
           This file can not be previewed.
           <div className="flex w-full items-center justify-end space-x-2 pt-6">
-            <Button disabled={loading} variant={'outline'} onClick={onClose}>
+            <button
+              disabled={loading}
+              onClick={onClose}
+              className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-60"
+              style={{ color: '#1E1D3D' }}
+            >
               Cancel
-            </Button>
+            </button>
           </div>
         </div>
       </ModalDocumentView>
@@ -58,9 +62,14 @@ const InvoiceViewModal = ({
             src={document.document_file_url || document.invoice_file_url}
           />
           <div className="flex w-full items-center justify-end space-x-2 pt-6">
-            <Button disabled={loading} variant={'outline'} onClick={onClose}>
+            <button
+              disabled={loading}
+              onClick={onClose}
+              className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-60"
+              style={{ color: '#1E1D3D' }}
+            >
               Cancel
-            </Button>
+            </button>
           </div>
         </div>
       </ModalDocumentView>

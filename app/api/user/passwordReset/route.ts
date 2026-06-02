@@ -52,10 +52,10 @@ export async function POST(req: Request) {
       });
     } else {
       const data = await resend.emails.send({
-        from: 'SaasHQ <saashqdev@saashq.org>',
+        from: `${process.env.NEXT_PUBLIC_APP_NAME ?? 'KEKELI GROUP'} <${process.env.RESEND_FROM_EMAIL ?? 'noreply@kekeligroup.com'}>`,
         to: user.email,
         //to: ["saashqdev@gmail.com"],
-        subject: 'SaasHQ - Password reset',
+        subject: `${process.env.NEXT_PUBLIC_APP_NAME ?? 'KEKELI GROUP'} - Réinitialisation du mot de passe`,
         text: '', // Add this line to fix the types issue
         //react: DemoTemplate({ firstName: "John" }),
         react: PasswordResetEmail({

@@ -13,28 +13,32 @@ export const columns: ColumnDef<Account>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created" />
+      <DataTableColumnHeader column={column} title="Créé le" />
     ),
     cell: ({ row }) => (
       <div className="">
-        {moment(row.getValue('createdAt')).format('YY/MM/DD-HH:mm')}
+        {moment(row.getValue('createdAt')).format('DD/MM/YY')}
       </div>
     ),
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, id, value: { from: string; to: string }) => {
+      const d = new Date(row.getValue(id) as string);
+      if (value.from && d < new Date(value.from)) return false;
+      if (value.to && d > new Date(value.to + 'T23:59:59')) return false;
+      return true;
+    },
   },
   {
     accessorKey: 'assigned_to_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Responsable" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[150px]">
         {
           //@ts-ignore
-          //TODO: fix this
-          row.getValue('assigned_to_user')?.name ?? 'Unassigned'
+          row.getValue('assigned_to_user')?.name ?? 'Non assigné'
         }
       </div>
     ),
@@ -44,18 +48,20 @@ export const columns: ColumnDef<Account>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Nom du client" />
     ),
-
     cell: ({ row }) => (
-      <Link href={`/crm/accounts/${row.original?.id}`}>
-        <div className="w-[250px]">
-          {
-            //@ts-ignore
-            //TODO: fix this
-            row.getValue('name')
-          }
-        </div>
+      <Link
+        href={`/crm/accounts/${row.original?.id}`}
+        className="w-[250px] block font-medium hover:underline"
+        style={{ color: '#1E1D3D' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#FF7E00')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#1E1D3D')}
+      >
+        {
+          //@ts-ignore
+          row.getValue('name')
+        }
       </Link>
     ),
     enableSorting: false,
@@ -66,7 +72,6 @@ export const columns: ColumnDef<Account>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="E-mail" />
     ),
-
     cell: ({ row }) => <div className="w-[150px]">{row.getValue('email')}</div>,
     enableSorting: true,
     enableHiding: true,
@@ -74,9 +79,8 @@ export const columns: ColumnDef<Account>[] = [
   {
     accessorKey: 'contacts',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Account contact" />
+      <DataTableColumnHeader column={column} title="Contact principal" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[150px]">
         {row.original.contacts?.map(
@@ -90,17 +94,13 @@ export const columns: ColumnDef<Account>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = statuses.find(
         (status) => status.value === row.getValue('status')
       );
-
-      if (!status) {
-        return null;
-      }
-
+      if (!status) return null;
       return (
         <div className="flex w-[100px] items-center">
           {status.icon && (

@@ -1,24 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import RightViewModal from '@/components/modals/right-view-modal';
 
 import { columns } from '../table-components/columns';
 import { NewEmployeeForm } from './NewEmployeeForm';
 import { EmployeeDataTable } from '../table-components/data-table';
-import { useRouter } from 'next/navigation';
-
 const EmployeesView = ({ data, crmData }: any) => {
-  const router = useRouter();
+  const t = useTranslations('EmployeePage');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -34,28 +30,33 @@ const EmployeesView = ({ data, crmData }: any) => {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex justify-between">
-          <div>
-            <CardTitle
-              onClick={() => router.push('/employees')}
-              className="cursor-pointer"
-            >
-              Employees
-            </CardTitle>
-            <CardDescription></CardDescription>
-          </div>
-          <div className="flex space-x-2">
-            <RightViewModal label={'+'} title="Create Employee" description="">
-              <NewEmployeeForm users={users} />
-            </RightViewModal>
-          </div>
+        <div className="flex justify-end">
+          <RightViewModal label={'+'} title={t('createEmployee')} description="">
+            <NewEmployeeForm
+              translations={{
+                firstName: t('firstName'),
+                lastName: t('lastName'),
+                officePhone: t('officePhone'),
+                email: t('email'),
+                position: t('position'),
+                salary: t('salary'),
+                onBoarding: t('onBoarding'),
+                pickExpectedCloseDate: t('pickExpectedCloseDate'),
+                iban: t('iban'),
+                taxId: t('taxId'),
+                insurance: t('insurance'),
+                address: t('address'),
+                createEmployee: t('createEmployee'),
+              }}
+            />
+          </RightViewModal>
         </div>
-        <Separator />
+        <div className="h-px bg-gray-100" />
       </CardHeader>
 
       <CardContent>
         {!data || data.length === 0 ? (
-          'No assigned employees found'
+          t('noEmployeesFound')
         ) : (
           <EmployeeDataTable data={data} columns={columns} />
         )}

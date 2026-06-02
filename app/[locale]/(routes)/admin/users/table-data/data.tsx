@@ -3,29 +3,30 @@ import { StopIcon, PauseIcon, PlayIcon } from '@radix-ui/react-icons';
 export const statuses = [
   {
     value: 'ACTIVE',
-    label: 'Active',
+    label: 'Actif',
     icon: PlayIcon,
   },
   {
     value: 'INACTIVE',
-    label: 'Inactive',
+    label: 'Inactif',
     icon: StopIcon,
   },
   {
     value: 'PENDING',
-    label: 'Pending',
+    label: 'En attente',
     icon: PauseIcon,
   },
 ];
+
 export const isAdmin = [
   {
     value: 'true',
-    label: 'True',
+    label: 'Oui',
     icon: PlayIcon,
   },
   {
     value: 'false',
-    label: 'False',
+    label: 'Non',
     icon: StopIcon,
   },
 ];

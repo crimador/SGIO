@@ -19,10 +19,9 @@ export async function DELETE(
   }
 
   try {
-    await prismadb.crm_Leads.delete({
-      where: {
-        id: params.leadId,
-      },
+    await prismadb.crm_Leads.update({
+      where: { id: params.leadId },
+      data: { deletedAt: new Date() },
     });
 
     return NextResponse.json({ message: 'Lead deleted' }, { status: 200 });

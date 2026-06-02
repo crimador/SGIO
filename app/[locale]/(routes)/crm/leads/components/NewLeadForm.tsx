@@ -8,337 +8,203 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+  Form, FormControl, FormField, FormItem, FormLabel, FormMessage,
 } from '@/components/ui/form';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 
-//TODO: fix all the types
-type NewTaskFormProps = {
+type NewLeadFormProps = {
   users: any[];
   accounts: any[];
 };
 
-export function NewLeadForm({ users, accounts }: NewTaskFormProps) {
+const formSchema = z.object({
+  first_name:  z.string().optional(),
+  last_name:   z.string().min(1, 'Le nom est obligatoire'),
+  company:     z.string().optional(),
+  jobTitle:    z.string().optional(),
+  email:       z.string().email('E-mail invalide').optional().or(z.literal('')),
+  phone:       z.string().optional(),
+  assigned_to: z.string().optional(),
+  accountIDs:  z.string().optional(),
+  description: z.string().optional(),
+  lead_source: z.string().optional(),
+  refered_by:  z.string().optional(),
+  campaign:    z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+export function NewLeadForm({ users, accounts }: NewLeadFormProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const formSchema = z.object({
-    first_name: z.string(),
-    last_name: z.string().min(3).max(30).nonempty(),
-    company: z.string().optional(),
-    jobTitle: z.string().optional(),
-    email: z.string().email().optional(),
-    phone: z.string().min(0).max(15).optional(),
-    description: z.string().optional(),
-    lead_source: z.string().optional(),
-    refered_by: z.string().optional(),
-    campaign: z.string().optional(),
-    assigned_to: z.string().optional(),
-    accountIDs: z.string().optional(),
-  });
-
-  type NewLeadFormValues = z.infer<typeof formSchema>;
-
-  const form = useForm<NewLeadFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = async (data: NewLeadFormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
     try {
       await axios.post('/api/crm/leads', data);
-      toast({
-        title: 'Success',
-        description: 'Lead created successfully',
-      });
+      toast({ title: 'Succès', description: 'Prospect créé avec succès.' });
+      form.reset({ first_name: '', last_name: '', company: '', email: '', phone: '', assigned_to: '', accountIDs: '' });
+      router.refresh();
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error?.response?.data,
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: error?.response?.data });
     } finally {
       setIsLoading(false);
-      form.reset({
-        first_name: '',
-        last_name: '',
-        company: '',
-        jobTitle: '',
-        email: '',
-        phone: '',
-        description: '',
-        lead_source: '',
-        refered_by: '',
-        campaign: '',
-        assigned_to: '',
-        accountIDs: '',
-      });
-      router.refresh();
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full px-10">
-        {/*        <div>
-          <pre>
-            <code>{JSON.stringify(form.watch(), null, 2)}</code>
-            <code>{JSON.stringify(form.formState.errors, null, 2)}</code>
-          </pre>
-        </div> */}
-        <div className="w-[800px] text-sm">
-          <div className="space-y-2 pb-5">
-            <FormField
-              control={form.control}
-              name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Johny"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Walker"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="company"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="SaasHQ Inc."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="jobTitle"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Job Title</FormLabel>
-                  <FormControl>
-                    <Input disabled={isLoading} placeholder="CTO" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>E-mail</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="johny@domain.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="+11 123 456 789"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 px-1 py-4">
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="New SaasHQ functionality"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lead_source"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lead source</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="Website"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="refered_by"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Refered by</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="Johny Walker"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="campaign"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Campaign</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="Social networks"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="assigned_to"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assigned to</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a user to assign the account" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="h-56 overflow-y-auto">
-                      {users.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="accountIDs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assign an Account</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose assigned account " />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                          {account.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Identité */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Identité</p>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="first_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prénom</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Jean" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="last_name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nom de famille *</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Dupont" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="company" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Entreprise</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="SARL ABC" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="jobTitle" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Poste</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Directeur Commercial" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="email" render={({ field }) => (
+              <FormItem>
+                <FormLabel>E-mail</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="contact@entreprise.tg" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="phone" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Téléphone</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="+228 90 00 00 00" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
           </div>
         </div>
-        <div className="grid gap-2 py-5">
-          <Button disabled={isLoading} type="submit">
-            {isLoading ? (
-              <span className="flex animate-pulse items-center">
-                Saving data ...
-              </span>
-            ) : (
-              'Create lead'
-            )}
-          </Button>
+
+        <div className="h-px bg-gray-100" />
+
+        {/* Affectation */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Affectation</p>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="assigned_to" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Responsable</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger><SelectValue placeholder="Assigner à..." /></SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-56 overflow-y-auto">
+                    {users.map((u) => (
+                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="accountIDs" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Client associé</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger><SelectValue placeholder="Sélectionner un client..." /></SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="max-h-56 overflow-y-auto">
+                    {accounts.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
         </div>
+
+        <div className="h-px bg-gray-100" />
+
+        {/* Informations complémentaires */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">Informations complémentaires</p>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField control={form.control} name="lead_source" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Source</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Ex : Salon, Recommandation..." {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="refered_by" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Référé par</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Nom du référent" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="campaign" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Campagne</FormLabel>
+                <FormControl><Input disabled={isLoading} placeholder="Nom de la campagne" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+          <div className="mt-4">
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea disabled={isLoading} placeholder="Informations utiles sur ce prospect..." {...field} className="min-h-[70px]" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+          </div>
+        </div>
+
+        <button
+          disabled={isLoading}
+          type="submit"
+          className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          {isLoading ? 'Enregistrement...' : 'Créer le prospect'}
+        </button>
       </form>
     </Form>
   );

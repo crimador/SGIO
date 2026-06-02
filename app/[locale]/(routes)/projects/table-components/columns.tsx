@@ -2,7 +2,6 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 
-import { Badge } from '@/components/ui/badge';
 
 import { visibility } from '../data/data';
 import type { Task } from '../data/schema';
@@ -15,7 +14,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'date_created',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date Created" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">
@@ -28,12 +27,12 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'assigned_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Assigné à" />
     ),
 
     cell: ({ row }) => (
       <div className="w-[150px]">
-        {row.original.assigned_user.name ?? 'Unassigned'}
+        {row.original.assigned_user.name ?? 'Non assigné'}
       </div>
     ),
     enableSorting: true,
@@ -43,7 +42,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'title',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Nom" />
     ),
     cell: ({ row }) => (
       <Link href={`/projects/boards/${row.original.id}`}>
@@ -63,7 +62,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'visibility',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Visibility" />
+      <DataTableColumnHeader column={column} title="Visibilité" />
     ),
     cell: ({ row }) => {
       const status = visibility.find(
@@ -76,7 +75,11 @@ export const columns: ColumnDef<Task>[] = [
 
       return (
         <div className="flex w-[100px] items-center">
-          {status.label && <Badge variant="outline">{status.label}</Badge>}
+          {status.label && (
+        <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium" style={{ color: '#1E1D3D' }}>
+          {status.label}
+        </span>
+      )}
         </div>
       );
     },

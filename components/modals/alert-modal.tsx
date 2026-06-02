@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 
 import Modal from '@/components/ui/modal';
-import { Button } from '@/components/ui/button';
 
 import { Icons } from '../ui/icons';
 
@@ -38,12 +37,22 @@ const AlertModal = ({
       onClose={onClose}
     >
       <div className="flex w-full items-center justify-end space-x-2 pt-6">
-        <Button disabled={loading} variant={'outline'} onClick={onClose}>
+        <button
+          disabled={loading}
+          onClick={onClose}
+          className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-60"
+          style={{ color: '#1E1D3D' }}
+        >
           Cancel
-        </Button>
-        <Button disabled={loading} variant={'destructive'} onClick={onConfirm}>
+        </button>
+        <button
+          disabled={loading}
+          onClick={onConfirm}
+          className="flex h-9 items-center rounded-lg border border-red-200 px-4 text-sm font-medium transition-colors hover:bg-red-50 disabled:opacity-60"
+          style={{ color: '#dc2626' }}
+        >
           {loading ? <Icons.spinner className="animate-spin" /> : 'Continue'}
-        </Button>
+        </button>
       </div>
     </Modal>
   );

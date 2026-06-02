@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { DialogTrigger } from '@/components/ui/dialog';
 import {
   Form,
@@ -37,7 +36,6 @@ type Props = {
 const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
   const [, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
@@ -57,28 +55,21 @@ const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
     defaultValues: initialData,
   });
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
-  //Actions
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const onSubmit = async (data: NewAccountFormValues) => {
     setIsLoading(true);
     try {
       await axios.put('/api/projects/', data);
       toast({
-        title: 'Success',
-        description: `Project: ${data.title}, update successfully`,
+        title: 'Succès',
+        description: `Projet "${data.title}" mis à jour avec succès.`,
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erreur',
         description: error?.response?.data,
       });
     } finally {
@@ -102,13 +93,9 @@ const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project name</FormLabel>
+                  <FormLabel>Nom du projet</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Enter project name"
-                      {...field}
-                    />
+                    <Input disabled={isLoading} placeholder="Nom du projet" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -119,14 +106,9 @@ const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project description</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      rows={10}
-                      disabled={isLoading}
-                      placeholder="Enter project description"
-                      {...field}
-                    />
+                    <Textarea rows={10} disabled={isLoading} placeholder="Description du projet" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,19 +119,16 @@ const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
               name="visibility"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Project visibility</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Visibilité</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select projects visibility" />
+                        <SelectValue placeholder="Choisir la visibilité" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={'public'}>{`Public`}</SelectItem>
-                      <SelectItem value={'private'}>{`Private`}</SelectItem>
+                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="private">Privé</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -159,15 +138,22 @@ const UpdateProjectForm = ({ initialData, openEdit }: Props) => {
           </div>
           <div className="flex w-full justify-end space-x-2 pt-2">
             <DialogTrigger asChild>
-              <Button variant={'destructive'}>Cancel</Button>
+              <button
+                type="button"
+                className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                style={{ color: '#dc2626' }}
+              >
+                Annuler
+              </button>
             </DialogTrigger>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <Icons.spinner className="animate-spin" />
-              ) : (
-                'Update'
-              )}
-            </Button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            >
+              {isLoading ? <Icons.spinner className="animate-spin" /> : 'Mettre à jour'}
+            </button>
           </div>
         </form>
       </Form>

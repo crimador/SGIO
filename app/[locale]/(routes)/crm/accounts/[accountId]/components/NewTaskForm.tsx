@@ -1,7 +1,6 @@
 'use client';
 
 import LoadingComponent from '@/components/LoadingComponent';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 
 import {
@@ -53,7 +52,6 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [date] = useState<Date>();
-  //  const [userSearch, setUserSearch] = useState<string>("");
 
   const { data: users, isLoading: isLoadingUsers } = useSWR(
     '/api/user',
@@ -87,28 +85,25 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
     return null;
   }
 
-  //Actions
-
   const onSubmit = form.handleSubmit(async (data) => {
-    //console.log(data);
     setIsLoading(true);
     try {
       await axios.post(`/api/crm/account/${account?.id}/task/create`, data);
       toast({
-        title: 'Success',
-        description: `New task: ${data.title}, created successfully`,
+        title: 'Succès',
+        description: `Tâche "${data.title}" créée avec succès.`,
       });
     } catch (error) {
       if (error instanceof AxiosError && error?.response?.data) {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description: error?.response?.data,
         });
       } else {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description: error instanceof AxiosError ? error?.message : '',
         });
       }
@@ -123,19 +118,12 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
     return <LoadingComponent />;
   }
 
-  /*   const filteredUsers = users?.filter((user: any) =>
-    user.name.toLowerCase().includes(userSearch.toLowerCase())
-  ); */
-
   return (
     <div className="flex flex-col">
       {isLoading ? (
         <LoadingComponent />
       ) : (
         <div className="flex w-full">
-          {/*           <div>
-            <pre>{JSON.stringify(form.watch(), null, 2)}</pre>
-          </div> */}
           <Form {...form}>
             <form onSubmit={onSubmit} className="h-full w-full space-y-3">
               <div className="flex flex-col space-y-3">
@@ -144,11 +132,11 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>New task name</FormLabel>
+                      <FormLabel>Nom de la tâche</FormLabel>
                       <FormControl>
                         <Input
                           disabled={isLoading}
-                          placeholder="Enter task name"
+                          placeholder="Ex : Appel de suivi client"
                           {...field}
                         />
                       </FormControl>
@@ -161,11 +149,11 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Task description</FormLabel>
+                      <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea
                           disabled={isLoading}
-                          placeholder="Enter task description"
+                          placeholder="Détails de la tâche..."
                           {...field}
                         />
                       </FormControl>
@@ -178,24 +166,24 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
                   name="dueDateAt"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Task due date</FormLabel>
+                      <FormLabel>Date d&apos;échéance</FormLabel>
                       <FormControl>
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button
-                              variant={'outline'}
+                            <button
+                              type="button"
                               className={cn(
-                                'w-[240px] justify-start text-left font-normal',
-                                !date && 'text-muted-foreground'
+                                'flex h-9 w-[240px] items-center justify-start rounded-lg border px-3 text-sm font-normal transition-colors hover:bg-gray-50',
+                                !date && 'text-gray-400'
                               )}
                             >
                               {field.value ? (
                                 format(field.value, 'PPP')
                               ) : (
-                                <span>Pick a date</span>
+                                <span>Choisir une date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
+                            </button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
@@ -216,36 +204,22 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
                   name="user"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned to</FormLabel>
+                      <FormLabel>Responsable</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select assigned user" />
+                            <SelectValue placeholder="Assigner à..." />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="h-56 overflow-y-auto">
-                          {/*                    <Input
-                            {...field}
-                            placeholder="Search user ..."
-                            onChange={(e) => {
-                              setTimeout(() => {
-                                setUserSearch(e.target.value);
-                              }, 1000);
-                            }}
-                          /> */}
                           {users.map((user: any) => (
                             <SelectItem key={user.id} value={user.id}>
                               {user.name}
                             </SelectItem>
                           ))}
-                          {/*           {filteredUsers.map((user: any) => (
-                            <SelectItem key={user.id} value={user.id}>
-                              {user.name}
-                            </SelectItem>
-                          ))} */}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -257,21 +231,21 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
                   name="priority"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Choose task priority</FormLabel>
+                      <FormLabel>Priorité</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select tasks priority" />
+                            <SelectValue placeholder="Sélectionner une priorité" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="critical">Critical</SelectItem>
+                          <SelectItem value="low">Basse</SelectItem>
+                          <SelectItem value="medium">Normale</SelectItem>
+                          <SelectItem value="high">Haute</SelectItem>
+                          <SelectItem value="critical">Critique</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -281,9 +255,21 @@ const NewTaskForm = ({ account, onFinish }: NewTaskFormProps) => {
               </div>
               <div className="flex w-full justify-end space-x-2 pt-2">
                 <SheetTrigger asChild>
-                  <Button variant={'destructive'}>Close</Button>
+                  <button
+                    type="button"
+                    className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                    style={{ color: '#dc2626' }}
+                  >
+                    Fermer
+                  </button>
                 </SheetTrigger>
-                <Button type="submit">Create</Button>
+                <button
+                  type="submit"
+                  className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                >
+                  Créer
+                </button>
               </div>
             </form>
           </Form>

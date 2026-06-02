@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Flex, Text } from '@tremor/react';
 import { Database } from 'lucide-react';
 import ProgressBarComponent from '@/app/[locale]/(routes)/components/dasboard/progress-bar-component';
@@ -16,8 +16,8 @@ export default function StorageQuota({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Database className="h-4 w-4 text-muted-foreground" />
+        <p className="text-sm font-medium" style={{ color: '#1E1D3D' }}>{title}</p>
+        <Database className="h-4 w-4 text-gray-400" />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-medium">{actual}/MB</div>

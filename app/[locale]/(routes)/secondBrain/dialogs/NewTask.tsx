@@ -1,7 +1,6 @@
 'use client';
 
 import LoadingComponent from '@/components/LoadingComponent';
-import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -251,9 +250,21 @@ const NewTaskDialog = ({ users, boards, open, setOpen, notionUrl }: Props) => {
                 </div>
                 <div className="flex w-full justify-end space-x-2 pt-2">
                   <DialogTrigger asChild>
-                    <Button variant={'destructive'}>Cancel</Button>
+                    <button
+                      type="button"
+                      className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                      style={{ color: '#dc2626' }}
+                    >
+                      Cancel
+                    </button>
                   </DialogTrigger>
-                  <Button type="submit">Create</Button>
+                  <button
+                    type="submit"
+                    className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+                    style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                  >
+                    Create
+                  </button>
                 </div>
               </form>
             </Form>

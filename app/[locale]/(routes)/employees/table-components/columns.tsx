@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import Link from 'next/link';
 
 import type { Employee } from '../table-data/schema';
 import { DataTableColumnHeader } from './data-table-column-header';
@@ -32,7 +33,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'createdAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date created" />
+      <DataTableColumnHeader column={column} title="Date de création" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">
@@ -46,10 +47,16 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'firstName',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="First Name" />
+      <DataTableColumnHeader column={column} title="Prénom / Nom" />
     ),
-
-    cell: ({ row }) => <div className="">{row.getValue('firstName')}</div>,
+    cell: ({ row }) => (
+      <Link
+        href={`/employees/${(row.original as any).id}`}
+        className="font-medium hover:underline text-primary"
+      >
+        {row.getValue('firstName')} {(row.original as any).lastName}
+      </Link>
+    ),
     enableSorting: true,
     enableHiding: true,
   },
@@ -67,7 +74,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'phone',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Mobile" />
+      <DataTableColumnHeader column={column} title="Téléphone" />
     ),
 
     cell: ({ row }) => <div className="">{row.getValue('phone')}</div>,
@@ -77,7 +84,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'position',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Position" />
+      <DataTableColumnHeader column={column} title="Poste" />
     ),
 
     cell: ({ row }) => <div className="">{row.getValue('position')}</div>,
@@ -87,10 +94,13 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: 'salary',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Salary" />
+      <DataTableColumnHeader column={column} title="Salaire (FCFA)" />
     ),
-
-    cell: ({ row }) => <div className="">{row.getValue('salary')}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">
+        {new Intl.NumberFormat('fr-FR').format(row.getValue('salary'))}
+      </div>
+    ),
     enableSorting: true,
     enableHiding: true,
   },

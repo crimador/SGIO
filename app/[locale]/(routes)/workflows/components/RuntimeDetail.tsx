@@ -5,9 +5,7 @@ import { Heading4, Heading5, RefreshCw } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Tooltip,
@@ -16,8 +14,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Box } from '@radix-ui/themes';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -56,26 +52,26 @@ const RuntimeDetailPage: FC<Props> = () => {
           <Link className="w-full" href={`/workflows/${data.definitions.id}`}>
             <Card className="w-full border-slate-200 hover:bg-slate-100">
               <CardHeader>
-                <CardTitle>
+                <p className="text-base font-bold" style={{ color: '#1E1D3D' }}>
                   {<Heading4>{data.definitions.name}</Heading4>}
-                  <Badge
-                    color={
-                      data.definitions.definitionStatus === 'active'
-                        ? 'success'
-                        : 'error'
-                    }
-                  >
-                    <Label>
-                      {data.definitions?.definitionStatus?.toUpperCase()}
-                    </Label>
-                  </Badge>
-                </CardTitle>
+                </p>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${
+                    data.definitions.definitionStatus === 'active'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-red-100 text-red-600'
+                  }`}
+                >
+                  <Label>
+                    {data.definitions?.definitionStatus?.toUpperCase()}
+                  </Label>
+                </span>
               </CardHeader>
               <CardContent>
                 <div className="gap-y-0.5">
-                  <CardDescription>
+                  <p className="text-sm text-gray-400">
                     {data?.definitions?.description}
-                  </CardDescription>
+                  </p>
                   <div className="grid-flow grid auto-cols-auto grid-flow-row auto-rows-auto items-center justify-between gap-x-0.5 gap-y-0.5">
                     <Label>
                       Last Updated:{' '}
@@ -101,9 +97,14 @@ const RuntimeDetailPage: FC<Props> = () => {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" onClick={handleRefresh}>
+                  <button
+                    type="button"
+                    onClick={handleRefresh}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border transition-colors hover:bg-gray-50"
+                    style={{ color: '#1E1D3D' }}
+                  >
                     <RefreshCw className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Refresh</p>
@@ -114,18 +115,18 @@ const RuntimeDetailPage: FC<Props> = () => {
           <div className="w-full gap-y-0.5">
             <Card className="w-full border-[1px] border-slate-200">
               <CardHeader>
-                <CardTitle>
+                <p className="text-sm font-bold" style={{ color: '#1E1D3D' }}>
                   {<Label>{data.id}</Label>}
-                  <Badge
-                    color={
-                      data.workflowStatus === 'completed'
-                        ? 'success'
-                        : undefined
-                    }
-                  >
-                    label={data.workflowStatus.toUpperCase()}
-                  </Badge>
-                </CardTitle>
+                </p>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${
+                    data.workflowStatus === 'completed'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  {data.workflowStatus.toUpperCase()}
+                </span>
               </CardHeader>
               <CardContent>
                 <div className="gap-y-0.5">
@@ -151,26 +152,32 @@ const RuntimeDetailPage: FC<Props> = () => {
               {data.tasks.map((task) => (
                 <Card className="border-[1px] border-slate-100" key={task.id}>
                   <CardHeader>
-                    <CardTitle>{task.name}</CardTitle>
-                    {<Badge color="primary">{task.type.toUpperCase()}</Badge>}
+                    <p className="text-sm font-bold" style={{ color: '#1E1D3D' }}>{task.name}</p>
+                    <span className="inline-flex items-center rounded-full bg-[#FF7E00]/10 px-2 py-0.5 text-xs font-medium text-[#FF7E00]">
+                      {task.type.toUpperCase()}
+                    </span>
                   </CardHeader>
                   <CardContent>
                     <div className="items-start justify-start gap-y-2">
                       <div className="flex flex-row items-center justify-start gap-x-0.5">
                         <Label>Status</Label>
-                        <Badge
-                          color={
-                            task?.status === 'completed' ? 'success' : undefined
-                          }
+                        <span
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            task?.status === 'completed'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
                         >
                           {task.status.toUpperCase()}
-                        </Badge>
+                        </span>
                       </div>
                       {data?.workflowResults?.[task.name] && (
                         <TooltipProvider>
                           <Tooltip>
-                            <Button
-                              variant="outline"
+                            <button
+                              type="button"
+                              className="flex h-8 items-center rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+                              style={{ color: '#1E1D3D' }}
                               onClick={() => {
                                 navigator.clipboard
                                   .writeText(
@@ -191,7 +198,7 @@ const RuntimeDetailPage: FC<Props> = () => {
                               }}
                             >
                               Copy Result
-                            </Button>
+                            </button>
                             <TooltipContent>
                               {JSON.stringify(
                                 data?.workflowResults,
@@ -214,7 +221,9 @@ const RuntimeDetailPage: FC<Props> = () => {
                   className="flex w-full flex-row items-center justify-start gap-x-0.5 border-[1px] border-slate-200 px-2 py-2"
                   key={timestamp as any}
                 >
-                  <Badge>{severity}</Badge>
+                  <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-medium">
+                    {severity}
+                  </span>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipContent>
@@ -222,7 +231,9 @@ const RuntimeDetailPage: FC<Props> = () => {
                           new Date(timestamp as any),
                           'dd MMM yyyy, hh:mm aa'
                         )}
-                        <Badge>{timestamp as any}</Badge>
+                        <span className="inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-medium">
+                          {timestamp as any}
+                        </span>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

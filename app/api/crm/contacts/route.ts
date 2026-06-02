@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { canWrite } from '@/lib/permissions';
 import sendEmail from '@/lib/sendmail';
 
 //Create route
@@ -10,6 +11,7 @@ export async function POST(req: Request) {
   if (!session) {
     return new NextResponse('Unauthenticated', { status: 401 });
   }
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
   try {
     const body = await req.json();
     const userId = session.user.id;
@@ -61,7 +63,9 @@ export async function POST(req: Request) {
             id: assigned_to,
           },
         },
-        birthday: birthday_day + '/' + birthday_month + '/' + birthday_year,
+        birthday: (birthday_day && birthday_month && birthday_year)
+          ? `${birthday_day}/${birthday_month}/${birthday_year}`
+          : null,
         description,
         email,
         personal_email,
@@ -120,6 +124,7 @@ export async function PUT(req: Request) {
   if (!session) {
     return new NextResponse('Unauthenticated', { status: 401 });
   }
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
   try {
     const body = await req.json();
     const userId = session.user.id;
@@ -177,7 +182,9 @@ export async function PUT(req: Request) {
             id: assigned_to,
           },
         },
-        birthday: birthday_day + '/' + birthday_month + '/' + birthday_year,
+        birthday: (birthday_day && birthday_month && birthday_year)
+          ? `${birthday_day}/${birthday_month}/${birthday_year}`
+          : null,
         description,
         email,
         personal_email,

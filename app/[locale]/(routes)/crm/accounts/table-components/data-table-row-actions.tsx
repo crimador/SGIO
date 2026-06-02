@@ -1,9 +1,8 @@
 'use client';
 
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { MoreHorizontal } from 'lucide-react';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,16 +43,16 @@ export function DataTableRowActions<TData>({
     try {
       await axios.delete(`/api/crm/account/${account.id}`);
       toast({
-        title: 'Success',
-        description: 'Opportunity has been deleted',
+        title: 'Succès',
+        description: 'Le client a été supprimé.',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description:
-            'Something went wrong while deleting opportunity. Please try again.',
+            'Une erreur est survenue lors de la suppression. Veuillez réessayer.',
         });
       }
     } finally {
@@ -70,13 +69,13 @@ export function DataTableRowActions<TData>({
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error, Account not watched. Please try again.',
+        title: 'Erreur — abonnement non enregistré. Veuillez réessayer.',
       });
       console.log(error);
     } finally {
       toast({
-        title: 'Success',
-        description: `You are now Account: ${account.name}, watcher`,
+        title: 'Succès',
+        description: `Vous suivez maintenant le client : ${account.name}.`,
       });
       setLoading(false);
     }
@@ -89,13 +88,13 @@ export function DataTableRowActions<TData>({
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error, Account not watched. Please try again.',
+        title: 'Erreur — abonnement non enregistré. Veuillez réessayer.',
       });
       console.log(error);
     } finally {
       toast({
-        title: 'Success',
-        description: `You are no longer Project: ${account.name}, watcher`,
+        title: 'Succès',
+        description: `Vous ne suivez plus le client : ${account.name}.`,
       });
       setLoading(false);
     }
@@ -110,8 +109,8 @@ export function DataTableRowActions<TData>({
         loading={loading}
       />
       <RightViewModalNoTrigger
-        title={'Update Account' + ' - ' + account?.name}
-        description="Update account details"
+        title={'Modifier le client' + ' - ' + account?.name}
+        description="Modifier les informations du client"
         open={updateOpen}
         setOpen={setUpdateOpen}
       >
@@ -120,35 +119,32 @@ export function DataTableRowActions<TData>({
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Ouvrir le menu</span>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[260px]">
           <DropdownMenuItem
             onClick={() => router.push(`/crm/accounts/${account?.id}`)}
           >
-            View
+            Voir
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setUpdateOpen(true)}>
-            Update
+            Modifier
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onWatch}>
             <Eye className="mr-2 h-4 w-4" />
-            Watch Account
+            Suivre
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onUnWatch}>
             <EyeOff className="mr-2 h-4 w-4" />
-            Stop watching Account
+            Ne plus suivre
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Delete
+            Supprimer
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

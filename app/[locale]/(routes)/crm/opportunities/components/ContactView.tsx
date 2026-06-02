@@ -1,12 +1,6 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,18 +16,11 @@ import React, { useEffect, useState } from 'react';
 
 const ContactView = ({ data, opportunityId }: any) => {
   const router = useRouter();
-
   const { toast } = useToast();
-
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const onAddNew = () => {
     alert('Actions - not yet implemented');
@@ -45,105 +32,69 @@ const ContactView = ({ data, opportunityId }: any) => {
 
   const onUnlink = async (id: string) => {
     try {
-      await axios.put(`/api/crm/contacts/unlink-opportunity/${id}`, {
-        opportunityId,
-      });
-      toast({
-        variant: 'default',
-        description: 'Contact unlinked',
-      });
+      await axios.put(`/api/crm/contacts/unlink-opportunity/${id}`, { opportunityId });
+      toast({ variant: 'default', description: 'Contact dissocié.' });
       router.refresh();
     } catch (error) {
       console.log(error);
-      toast({
-        variant: 'destructive',
-        description: 'Failed to unlink contact',
-      });
+      toast({ variant: 'destructive', description: 'Erreur lors de la dissociation du contact.' });
     }
   };
 
-  if (!data)
-    return (
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex justify-between">
-            <div>
-              <CardTitle>Contacts</CardTitle>
-              <CardDescription></CardDescription>
-            </div>
-            <div>
-              <Button onClick={onAddNew}>
-                <PlusIcon className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>No assigned contacts found</CardContent>
-      </Card>
-    );
-
-  console.log(data, 'data - contacts');
-
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex justify-between">
+    <Card className="overflow-hidden">
+      <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+      <CardHeader className="pb-4 pt-5">
+        <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Contacts</CardTitle>
-            <CardDescription></CardDescription>
+            <p className="text-base font-bold" style={{ color: '#1E1D3D' }}>Contacts</p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {data?.length ?? 0} contact{(data?.length ?? 0) > 1 ? 's' : ''}
+            </p>
           </div>
-          <div>
-            <Button onClick={onAddNew}>
-              <PlusIcon className="h-5 w-5" />
-            </Button>
-          </div>
+          <button
+            onClick={onAddNew}
+            className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            <PlusIcon className="h-4 w-4" /> Associer
+          </button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div>
-          {data.map((contact: any) => (
-            <div key={data.id}>
-              <div className="-mx-2 flex items-center space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <User className="mt-px h-5 w-5" />
+      <CardContent className="pt-0">
+        {!data || data.length === 0 ? (
+          <p className="py-6 text-center text-sm text-gray-400">Aucun contact associé.</p>
+        ) : (
+          <div>
+            {data.map((contact: any) => (
+              <div key={contact.id} className="-mx-2 flex items-center space-x-4 rounded-md p-2 transition-all hover:bg-[#FF7E00]/[0.05]">
+                <User className="mt-px h-5 w-5 shrink-0" style={{ color: '#FF7E00' }} />
                 <div className="flex w-full justify-between">
                   <div className="flex items-center justify-start space-x-5">
-                    <p className="text-sm font-medium leading-none">
-                      {contact.id}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm font-medium" style={{ color: '#1E1D3D' }}>
                       {contact.first_name} {contact.last_name}
                     </p>
-                    <p>{contact.email}</p>
-                    <p>{contact.office_phone}</p>
-
-                    <p>{contact.mobile_phone}</p>
+                    <p className="text-sm text-gray-400">{contact.email}</p>
+                    <p className="text-sm text-gray-400">{contact.office_phone}</p>
+                    <p className="text-sm text-gray-400">{contact.mobile_phone}</p>
                   </div>
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button
-                          variant="ghost"
-                          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                        >
-                          <DotsHorizontalIcon className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[160px]">
-                        <DropdownMenuItem onClick={() => onView(contact.id)}>
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onUnlink(contact.id)}>
-                          Unlink
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex h-8 w-8 items-center justify-center rounded-md p-0 hover:bg-[#FF7E00]/[0.08]">
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                        <span className="sr-only">Ouvrir le menu</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                      <DropdownMenuItem onClick={() => onView(contact.id)}>Voir</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => onUnlink(contact.id)}>Dissocier</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

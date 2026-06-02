@@ -1,12 +1,12 @@
 [
     {
-      "name": "Social networks",
+      "name": "Réseaux sociaux",
       "description": "Instagram, Facebook, Twitter",
       "status": "ACTIVE"
     },
     {
-      "name": "Cold calls",
-      "description": "Our call center",
-      "status": null
+      "name": "Démarchage téléphonique",
+      "description": "Notre centre d'appels",
+      "status": "ACTIVE"
     }
   ]

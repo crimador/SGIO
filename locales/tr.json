@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ, NextJS üzerine kurulu açık kaynaklı bir CRM'dir."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Kurumsal ERP yönetim sistemi."
   },
   "ModuleMenu": {
     "dashboard": "Kontrol Paneli",
@@ -16,6 +16,7 @@
     "emails": "E-postalar",
     "tasks": "Görevler",
     "invoices": "Faturalar",
+    "employees": "Çalışanlar",
     "reports": "Raporlar",
     "documents": "Belgeler",
     "storage": "Depolama",
@@ -24,7 +25,7 @@
   "DashboardPage": {
     "containerTitle": "Kontrol Paneli",
     "totalRevenue": "Toplam Gelir",
-    "containerDescription": "SaasHQ'ya hoş geldiniz, burada işinizle ilgili tüm önemli bilgileri görebilirsiniz.",
+    "containerDescription": "KEKELI GROUP'a hoş geldiniz, burada işinizle ilgili tüm önemli bilgileri görebilirsiniz.",
     "expectedRevenue": "Beklenen Gelir",
     "activeUsers": "Aktif Kullanıcılar",
     "accounts": "Şirketler",
@@ -49,5 +50,51 @@
     "cardDescription": "Giriş yaparak hesap oluşturun",
     "label": "Dil",
     "locale": "{locale, select, de {Almanca} en {İngilizce} cz {Çekçe} uk {Ukraynaca} other {Bilinmeyen}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "PDF Yükle",
+    "myInvoices": "Faturalarım",
+    "settings": "Ayarlar",
+    "companySettings": "Şirket Ayarları",
+    "companySettingsDescription": "Bu veriler, faturalarınız için varsayılan değerler olarak kullanılacaktır. Bunları istediğiniz zaman değiştirebilirsiniz. ERP'lere dosya alımı için dosyaları alacak hesap e-postasını ayarlamak çok önemlidir",
+    "filterByInvoiceNumber": "Fatura numarasına göre filtrele...",
+    "dueDate": "Vade Tarihi",
+    "number": "Numara",
+    "amount": "Tutar",
+    "partner": "Partner",
+    "rossumState": "Rossum Durumu",
+    "status": "Durum",
+    "noResults": "Sonuç bulunamadı.",
+    "rowsSelected": "satır seçildi.",
+    "rowsPerPage": "Sayfa başına satır",
+    "view": "Görüntüle"
+  },
+  "EmployeePage": {
+    "title": "Çalışanlar",
+    "firstName": "Ad",
+    "lastName": "Soyadı",
+    "officePhone": "Ofis telefonu",
+    "email": "E-posta",
+    "position": "Pozisyon",
+    "salary": "Maaş",
+    "onBoarding": "İşe başlama",
+    "pickExpectedCloseDate": "Beklenen bitiş tarihini seçin",
+    "iban": "IBAN",
+    "assignedUser": "Atanan kullanıcı",
+    "taxId": "Vergi kimlik numarası",
+    "insurance": "Sigorta",
+    "address": "Adres",
+    "close": "Kapat",
+    "createEmployee": "Çalışan oluştur",
+    "noEmployeesFound": "Atanan çalışan bulunamadı"
+  },
+  "TimekeepingPage": {
+    "title": "Zaman Takibi",
+    "employee": "Çalışan",
+    "timeIn": "Giriş Saati",
+    "timeOut": "Çıkış Saati",
+    "verified": "Doğrulandı",
+    "createTimekeeping": "Kayıt Ekle",
+    "noTimekeepingFound": "Zaman kaydı bulunamadı"
   }
 }

@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import axios, { AxiosError } from 'axios';
 
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -34,7 +33,6 @@ import { format } from 'date-fns';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { Calendar } from '@/components/ui/calendar';
 
-//TODO: fix all the types
 type NewEmployeeFormProps = {
   initialData: any;
   setOpen: (value: boolean) => void;
@@ -65,13 +63,13 @@ export function UpdateEmployeeForm({
     taxid: z.string().min(2).max(30).optional(),
     address: z.string().min(3).max(250).optional(),
     onBoarding: z.date().default(new Date()).optional(),
+    dateOfBirth: z.date().optional(),
     insurance: z.string().min(3).max(50).optional(),
     salary: z.coerce.number().positive(),
   });
 
   type NewEmployeeFormValues = z.infer<typeof formSchema>;
 
-  //TODO: fix this any
   const form = useForm<any>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
@@ -82,14 +80,14 @@ export function UpdateEmployeeForm({
     try {
       await axios.put('/api/employee', data);
       toast({
-        title: 'Success',
-        description: 'Employee updated successfully',
+        title: 'Succès',
+        description: 'Employé mis à jour avec succès.',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description: error?.response?.data,
         });
       }
@@ -108,25 +106,11 @@ export function UpdateEmployeeForm({
     );
 
   if (!users || !initialData)
-    return <div>Something went wrong, there is no data for form</div>;
+    return <div>Impossible de charger les données du formulaire.</div>;
 
-  //console.log(accounts, "accounts");
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full px-10">
-        {/*    <div>
-          <pre>
-            <code>{JSON.stringify(form.formState.errors, null, 2)}</code>
-          </pre>
-        </div> */}
-        {/*     <pre>
-          <code>{JSON.stringify(initialData, null, 2)}</code>
-        </pre> */}
-        {/*   <div>
-          <pre>
-            <code>{JSON.stringify(form.watch(), null, 2)}</code>
-          </pre>
-        </div> */}
         <FormField
           control={form.control}
           name="id"
@@ -153,13 +137,9 @@ export function UpdateEmployeeForm({
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First name</FormLabel>
+                      <FormLabel>Prénom</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="Matt"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="Koffi" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -172,13 +152,9 @@ export function UpdateEmployeeForm({
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last name</FormLabel>
+                      <FormLabel>Nom</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="Parker"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="Mensah" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -193,13 +169,9 @@ export function UpdateEmployeeForm({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone</FormLabel>
+                      <FormLabel>Téléphone</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="+420 ...."
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="+228 90 00 00 00" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -214,11 +186,7 @@ export function UpdateEmployeeForm({
                     <FormItem>
                       <FormLabel>E-mail</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="account@domain.com"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="account@domain.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -233,13 +201,9 @@ export function UpdateEmployeeForm({
                   name="position"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Position</FormLabel>
+                      <FormLabel>Poste</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="Developer"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="Comptable" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -252,13 +216,9 @@ export function UpdateEmployeeForm({
                   name="salary"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Salary</FormLabel>
+                      <FormLabel>Salaire (FCFA)</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="3500"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="150000" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,17 +231,38 @@ export function UpdateEmployeeForm({
             <div className="w-1/2 space-y-2">
               <FormField
                 control={form.control}
-                name="IBAN"
+                name="dateOfBirth"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>IBAN</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Enter IBAN"
-                        {...field}
-                      />
-                    </FormControl>
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date de naissance</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <button
+                            type="button"
+                            className={cn(
+                              'flex h-9 w-full items-center rounded-lg border px-3 text-sm font-normal transition-colors hover:bg-gray-50',
+                              !field.value && 'text-gray-400'
+                            )}
+                          >
+                            {field.value ? format(new Date(field.value), 'dd/MM/yyyy') : 'JJ/MM/AAAA'}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value ? new Date(field.value) : undefined}
+                          onSelect={field.onChange}
+                          captionLayout="dropdown"
+                          fromYear={1950}
+                          toYear={new Date().getFullYear() - 18}
+                          disabled={(date) => date > new Date() || date < new Date('1950-01-01')}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -293,32 +274,30 @@ export function UpdateEmployeeForm({
                 name="onBoarding"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>onBoarding</FormLabel>
+                    <FormLabel>Date d'embauche</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
-                          <Button
-                            variant={'outline'}
+                          <button
+                            type="button"
                             className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
+                              'flex h-9 w-full items-center rounded-lg border px-3 text-sm font-normal transition-colors hover:bg-gray-50',
+                              !field.value && 'text-gray-400'
                             )}
                           >
                             {field.value ? (
-                              format(field?.value, 'PPP')
+                              format(new Date(field.value), 'dd/MM/yyyy')
                             ) : (
-                              <span>Pick a expected close date</span>
+                              <span>JJ/MM/AAAA</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
+                          </button>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={field.value}
-                          //@ts-ignore
-                          //TODO: fix this
+                          selected={field.value ? new Date(field.value) : undefined}
                           onSelect={field.onChange}
                           disabled={(date) => date < new Date('1900-01-01')}
                           initialFocus
@@ -335,16 +314,29 @@ export function UpdateEmployeeForm({
             <div className="w-1/2 space-y-2">
               <FormField
                 control={form.control}
+                name="IBAN"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>IBAN</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="TG53 TG008..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+          <div className="flex gap-5 pb-5">
+            <div className="w-1/2 space-y-2">
+              <FormField
+                control={form.control}
                 name="taxid"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tax id</FormLabel>
+                    <FormLabel>NIF</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Enter Tax Id"
-                        {...field}
-                      />
+                      <Input disabled={isLoading} placeholder="NIF personnel" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -357,13 +349,9 @@ export function UpdateEmployeeForm({
                 name="insurance"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Insurance</FormLabel>
+                    <FormLabel>N° CNSS</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Enter insurance detail "
-                        {...field}
-                      />
+                      <Input disabled={isLoading} placeholder="N° immatriculation CNSS" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -378,13 +366,9 @@ export function UpdateEmployeeForm({
                 name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address</FormLabel>
+                    <FormLabel>Adresse</FormLabel>
                     <FormControl>
-                      <Textarea
-                        disabled={isLoading}
-                        placeholder="address..."
-                        {...field}
-                      />
+                      <Textarea disabled={isLoading} placeholder="Adresse de résidence..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -394,15 +378,18 @@ export function UpdateEmployeeForm({
           </div>
         </div>
         <div className="grid gap-2 py-5">
-          <Button type="submit">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
             {isLoading ? (
-              <span className="flex animate-pulse items-center">
-                Saving data ...
-              </span>
+              <span className="flex animate-pulse items-center">Enregistrement...</span>
             ) : (
-              'Update Employee'
+              'Mettre à jour'
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

@@ -2,27 +2,28 @@ import {
   CircleIcon,
   QuestionMarkCircledIcon,
   StopwatchIcon,
+  CheckCircledIcon,
 } from '@radix-ui/react-icons';
 
 export const statuses = [
   {
     value: 'ACTIVE',
-    label: 'Active',
+    label: 'Actif',
     icon: QuestionMarkCircledIcon,
   },
   {
     value: 'INACTIVE',
-    label: 'Inactive',
+    label: 'Inactif',
     icon: CircleIcon,
   },
   {
     value: 'PENDING',
-    label: 'Pending',
-    icon: CircleIcon,
+    label: 'En attente',
+    icon: StopwatchIcon,
   },
   {
     value: 'CLOSED',
-    label: 'Closed',
-    icon: StopwatchIcon,
+    label: 'Clôturé',
+    icon: CheckCircledIcon,
   },
 ];

@@ -2,19 +2,16 @@ import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-
+import nodemailer from 'nodemailer';
+import { render } from '@react-email/render';
+import React from 'react';
 import NewTaskFromProject from '@/emails/NewTaskFromProject';
-import resendHelper from '@/lib/resend';
 
 //Create new task in project route
 /*
 TODO: there is second route for creating task in board, but it is the same as this one. Consider merging them (/api/projects/tasks/create-task/[boardId]). 
 */
 export async function POST(req: Request) {
-  /*
-  Resend.com function init - this is a helper function that will be used to send emails
-  */
-  const resend = await resendHelper();
   const session = await getServerSession(authOptions);
   const body = await req.json();
   const { title, user, board, priority, content, notionUrl, dueDateAt } = body;
@@ -79,42 +76,53 @@ export async function POST(req: Request) {
       },
     });
 
-    //Notification to user who is not a task creator
+    //Notification à l'utilisateur assigné (si différent du créateur)
     if (user !== session.user.id) {
       try {
-        const notifyRecipient = await prismadb.users.findUnique({
-          where: { id: user },
-        });
+        const [notifyRecipient, boardData] = await Promise.all([
+          prismadb.users.findUnique({ where: { id: user } }),
+          prismadb.boards.findUnique({ where: { id: board } }),
+        ]);
 
-        const boardData = await prismadb.boards.findUnique({
-          where: { id: board },
-        });
+        const gmailUser = process.env.GMAIL_USER;
+        const gmailPass = process.env.GMAIL_APP_PASSWORD;
 
-        //console.log(notifyRecipient, "notifyRecipient");
+        if (gmailUser && gmailPass && notifyRecipient?.email) {
+          const lang = notifyRecipient.userLanguage ?? 'fr';
+          const subject =
+            lang === 'en'
+              ? `Nouvelle tâche — ${title}`
+              : lang === 'de'
+                ? `Neue Aufgabe — ${title}`
+                : `Nouvelle tâche assignée — ${title}`;
 
-        await resend.emails.send({
-          from:
-            process.env.NEXT_PUBLIC_APP_NAME +
-            ' <' +
-            process.env.EMAIL_FROM +
-            '>',
-          to: notifyRecipient?.email!,
-          subject:
-            session.user.userLanguage === 'en'
-              ? `New task -  ${title}.`
-              : `Eine neue Aufgabe - ${title}.`,
-          text: '', // Add this line to fix the types issue
-          react: NewTaskFromProject({
-            taskFromUser: session.user.name!,
-            username: notifyRecipient?.name!,
-            userLanguage: notifyRecipient?.userLanguage!,
-            taskData: task,
-            boardData: boardData,
-          }),
-        });
-        console.log('Email sent to user: ', notifyRecipient?.email!);
+          const html = await render(
+            React.createElement(NewTaskFromProject, {
+              taskFromUser: session.user.name!,
+              username: notifyRecipient.name!,
+              userLanguage: lang,
+              taskData: task,
+              boardData: boardData,
+            })
+          );
+
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: { user: gmailUser, pass: gmailPass },
+          });
+
+          await transporter.sendMail({
+            from: `${process.env.NEXT_PUBLIC_APP_NAME} <${gmailUser}>`,
+            replyTo: gmailUser,
+            to: notifyRecipient.email,
+            subject,
+            html,
+          });
+
+          console.log('[NEW_TASK] Email envoyé à:', notifyRecipient.email);
+        }
       } catch (error) {
-        console.log(error);
+        console.log('[NEW_TASK] Erreur envoi email:', error);
       }
     }
     return NextResponse.json({ status: 200 });

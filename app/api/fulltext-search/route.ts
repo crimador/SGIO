@@ -5,96 +5,139 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
+  if (!session) return new NextResponse('Unauthenticated', { status: 401 });
+
   const body = await req.json();
-  const data = body;
+  const search: string = body.data ?? '';
 
-  const search = data.data;
-
-  if (!session) {
-    return new NextResponse('Unauthenticated', { status: 401 });
+  if (!search.trim()) {
+    return NextResponse.json({ data: {} }, { status: 200 });
   }
 
-  //return new NextResponse("Done", { status: 200 });
-
   try {
-    //Search in modul CRM (Oppotunities)
-    const resultsCrmOpportunities = await prismadb.crm_Opportunities.findMany({
-      where: {
-        OR: [
-          { description: { contains: search, mode: 'insensitive' } },
-          { name: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
+    const [
+      opportunities,
+      accounts,
+      contacts,
+      leads,
+      billingDocuments,
+      employees,
+      users,
+      tasks,
+      projects,
+    ] = await Promise.all([
+      prismadb.crm_Opportunities.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { name:        { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, name: true, status: true, budget: true },
+        take: 10,
+      }),
+      prismadb.crm_Accounts.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { name:        { contains: search, mode: 'insensitive' } },
+            { email:       { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, name: true, email: true, type: true },
+        take: 10,
+      }),
+      prismadb.crm_Contacts.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { first_name: { contains: search, mode: 'insensitive' } },
+            { last_name:  { contains: search, mode: 'insensitive' } },
+            { email:      { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, first_name: true, last_name: true, email: true },
+        take: 10,
+      }),
+      prismadb.crm_Leads.findMany({
+        where: {
+          deletedAt: null,
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' } },
+            { lastName:  { contains: search, mode: 'insensitive' } },
+            { company:   { contains: search, mode: 'insensitive' } },
+            { email:     { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, firstName: true, lastName: true, email: true, company: true, status: true },
+        take: 10,
+      }),
+      prismadb.billingDocument.findMany({
+        where: {
+          OR: [
+            { number: { contains: search, mode: 'insensitive' } },
+            { crmAccount:       { name: { contains: search, mode: 'insensitive' } } },
+            { occasionalClient: { name: { contains: search, mode: 'insensitive' } } },
+          ],
+        },
+        select: {
+          id: true, number: true, type: true, status: true, totalTTC: true,
+          crmAccount:       { select: { name: true } },
+          occasionalClient: { select: { name: true } },
+        },
+        take: 10,
+      }),
+      prismadb.employee.findMany({
+        where: {
+          OR: [
+            { firstName: { contains: search, mode: 'insensitive' } },
+            { lastName:  { contains: search, mode: 'insensitive' } },
+            { email:     { contains: search, mode: 'insensitive' } },
+            { position:  { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, firstName: true, lastName: true, email: true, position: true },
+        take: 10,
+      }),
+      prismadb.users.findMany({
+        where: {
+          OR: [
+            { name:         { contains: search, mode: 'insensitive' } },
+            { email:        { contains: search, mode: 'insensitive' } },
+            { username:     { contains: search, mode: 'insensitive' } },
+            { account_name: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, name: true, email: true, username: true },
+        take: 10,
+      }),
+      prismadb.tasks.findMany({
+        where: {
+          OR: [
+            { title:   { contains: search, mode: 'insensitive' } },
+            { content: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, title: true, taskStatus: true },
+        take: 10,
+      }),
+      prismadb.boards.findMany({
+        where: {
+          OR: [
+            { title:       { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, title: true },
+        take: 10,
+      }),
+    ]);
 
-    //Search in modul CRM (Accounts)
-    const resultsCrmAccounts = await prismadb.crm_Accounts.findMany({
-      where: {
-        OR: [
-          { description: { contains: search, mode: 'insensitive' } },
-          { name: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
-
-    //Search in modul CRM (Contacts)
-    const resultsCrmContacts = await prismadb.crm_Contacts.findMany({
-      where: {
-        OR: [
-          { last_name: { contains: search, mode: 'insensitive' } },
-          { first_name: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
-
-    //Search in local user database
-    const resultsUser = await prismadb.users.findMany({
-      where: {
-        OR: [
-          { email: { contains: search, mode: 'insensitive' } },
-          { account_name: { contains: search, mode: 'insensitive' } },
-          { name: { contains: search, mode: 'insensitive' } },
-          { username: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
-
-    const resultsTasks = await prismadb.tasks.findMany({
-      where: {
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
-
-    const reslutsProjects = await prismadb.boards.findMany({
-      where: {
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } },
-          // add more fields as needed
-        ],
-      },
-    });
-
-    const data = {
-      opportunities: resultsCrmOpportunities,
-      accounts: resultsCrmAccounts,
-      contacts: resultsCrmContacts,
-      users: resultsUser,
-      tasks: resultsTasks,
-      projects: reslutsProjects,
-    };
-
-    return NextResponse.json({ data }, { status: 200 });
+    return NextResponse.json({
+      data: { opportunities, accounts, contacts, leads, billingDocuments, employees, users, tasks, projects },
+    }, { status: 200 });
   } catch (error) {
     console.log('[FULLTEXT_SEARCH_POST]', error);
     return new NextResponse('Initial error', { status: 500 });

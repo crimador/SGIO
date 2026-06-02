@@ -6,14 +6,16 @@ import { getOpportunities } from '@/actions/crm/get-opportunities';
 import { getAllCrmData } from '@/actions/crm/get-crm-data';
 
 const CrmDashboardPage = async () => {
-  const salesStages = await getSaleStages();
-  const opportunities = await getOpportunities();
-  const crmData = await getAllCrmData();
+  const [salesStages, opportunities, crmData] = await Promise.all([
+    getSaleStages(),
+    getOpportunities(),
+    getAllCrmData(),
+  ]);
 
   return (
     <Container
-      title="CRM Dashboard"
-      description="In development. After this compoment is finished, there will be an optimistic update of the data."
+      title="Tableau de bord CRM"
+      description="Vue Kanban de vos opportunités par étape commerciale."
     >
       <div className="h-full w-full overflow-hidden">
         <CRMKanban

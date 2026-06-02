@@ -4,7 +4,6 @@ import type { FC } from 'react';
 import { useState } from 'react';
 
 import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getAiReport } from '@/actions/ai/projects/boards/getAiReport';
 import type { Session } from 'next-auth';
@@ -22,15 +21,15 @@ const AiAssistantProject: FC<{
     try {
       await getAiReport(session, boardId);
       toast({
-        title: 'Success',
-        description: 'AI Assistant just send your report to your mailbox',
+        title: 'Rapport envoyé',
+        description: 'Le rapport IA du projet a été envoyé dans votre boîte mail.',
       });
     } catch (error) {
       console.log(error, 'error from AI Assistant');
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong, please try again',
+        title: 'Erreur',
+        description: 'Une erreur est survenue, veuillez réessayer.',
       });
     } finally {
       setLoading(false);
@@ -38,15 +37,20 @@ const AiAssistantProject: FC<{
   };
 
   return (
-    <Button onClick={handleAiAssistant} disabled={loading}>
+    <button
+      onClick={handleAiAssistant}
+      disabled={loading}
+      className="flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors hover:bg-[#FF7E00]/[0.06] disabled:opacity-60"
+      style={{ color: '#1E1D3D' }}
+    >
       {loading ? (
         <span className="flex items-center gap-2">
-          Creating report <Icons.spinner className="animate-spin" />
+          Génération... <Icons.spinner className="animate-spin" />
         </span>
       ) : (
-        'AI report'
+        'Rapport IA'
       )}
-    </Button>
+    </button>
   );
 };
 

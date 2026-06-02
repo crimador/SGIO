@@ -2,16 +2,11 @@
 
 import React from 'react';
 import { z } from 'zod';
-
 import { useRouter } from 'next/navigation';
-
 import { useToast } from '@/components/ui/use-toast';
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
-
-import { Button } from '@/components/ui/button';
 
 import { Input } from '@/components/ui/input';
 import {
@@ -35,259 +30,129 @@ import useSWR from 'swr';
 import SuspenseLoading from '@/components/loadings/suspense';
 
 interface UpdateAccountFormProps {
-  //TODO: fix this any
   initialData: any;
   open: (value: boolean) => void;
 }
 
-export function UpdateAccountForm({
-  initialData,
-  open,
-}: UpdateAccountFormProps) {
+const formSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2).max(80),
+  office_phone: z.string().nullable().optional(),
+  email: z.string().email().nullable().optional().or(z.literal('')),
+  nif: z.string().max(20).nullable().optional(),
+  rccm: z.string().max(50).nullable().optional(),
+  regimeFiscal: z.string().nullable().optional(),
+  centreImpots: z.string().max(100).nullable().optional(),
+  dateCloture: z.string().nullable().optional(),
+  billing_street: z.string().nullable().optional(),
+  billing_city: z.string().min(2).max(50),
+  billing_country: z.string().nullable().optional(),
+  description: z.string().max(1000).nullable().optional(),
+  assigned_to: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  annual_revenue: z.string().nullable().optional(),
+  industry: z.string().nullable().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+export function UpdateAccountForm({ initialData, open }: UpdateAccountFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
-  const { data: industries, isLoading: isLoadingIndustries } = useSWR(
-    '/api/crm/industries',
-    fetcher
-  );
-  const { data: users, isLoading: isLoadingUsers } = useSWR(
-    '/api/user',
-    fetcher
-  );
+  const { data: industries, isLoading: isLoadingIndustries } = useSWR('/api/crm/industries', fetcher);
+  const { data: users, isLoading: isLoadingUsers } = useSWR('/api/user', fetcher);
 
-  const formSchema = z.object({
-    id: z.string().min(5).max(30),
-    name: z.string().min(3).max(80),
-    office_phone: z.string().nullable().optional(),
-    website: z.string().nullable().optional(),
-    fax: z.string().nullable().optional(),
-    company_id: z.string().min(5).max(10),
-    vat: z.string().min(5).max(20).nullable().optional(),
-    email: z.string().email(),
-    billing_street: z.string().min(3).max(50),
-    billing_postal_code: z.string().min(2).max(10),
-    billing_city: z.string().min(3).max(50),
-    billing_state: z.string().min(3).max(50).nullable().optional(),
-    billing_country: z.string().min(3).max(50),
-    shipping_street: z.string().nullable().optional(),
-    shipping_postal_code: z.string().nullable().optional(),
-    shipping_city: z.string().nullable().optional(),
-    shipping_state: z.string().nullable().optional(),
-    shipping_country: z.string().nullable().optional(),
-    description: z.string().min(3).max(250).nullable().optional(),
-    assigned_to: z.string().min(3).max(50),
-    status: z.string().min(3).max(50).nullable().optional(),
-    annual_revenue: z.string().min(3).max(50).nullable().optional(),
-    member_of: z.string().min(3).max(50).nullable().optional(),
-    industry: z.string().min(3).max(50),
-  });
-
-  type NewAccountFormValues = z.infer<typeof formSchema>;
-
-  //TODO: fix this any
-  const form = useForm<any>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    //@ts-ignore
-    //TODO: fix this
     defaultValues: initialData
-      ? initialData
+      ? {
+          ...initialData,
+          dateCloture: initialData.dateCloture
+            ? new Date(initialData.dateCloture).toISOString().split('T')[0]
+            : '',
+          billing_country: initialData.billing_country ?? 'Togo',
+        }
       : {
           id: '',
           name: '',
-          office_phone: '' as string | null,
-          website: '',
-          fax: '',
-          company_id: '',
-          vat: '',
+          office_phone: '',
           email: '',
+          nif: '',
+          rccm: '',
+          regimeFiscal: '',
+          centreImpots: '',
+          dateCloture: '',
           billing_street: '',
-          billing_postal_code: '',
           billing_city: '',
-          billing_state: '',
-          billing_country: '',
-          shipping_street: '',
-          shipping_postal_code: '',
-          shipping_city: '',
-          shipping_state: '',
-          shipping_country: '',
+          billing_country: 'Togo',
           description: '',
           assigned_to: '',
           status: '',
           annual_revenue: '',
-          member_of: '',
           industry: '',
         },
   });
 
-  const onSubmit = async (data: NewAccountFormValues) => {
-    //console.log(data);
+  const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
     try {
       await axios.put('/api/crm/account', data);
-      toast({
-        title: 'Success',
-        description: 'Account updated successfully',
-      });
+      toast({ title: 'Succès', description: 'Client mis à jour avec succès.' });
+      router.refresh();
+      open(false);
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error?.response?.data,
+        title: 'Erreur',
+        description: error?.response?.data ?? 'Une erreur est survenue.',
       });
     } finally {
       setIsLoading(false);
-      router.refresh();
-      open(false);
     }
   };
 
-  if (isLoadingIndustries || isLoadingUsers)
-    return (
-      <div>
-        <SuspenseLoading />
-      </div>
-    );
-
+  if (isLoadingIndustries || isLoadingUsers) return <SuspenseLoading />;
   if (!industries || !users || !initialData)
-    return <div>Something went wrong, there is no data for form</div>;
+    return <div>Impossible de charger les données du formulaire.</div>;
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="h-full w-full px-10"
-      >
-        {/*    <div>
-          <pre>
-            <code>{JSON.stringify(form.formState.errors, null, 2)}</code>
-          </pre>
-        </div> */}
-        {/*       <pre>
-          <code>{JSON.stringify(initialData, null, 2)}</code>
-        </pre> */}
+      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full px-10">
+        <div className="w-[800px] space-y-6 text-sm">
 
-        <div className="w-[800px] text-sm">
-          <div className="space-y-2 pb-5">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="SaasHQ Inc."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="office_phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Office phone</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="+420 ...."
-                      //@ts-ignore
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>E-mail</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="account@domain.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="https://www.domain.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="company_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account ID</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="1234567890"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="vat"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Account VAT number</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="DE1234567890"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <div className="flex gap-5 pb-5">
-            <div className="w-1/2 space-y-2">
+          {/* Informations générales */}
+          <div>
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Informations générales
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="billing_street"
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Nom du client <span className="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="Cabinet ABC SARL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="office_phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Billing street</FormLabel>
+                    <FormLabel>Téléphone</FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder="1931 Norris Ave."
-                        {...field}
+                        placeholder="+228 90 00 00 00"
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
                       />
                     </FormControl>
                     <FormMessage />
@@ -296,16 +161,122 @@ export function UpdateAccountForm({
               />
               <FormField
                 control={form.control}
-                name="billing_postal_code"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Billing postal code</FormLabel>
+                    <FormLabel>E-mail</FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder="L2M 4X3"
-                        {...field}
+                        placeholder="contact@entreprise.tg"
+                        value={field.value ?? ''}
+                        onChange={field.onChange}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Informations légales */}
+          <div className="border-t pt-4">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Informations légales (Togo)
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="nif"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>NIF</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="P0012345678" value={field.value ?? ''} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="rccm"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>RCCM</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="TG-LFW-01-2024-B12-00123" value={field.value ?? ''} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="regimeFiscal"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Régime fiscal</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un régime" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="reel_tva">Réel avec TVA</SelectItem>
+                        <SelectItem value="reel_sans_tva">Réel sans TVA</SelectItem>
+                        <SelectItem value="tpu">TPU</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="centreImpots"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Centre des impôts</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="Lomé 1, Kara..." value={field.value ?? ''} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateCloture"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date de clôture d&apos;exercice</FormLabel>
+                    <FormControl>
+                      <Input type="date" disabled={isLoading} value={field.value ?? ''} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Adresse */}
+          <div className="border-t pt-4">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Adresse
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="billing_street"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Rue / Quartier</FormLabel>
+                    <FormControl>
+                      <Input disabled={isLoading} placeholder="Bd du 13 Janvier, Adidogomé..." value={field.value ?? ''} onChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -316,26 +287,9 @@ export function UpdateAccountForm({
                 name="billing_city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Billing City</FormLabel>
+                    <FormLabel>Ville <span className="text-destructive">*</span></FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Berlin"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="billing_state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Billing state</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} placeholder="" {...field} />
+                      <Input disabled={isLoading} placeholder="Lomé" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -346,96 +300,9 @@ export function UpdateAccountForm({
                 name="billing_country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Billing country</FormLabel>
+                    <FormLabel>Pays</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Germany"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="w-1/2 space-y-2">
-              <FormField
-                control={form.control}
-                name="shipping_street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Shipping street</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="1931 Norris Ave."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shipping_postal_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Shipping postal code</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="L2R5J1"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shipping_city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Shipping City</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Berlin"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shipping_state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Shipping state</FormLabel>
-                    <FormControl>
-                      <Input disabled={isLoading} placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shipping_country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Shipping country</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Germany"
-                        {...field}
-                      />
+                      <Input disabled={isLoading} placeholder="Togo" value={field.value ?? 'Togo'} onChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -443,56 +310,21 @@ export function UpdateAccountForm({
               />
             </div>
           </div>
-          <div className="flex gap-5 pb-5">
-            <div className="w-1/2 space-y-2">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        disabled={isLoading}
-                        placeholder="Description"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="w-1/2 space-y-2">
+
+          {/* Autres informations */}
+          <div className="border-t pt-4">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Autres informations
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="annual_revenue"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Annual revenue</FormLabel>
+                    <FormLabel>Chiffre d&apos;affaires annuel (FCFA)</FormLabel>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="1.0000.000"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="member_of"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Is member of</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder="Tesla Inc."
-                        {...field}
-                      />
+                      <Input disabled={isLoading} placeholder="50 000 000" value={field.value ?? ''} onChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -503,17 +335,14 @@ export function UpdateAccountForm({
                 name="industry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Choose industry</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <FormLabel>Secteur d&apos;activité</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select new account industry" />
+                          <SelectValue placeholder="Sélectionner un secteur" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="flex h-56 overflow-y-auto">
+                      <SelectContent className="h-56 overflow-y-auto">
                         {industries.map((industry: any) => (
                           <SelectItem key={industry.id} value={industry.id}>
                             {industry.name}
@@ -530,36 +359,51 @@ export function UpdateAccountForm({
                 name="assigned_to"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Assigned to</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <FormLabel>Responsable du dossier</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a user to assign the account" />
+                          <SelectValue placeholder="Assigner à un collaborateur" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="h-56 overflow-y-auto">
-                        {users &&
-                          users.map((user: any) => (
-                            <SelectItem key={user.id} value={user.id}>
-                              {user.name}
-                            </SelectItem>
-                          ))}
+                        {users.map((user: any) => (
+                          <SelectItem key={user.id} value={user.id}>
+                            {user.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Notes internes</FormLabel>
+                    <FormControl>
+                      <Textarea disabled={isLoading} placeholder="Informations complémentaires..." value={field.value ?? ''} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
-        </div>
-        <div className="grid gap-2 py-5">
-          <Button disabled={isLoading} type="submit">
-            Update account
-          </Button>
+
+          <div className="pb-5">
+            <button
+              disabled={isLoading}
+              type="submit"
+              className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            >
+              Mettre à jour
+            </button>
+          </div>
         </div>
       </form>
     </Form>

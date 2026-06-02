@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Box } from '@radix-ui/themes';
-import { Button } from '@/components/ui/button';
 import {
   ChevronDown,
   Sigma,
@@ -64,7 +63,6 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import WorkflowGlobalMonaco from '../../../components/WorkflowGlobalMonaco';
-import { Separator } from '@/components/ui/separator';
 import type { ResponseSchemaType } from '@/actions/workflows/get-definition-single';
 
 const workflowMetadataFormSchema = z.object({
@@ -261,9 +259,10 @@ export function WorkflowEditPage({ editData }: EditFormProps) {
               <form onSubmit={form.handleSubmit(submitHandle as any)}>
                 <Sheet>
                   <SheetTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      className="relative"
+                    <button
+                      type="button"
+                      className="relative flex h-9 items-center gap-1.5 rounded-md bg-gray-100 px-4 text-sm font-medium transition-colors hover:bg-gray-200"
+                      style={{ color: '#1E1D3D' }}
                       onClick={openDefinitionDialog}
                     >
                       Configure Definition&nbsp;{' '}
@@ -275,7 +274,7 @@ export function WorkflowEditPage({ editData }: EditFormProps) {
                           </span>
                         ) : null}
                       </span>
-                    </Button>
+                    </button>
                   </SheetTrigger>
                   <SheetContent
                     className="sm:max-w-[540px]"
@@ -288,7 +287,7 @@ export function WorkflowEditPage({ editData }: EditFormProps) {
                         remains intact when this panel is closed.
                       </SheetDescription>
                     </SheetHeader>
-                    <Separator className="mt-6" />
+                    <div className="mt-6 h-px bg-gray-100" />
                     <div className="grid gap-4 py-4">
                       <div className="w-full space-y-2">
                         <FormField
@@ -382,17 +381,26 @@ export function WorkflowEditPage({ editData }: EditFormProps) {
                     </div>
                   </SheetContent>
                 </Sheet>
-                <Button type="submit" className="absolute right-10 mr-10">
+                <button
+                  type="submit"
+                  className="absolute right-10 mr-10 flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                  style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                >
                   Submit
-                </Button>
+                </button>
               </form>
             </Form>
             <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button variant="secondary" onClick={handleMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-9 items-center gap-1.5 rounded-md bg-gray-100 px-4 text-sm font-medium transition-colors hover:bg-gray-200"
+                  style={{ color: '#1E1D3D' }}
+                  onClick={handleMenuOpen}
+                >
                   New Task&nbsp;
                   <ChevronDown width="16" height="16" />
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[125px]">
                 <DropdownMenuItem onClick={() => addNewTask('function')}>

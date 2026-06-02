@@ -19,6 +19,8 @@ declare module 'next-auth' {
       isAdmin: boolean;
       userLanguage: import('@/dictionaries').SupportLanguageDict;
       userStatus: string;
+      userRole: import('@/lib/permissions').UserRole;
+      mustChangePassword: boolean;
     };
   }
 }

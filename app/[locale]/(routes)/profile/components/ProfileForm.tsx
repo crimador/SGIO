@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -55,21 +54,15 @@ export function ProfileForm({ data }: ProfileFormProps) {
       await axios.put(`/api/user/${data.id}/updateprofile`, data);
       //TODO: send data to the server
       toast({
-        title: 'You submitted the following values:',
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
+        title: 'Profil mis à jour avec succès.',
       });
       router.refresh();
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description:
-            'Something went wrong while activating your notion integration.',
+          title: 'Erreur',
+          description: 'Une erreur est survenue lors de la mise à jour du profil.',
         });
       }
     } finally {
@@ -88,7 +81,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem className="w-1/3">
-              <FormLabel>Full name</FormLabel>
+              <FormLabel>Nom complet</FormLabel>
               <FormControl>
                 <Input disabled={isLoading} placeholder="John Doe" {...field} />
               </FormControl>
@@ -101,7 +94,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           name="username"
           render={({ field }) => (
             <FormItem className="w-1/3">
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Nom d&apos;utilisateur</FormLabel>
               <FormControl>
                 <Input disabled={isLoading} placeholder="jdoe" {...field} />
               </FormControl>
@@ -114,7 +107,7 @@ export function ProfileForm({ data }: ProfileFormProps) {
           name="account_name"
           render={({ field }) => (
             <FormItem className="w-1/3">
-              <FormLabel>Company</FormLabel>
+              <FormLabel>Entreprise</FormLabel>
               <FormControl>
                 <Input
                   disabled={isLoading}
@@ -127,9 +120,14 @@ export function ProfileForm({ data }: ProfileFormProps) {
           )}
         />
 
-        <Button className="w-[150px]" type="submit">
-          Update
-        </Button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex h-9 w-[150px] items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          Mettre à jour
+        </button>
       </form>
     </Form>
   );

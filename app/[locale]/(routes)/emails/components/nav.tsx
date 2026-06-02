@@ -4,7 +4,6 @@ import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -35,11 +34,14 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 <Link
                   href="#"
                   className={cn(
-                    buttonVariants({ variant: link.variant, size: 'icon' }),
-                    'h-8 w-8',
-                    link.variant === 'default' &&
-                      'dark:bg-muted dark:text-muted-foreground'
+                    'flex h-8 w-8 items-center justify-center rounded-md transition-colors',
+                    link.variant === 'default'
+                      ? 'text-white'
+                      : 'hover:bg-gray-100'
                   )}
+                  style={link.variant === 'default'
+                    ? { background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }
+                    : { color: '#1E1D3D' }}
                 >
                   <link.icon className="h-4 w-4" />
                   <span className="sr-only">{link.title}</span>
@@ -48,7 +50,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
               <TooltipContent side="right" className="flex items-center gap-4">
                 {link.title}
                 {link.label && (
-                  <span className="ml-auto text-muted-foreground">
+                  <span className="ml-auto text-gray-400">
                     {link.label}
                   </span>
                 )}
@@ -59,10 +61,14 @@ export function Nav({ links, isCollapsed }: NavProps) {
               key={index}
               href="#"
               className={cn(
-                buttonVariants({ variant: link.variant, size: 'sm' }),
-                link.variant === 'default' && 'dark:bg-muted dark:text-white',
-                'justify-start'
+                'flex h-8 items-center justify-start rounded-md px-3 text-sm font-medium transition-colors',
+                link.variant === 'default'
+                  ? 'text-white'
+                  : 'hover:bg-gray-100'
               )}
+              style={link.variant === 'default'
+                ? { background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }
+                : { color: '#1E1D3D' }}
             >
               <link.icon className="mr-2 h-4 w-4" />
               {link.title}
@@ -70,8 +76,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 <span
                   className={cn(
                     'ml-auto',
-                    link.variant === 'default' &&
-                      'text-background dark:text-white'
+                    link.variant === 'default' && 'text-white'
                   )}
                 >
                   {link.label}

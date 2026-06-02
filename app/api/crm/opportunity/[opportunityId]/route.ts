@@ -33,6 +33,7 @@ export async function PUT(
     });
 
     const data = await prismadb.crm_Opportunities.findMany({
+      where: { deletedAt: null },
       include: {
         assigned_to_user: {
           select: {
@@ -69,10 +70,9 @@ export async function DELETE(
   }
 
   try {
-    await prismadb.crm_Opportunities.delete({
-      where: {
-        id: params.opportunityId,
-      },
+    await prismadb.crm_Opportunities.update({
+      where: { id: params.opportunityId },
+      data: { deletedAt: new Date() },
     });
 
     return NextResponse.json(

@@ -2,13 +2,11 @@
 
 import React, { useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Box } from '@radix-ui/themes';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { Separator } from '@/components/ui/separator';
 import { GitFork } from 'lucide-react';
 
 const WorkflowListView = ({ data }: any) => {
@@ -18,8 +16,12 @@ const WorkflowListView = ({ data }: any) => {
     <Box>
       <div className="gap-y-1">
         <div className="flex flex-row items-center justify-end">
-          <Link href={`/workflows/create`}>
-            <Button className="mb-5">Create&nbsp; +</Button>
+          <Link
+            href="/workflows/create"
+            className="mb-5 flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            Create&nbsp; +
           </Link>
         </div>
         {!isLoading && data && (
@@ -49,7 +51,7 @@ const WorkflowListView = ({ data }: any) => {
                         )}
                       </div>
                     </div>
-                    <Separator />
+                    <div className="h-px bg-gray-100" />
                     <span className="font-normal">Description:</span>
                     <span className="ml-1 w-full font-normal">
                       {item.description}

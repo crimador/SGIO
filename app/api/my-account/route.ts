@@ -5,6 +5,14 @@ import { NextResponse } from 'next/server';
 
 //Endpoint: /api/my-account
 
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+  const account = await prismadb.myAccount.findFirst();
+  return NextResponse.json(account ?? null);
+}
+
 //Endpoint for adding my account data
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -52,6 +60,10 @@ export async function POST(req: Request) {
     bank_code,
     bank_IBAN,
     bank_SWIFT,
+    services,
+    logoUrl,
+    signer_name,
+    signer_title,
   } = body;
 
   await prismadb.myAccount.create({
@@ -88,6 +100,10 @@ export async function POST(req: Request) {
       bank_code,
       bank_IBAN,
       bank_SWIFT,
+      services:     services     ?? null,
+      logoUrl:      logoUrl      ?? null,
+      signer_name:  signer_name  ?? null,
+      signer_title: signer_title ?? null,
     },
   });
 
@@ -151,6 +167,10 @@ export async function PUT(req: Request) {
     bank_code,
     bank_IBAN,
     bank_SWIFT,
+    services,
+    logoUrl,
+    signer_name,
+    signer_title,
   } = body;
 
   await prismadb.myAccount.update({
@@ -188,6 +208,10 @@ export async function PUT(req: Request) {
       bank_code,
       bank_IBAN,
       bank_SWIFT,
+      services:     services     ?? null,
+      logoUrl:      logoUrl      ?? null,
+      signer_name:  signer_name  ?? null,
+      signer_title: signer_title ?? null,
     },
   });
 

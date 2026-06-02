@@ -2,36 +2,30 @@ import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { canWrite } from '@/lib/permissions';
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    return new NextResponse('Unauthenticated', { status: 401 });
-  }
+  if (!session) return new NextResponse('Unauthenticated', { status: 401 });
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
+
   try {
     const body = await req.json();
     const {
       name,
       office_phone,
-      website,
-      fax,
-      company_id,
-      vat,
       email,
+      nif,
+      rccm,
+      regimeFiscal,
+      centreImpots,
+      dateCloture,
       billing_street,
-      billing_postal_code,
       billing_city,
-      billing_state,
       billing_country,
-      shipping_street,
-      shipping_postal_code,
-      shipping_city,
-      shipping_state,
-      shipping_country,
       description,
       assigned_to,
       annual_revenue,
-      member_of,
       industry,
     } = body;
 
@@ -40,28 +34,21 @@ export async function POST(req: Request) {
         createdBy: session.user.id,
         updatedBy: session.user.id,
         name,
-        office_phone,
-        website,
-        fax,
-        company_id,
-        vat,
-        email,
-        billing_street,
-        billing_postal_code,
+        office_phone: office_phone || null,
+        email: email || null,
+        nif: nif || null,
+        rccm: rccm || null,
+        regimeFiscal: regimeFiscal || null,
+        centreImpots: centreImpots || null,
+        dateCloture: dateCloture ? new Date(dateCloture) : null,
+        billing_street: billing_street || null,
         billing_city,
-        billing_state,
-        billing_country,
-        shipping_street,
-        shipping_postal_code,
-        shipping_city,
-        shipping_state,
-        shipping_country,
-        description,
-        assigned_to,
+        billing_country: billing_country || 'Togo',
+        description: description || null,
+        assigned_to: assigned_to || null,
         status: 'Active',
-        annual_revenue,
-        member_of,
-        industry,
+        annual_revenue: annual_revenue || null,
+        industry: industry || null,
       },
     });
 
@@ -72,89 +59,69 @@ export async function POST(req: Request) {
   }
 }
 
-//Update account route
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    return new NextResponse('Unauthenticated', { status: 401 });
-  }
+  if (!session) return new NextResponse('Unauthenticated', { status: 401 });
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
+
   try {
     const body = await req.json();
     const {
       id,
       name,
       office_phone,
-      website,
-      fax,
-      company_id,
-      vat,
       email,
+      nif,
+      rccm,
+      regimeFiscal,
+      centreImpots,
+      dateCloture,
       billing_street,
-      billing_postal_code,
       billing_city,
-      billing_state,
       billing_country,
-      shipping_street,
-      shipping_postal_code,
-      shipping_city,
-      shipping_state,
-      shipping_country,
       description,
       assigned_to,
       status,
       annual_revenue,
-      member_of,
       industry,
     } = body;
 
-    const newAccount = await prismadb.crm_Accounts.update({
-      where: {
-        id,
-      },
+    const updatedAccount = await prismadb.crm_Accounts.update({
+      where: { id },
       data: {
         updatedBy: session.user.id,
         name,
-        office_phone,
-        website,
-        fax,
-        company_id,
-        vat,
-        email,
-        billing_street,
-        billing_postal_code,
+        office_phone: office_phone || null,
+        email: email || null,
+        nif: nif || null,
+        rccm: rccm || null,
+        regimeFiscal: regimeFiscal || null,
+        centreImpots: centreImpots || null,
+        dateCloture: dateCloture ? new Date(dateCloture) : null,
+        billing_street: billing_street || null,
         billing_city,
-        billing_state,
-        billing_country,
-        shipping_street,
-        shipping_postal_code,
-        shipping_city,
-        shipping_state,
-        shipping_country,
-        description,
-        assigned_to,
-        status: status,
-        annual_revenue,
-        member_of,
-        industry,
+        billing_country: billing_country || 'Togo',
+        description: description || null,
+        assigned_to: assigned_to || null,
+        status: status || 'Active',
+        annual_revenue: annual_revenue || null,
+        industry: industry || null,
       },
     });
 
-    return NextResponse.json({ newAccount }, { status: 200 });
+    return NextResponse.json({ updatedAccount }, { status: 200 });
   } catch (error) {
     console.log('[UPDATE_ACCOUNT_PUT]', error);
     return new NextResponse('Initial error', { status: 500 });
   }
 }
 
-//GET all accounts route
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    return new NextResponse('Unauthenticated', { status: 401 });
-  }
+  if (!session) return new NextResponse('Unauthenticated', { status: 401 });
+
   try {
     const accounts = await prismadb.crm_Accounts.findMany({});
-
     return NextResponse.json(accounts, { status: 200 });
   } catch (error) {
     console.log('[ACCOUNTS_GET]', error);

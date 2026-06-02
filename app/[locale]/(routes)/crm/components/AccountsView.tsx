@@ -1,95 +1,68 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Plus } from 'lucide-react';
 
 import { columns } from '../accounts/table-components/columns';
 import { NewAccountForm } from '../accounts/components/NewAccountForm';
 import { AccountDataTable } from '../accounts/table-components/data-table';
-import { useRouter } from 'next/navigation';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 
-const AccountsView = ({ data, crmData }: any) => {
+const AccountsView = ({ data, crmData, canWrite = true }: any) => {
   const router = useRouter();
-
-  const [open, setOpen] = useState(false);
+  const [open, setOpen]           = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const { users, industries } = crmData;
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex justify-between">
+    <Card className="overflow-hidden">
+      <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+      <CardHeader className="pb-4 pt-5">
+        <div className="flex items-center justify-between">
           <div>
-            <CardTitle
+            <button
+              className="text-base font-bold hover:underline"
+              style={{ color: '#1E1D3D' }}
               onClick={() => router.push('/crm/accounts')}
-              className="cursor-pointer"
             >
-              Accounts
-            </CardTitle>
-            <CardDescription></CardDescription>
+              Clients
+            </button>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {data?.length ?? 0} compte{(data?.length ?? 0) > 1 ? 's' : ''}
+            </p>
           </div>
-          <div className="flex space-x-2">
-            <Sheet open={open} onOpenChange={() => setOpen(false)}>
-              <Button
-                className="m-2 cursor-pointer"
+          {canWrite && (
+            <Sheet open={open} onOpenChange={setOpen}>
+              <button
                 onClick={() => setOpen(true)}
+                className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
               >
-                +
-              </Button>
+                <Plus className="h-4 w-4" /> Nouveau
+              </button>
               <SheetContent className="min-w-[1000px] space-y-2">
-                <SheetHeader>
-                  <SheetTitle>Create new Account</SheetTitle>
-                </SheetHeader>
+                <SheetHeader><SheetTitle>Nouveau client</SheetTitle></SheetHeader>
                 <div className="h-full overflow-y-auto">
-                  <NewAccountForm
-                    industries={industries}
-                    users={users}
-                    onFinish={() => setOpen(false)}
-                  />
+                  <NewAccountForm industries={industries} users={users} onFinish={() => setOpen(false)} />
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
+          )}
         </div>
-        <Separator />
       </CardHeader>
-      {!data ||
-        (data.length === 0 ? (
-          <CardContent>No assigned accounts found</CardContent>
+      <CardContent className="pt-0">
+        {!data || data.length === 0 ? (
+          <p className="py-6 text-center text-sm text-gray-400">Aucun client trouvé.</p>
         ) : (
-          <CardContent>
-            <AccountDataTable
-              data={data}
-              columns={columns}
-              industries={industries}
-              users={users}
-            />
-          </CardContent>
-        ))}
+          <AccountDataTable data={data} columns={columns} industries={industries} users={users} />
+        )}
+      </CardContent>
     </Card>
   );
 };

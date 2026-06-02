@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import ModalDocumentView from '../ui/modal-document-view';
 import Link from 'next/link';
-import Image from 'next/image';
+import { Download, FileX } from 'lucide-react';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -13,95 +12,93 @@ interface AlertModalProps {
   document: any;
 }
 
-const DocumentViewModal = ({
-  isOpen,
-  onClose,
-  loading,
-  document,
-}: AlertModalProps) => {
+const IMAGE_TYPES = [
+  'image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/webp',
+  'application/png', 'application/jpg', 'application/jpeg', 'application/gif',
+  'images/png', 'images/jpg', 'images/jpeg', 'images/gif',
+];
+
+const DocumentViewModal = ({ isOpen, onClose, loading, document }: AlertModalProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
-  const imageTypes = [
-    'application/png',
-    'application/jpg',
-    'application/jpeg',
-    'application/gif',
-    'images/png',
-    'images/jpg',
-    'images/jpeg',
-    'images/gif',
-    'image/png',
-    'image/jpg',
-    'image/jpeg',
-    'image/gif',
-    'image/webp',
-  ];
+  const mime = document.document_file_mimeType as string;
+  const url = document.document_file_url as string;
 
-  console.log(document.document_file_mimeType, 'mimeType');
+  const CloseBtn = () => (
+    <div className="flex w-full items-center justify-end space-x-2 pt-4">
+      <Link
+        href={url}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+        style={{ color: '#1E1D3D' }}
+      >
+        <Download className="h-4 w-4" />
+        Télécharger
+      </Link>
+      <button
+        disabled={loading}
+        onClick={onClose}
+        className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-60"
+        style={{ color: '#1E1D3D' }}
+      >
+        Fermer
+      </button>
+    </div>
+  );
 
-  if (imageTypes.includes(document.document_file_mimeType)) {
-    console.log('image');
+  if (IMAGE_TYPES.includes(mime)) {
     return (
       <ModalDocumentView isOpen={isOpen} onClose={onClose}>
-        <div className="flex h-full flex-col">
-          <div className="relative h-full p-10">
-            <Image fill alt="Image preview" src={document.document_file_url} />
+        <div className="flex h-full flex-col gap-4">
+          <div className="relative flex-1 min-h-[400px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={url}
+              alt={document.document_name ?? 'Aperçu'}
+              className="h-full w-full object-contain rounded-md"
+            />
           </div>
-          <div className="flex w-full items-center justify-end space-x-2 pt-6">
-            <Button disabled={loading} variant={'outline'} onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
+          <CloseBtn />
         </div>
       </ModalDocumentView>
     );
   }
 
-  if (document.document_file_mimeType === 'application/pdf') {
+  if (mime === 'application/pdf') {
     return (
       <ModalDocumentView isOpen={isOpen} onClose={onClose}>
-        <div className="flex h-full flex-col">
+        <div className="flex h-full flex-col gap-2">
           <embed
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
+            style={{ width: '100%', height: '100%', minHeight: '500px' }}
             type="application/pdf"
-            src={document.document_file_url}
+            src={url}
           />
-          <div className="flex w-full items-center justify-end space-x-2 pt-6">
-            <Button disabled={loading} variant={'outline'} onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
-        </div>
-      </ModalDocumentView>
-    );
-  } else {
-    return (
-      <ModalDocumentView isOpen={isOpen} onClose={onClose}>
-        <div className="flex h-full flex-col">
-          This format can not be previewed. Please download the file to view it.
-          <Button>
-            <Link href={document.document_file_url}> Download</Link>
-          </Button>
-          <div className="flex w-full items-center justify-end space-x-2 pt-6">
-            <Button disabled={loading} variant={'outline'} onClick={onClose}>
-              Cancel
-            </Button>
-          </div>
+          <CloseBtn />
         </div>
       </ModalDocumentView>
     );
   }
+
+  return (
+    <ModalDocumentView isOpen={isOpen} onClose={onClose}>
+      <div className="flex h-full flex-col items-center justify-center gap-4 py-10">
+        <FileX className="h-12 w-12 text-gray-400" />
+        <p className="text-center text-sm text-gray-400">
+          Ce format ne peut pas être prévisualisé.
+        </p>
+        <p className="text-xs text-gray-400">{mime}</p>
+        <CloseBtn />
+      </div>
+    </ModalDocumentView>
+  );
 };
 
 export default DocumentViewModal;

@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/command';
 import { Command as CommandPrimitive } from 'cmdk';
 import { useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 export interface Option {
@@ -327,13 +326,15 @@ const MultipleSelector = React.forwardRef<
         >
           <div className="flex flex-wrap gap-1">
             {selected.map((option) => (
-              <Badge
+              <span
                 key={option.value}
                 className={cn(
-                  'data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground',
-                  'data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground',
+                  'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white transition-colors',
+                  'data-[disabled]:bg-gray-400 data-[disabled]:hover:bg-gray-400',
+                  'data-[fixed]:bg-gray-400 data-[fixed]:hover:bg-gray-400',
                   badgeClassName
                 )}
+                style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
                 data-fixed={option.fixed}
                 data-disabled={disabled}
               >
@@ -356,7 +357,7 @@ const MultipleSelector = React.forwardRef<
                 >
                   <X className="h-3 w-3 text-slate-100 hover:text-slate-300" />
                 </button>
-              </Badge>
+              </span>
             ))}
             {/* Avoid having the "Search" Icon */}
             <CommandPrimitive.Input

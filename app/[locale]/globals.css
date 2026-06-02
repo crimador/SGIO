@@ -45,67 +45,74 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* KEKELI Group — Charte Graphique V01 */
+    --kekeli-navy:      241 36% 18%;   /* #1E1D3D */
+    --kekeli-orange:    30 100% 50%;   /* #FF7E00 */
+    --kekeli-yellow:    44 95% 59%;    /* #FAC731 */
+    --kekeli-navy-mid:  241 28% 29%;   /* #36355F */
+    --kekeli-cream:     0 5% 95%;      /* #F4F2F2 */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --background: 0 0% 100%;
+    --foreground: 241 36% 18%;         /* navy KEKELI */
+
+    --muted: 0 5% 95%;                 /* cream KEKELI */
+    --muted-foreground: 241 15% 50%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 241 36% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 241 36% 18%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 241 36% 18%;            /* navy KEKELI */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 0 5% 95%;             /* cream KEKELI */
+    --secondary-foreground: 241 36% 18%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 30 100% 50%;             /* orange KEKELI */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --ring: 215 20.2% 65.1%;
+    --ring: 30 100% 50%;               /* orange KEKELI */
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 241 36% 10%;
+    --foreground: 0 5% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 241 28% 20%;
+    --muted-foreground: 241 15% 65%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 241 36% 12%;
+    --popover-foreground: 0 5% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 241 36% 12%;
+    --card-foreground: 0 5% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 241 28% 25%;
+    --input: 241 28% 25%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 44 95% 59%;             /* yellow KEKELI en dark */
+    --primary-foreground: 241 36% 18%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 241 28% 20%;
+    --secondary-foreground: 0 5% 95%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 30 100% 50%;             /* orange KEKELI */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
 
-    --ring: 217.2 32.6% 17.5%;
+    --ring: 30 100% 50%;
   }
 }
 
@@ -120,4 +127,18 @@
 
 .SelectTrigger[data-placeholder] {
   @apply text-slate-500;
+}
+
+/* Scrollbar invisible pour la sidebar */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Transition fluide pour tous les liens du menu */
+nav a, nav button {
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
 }

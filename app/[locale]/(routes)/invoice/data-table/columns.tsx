@@ -25,7 +25,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'date_due',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date due" />
+      <DataTableColumnHeader column={column} title="Date d'échéance" />
     ),
     cell: ({ row }) => (
       <div className="w-[120px]">
@@ -38,7 +38,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'variable_symbol',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Number" />
+      <DataTableColumnHeader column={column} title="Numéro" />
     ),
     cell: ({ row }) => (
       <div className="w-[120px]">{row.getValue('variable_symbol')}</div>
@@ -49,7 +49,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'invoice_amount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title=" Amount" />
+      <DataTableColumnHeader column={column} title="Montant" />
     ),
     cell: ({ row }) => (
       <div className="w-[120px]">{row.getValue('invoice_amount')}</div>
@@ -71,7 +71,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'partner',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Partner" />
+      <DataTableColumnHeader column={column} title="Partenaire" />
     ),
     cell: ({ row }) => (
       <div className="w-[120px]">{row.getValue('partner')}</div>
@@ -100,7 +100,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'rossum_status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Rosssum state" />
+      <DataTableColumnHeader column={column} title="État Rossum" />
     ),
     cell: ({ row }) => <div className="">{row.getValue('rossum_status')}</div>,
     enableSorting: false,
@@ -109,7 +109,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = statuses.find(

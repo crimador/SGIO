@@ -1,8 +1,6 @@
-import type { ComponentProps } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Mail } from '@/app/[locale]/(routes)/emails/data';
 import { useMail } from '@/app/[locale]/(routes)/emails/use-mail';
@@ -22,7 +20,7 @@ export function MailList({ items }: MailListProps) {
             key={item.id}
             className={cn(
               'flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent',
-              mail.selected === item.id && 'bg-muted'
+              mail.selected === item.id && 'bg-gray-100'
             )}
             onClick={() =>
               setMail({
@@ -43,8 +41,8 @@ export function MailList({ items }: MailListProps) {
                   className={cn(
                     'ml-auto text-xs',
                     mail.selected === item.id
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
+                      ? 'text-gray-900'
+                      : 'text-gray-400'
                   )}
                 >
                   {formatDistanceToNow(new Date(item.date), {
@@ -54,15 +52,15 @@ export function MailList({ items }: MailListProps) {
               </div>
               <div className="text-xs font-medium">{item.subject}</div>
             </div>
-            <div className="line-clamp-2 text-xs text-muted-foreground">
+            <div className="line-clamp-2 text-xs text-gray-400">
               {item.text.substring(0, 300)}
             </div>
             {item.labels.length ? (
               <div className="flex items-center gap-2">
                 {item.labels.map((label) => (
-                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
+                  <span key={label} className={getBadgeClassFromLabel(label)}>
                     {label}
-                  </Badge>
+                  </span>
                 ))}
               </div>
             ) : null}
@@ -73,16 +71,12 @@ export function MailList({ items }: MailListProps) {
   );
 }
 
-function getBadgeVariantFromLabel(
-  label: string
-): ComponentProps<typeof Badge>['variant'] {
+function getBadgeClassFromLabel(label: string): string {
   if (['work'].includes(label.toLowerCase())) {
-    return 'default';
+    return 'inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium text-white';
   }
-
   if (['personal'].includes(label.toLowerCase())) {
-    return 'outline';
+    return 'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium';
   }
-
-  return 'secondary';
+  return 'inline-flex items-center rounded-sm bg-gray-100 px-1 text-xs font-normal';
 }

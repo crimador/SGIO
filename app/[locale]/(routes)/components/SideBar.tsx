@@ -1,5 +1,4 @@
 import { getModules } from '@/actions/get-modules';
-
 import ModuleMenu from './ModuleMenu';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -15,14 +14,17 @@ const SideBar: FC<{ build: number }> = async ({ build }) => {
 
   if (!modules) return null;
 
-  //Get user language
-  const lang = session.user.userLanguage;
-
-  //Fetch translations from dictionary
-  const dict = await getDictionary(lang);
+  const dict = await getDictionary('fr');
 
   if (!dict) return null;
 
-  return <ModuleMenu modules={modules} dict={dict} build={build} />;
+  return (
+    <ModuleMenu
+      modules={modules}
+      dict={dict}
+      build={build}
+      userRole={session.user.userRole ?? 'COMMERCIAL'}
+    />
+  );
 };
 export default SideBar;

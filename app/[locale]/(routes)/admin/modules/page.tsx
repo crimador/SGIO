@@ -11,14 +11,14 @@ import { getModules } from '@/actions/get-modules';
 const AdminModulesPage = async () => {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.isAdmin) {
+  if (session?.user?.userRole !== 'DG') {
     return (
       <Container
         title="Administration"
-        description="You are not admin, access not allowed"
+        description="Accès réservé au Dirigeant"
       >
         <div className="flex h-full w-full items-center justify-center">
-          Access not allowed
+          Accès non autorisé
         </div>
       </Container>
     );
@@ -27,8 +27,8 @@ const AdminModulesPage = async () => {
   const modules = await getModules();
   return (
     <Container
-      title="Modules administration"
-      description={'Here you can manage your SaasHQ modules'}
+      title="Gestion des modules"
+      description="Activez ou désactivez les modules de l'application."
     >
       <DataTable columns={columns} data={modules} search="name" />
     </Container>

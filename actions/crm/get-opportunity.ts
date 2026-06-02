@@ -37,6 +37,11 @@ export const getOpportunity = async (opportunityId: string) => {
           email: true,
         },
       },
+      assigned_campaings: {
+        select: {
+          name: true,
+        },
+      },
       documents: {
         select: {
           id: true,

@@ -10,53 +10,37 @@ import moment from 'moment';
 import Link from 'next/link';
 
 export const columns: ColumnDef<Opportunity>[] = [
-  /* {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-   */
   {
     accessorKey: 'close_date',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Expected close" />
+      <DataTableColumnHeader column={column} title="Clôture prévue" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">
-        {moment(row.getValue('close_date')).format('YY-MM-DD')}
+        {moment(row.getValue('close_date')).format('DD/MM/YY')}
       </div>
     ),
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, id, value: { from: string; to: string }) => {
+      const raw = row.getValue(id);
+      if (!raw) return true;
+      const d = new Date(raw as string);
+      if (value.from && d < new Date(value.from)) return false;
+      if (value.to && d > new Date(value.to + 'T23:59:59')) return false;
+      return true;
+    },
   },
   {
     accessorKey: 'assigned_to_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Responsable" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[150px]">
         {
           //@ts-ignore
-          //TODO: fix this
-          row.getValue('assigned_to_user')?.name ?? 'Unassigned'
+          row.getValue('assigned_to_user')?.name ?? 'Non assigné'
         }
       </div>
     ),
@@ -66,15 +50,13 @@ export const columns: ColumnDef<Opportunity>[] = [
   {
     accessorKey: 'assigned_account',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned account" />
+      <DataTableColumnHeader column={column} title="Compte associé" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[250px]">
         {
           //@ts-ignore
-          //TODO: fix this
-          row.getValue('assigned_account')?.name ?? 'Unassigned'
+          row.getValue('assigned_account')?.name ?? '—'
         }
       </div>
     ),
@@ -84,12 +66,17 @@ export const columns: ColumnDef<Opportunity>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Opportunité" />
     ),
-
     cell: ({ row }) => (
-      <Link href={`/crm/opportunities/${row.original.id}`}>
-        <div className="w-[250px]">{row.getValue('name')}</div>
+      <Link
+        href={`/crm/opportunities/${row.original.id}`}
+        className="w-[250px] block font-medium hover:underline"
+        style={{ color: '#1E1D3D' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#FF7E00')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#1E1D3D')}
+      >
+        {row.getValue('name')}
       </Link>
     ),
     enableSorting: true,
@@ -100,27 +87,28 @@ export const columns: ColumnDef<Opportunity>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Budget" />
     ),
-
     cell: ({ row }) => (
-      //console.log(row.original.budget);
       <div>
         {row.original.budget
-          ? row.original.budget.toLocaleString('en-US', {
-              style: 'currency',
-              currency: 'USD',
-            })
-          : 'N/A'}
+          ? row.original.budget.toLocaleString('fr-FR') + ' FCFA'
+          : '—'}
       </div>
     ),
     enableSorting: true,
     enableHiding: true,
+    filterFn: (row, id, value: { min: string; max: string }) => {
+      const num = row.getValue(id) as number | null;
+      if (num === null || num === undefined) return !value.min;
+      if (value.min && num < Number(value.min)) return false;
+      if (value.max && num > Number(value.max)) return false;
+      return true;
+    },
   },
   {
     accessorKey: 'next_step',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Next step" />
+      <DataTableColumnHeader column={column} title="Prochaine étape" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[150px]">{row.getValue('next_step')}</div>
     ),
@@ -130,17 +118,13 @@ export const columns: ColumnDef<Opportunity>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
     cell: ({ row }) => {
       const status = statuses.find(
         (status) => status.value === row.getValue('status')
       );
-
-      if (!status) {
-        return null;
-      }
-
+      if (!status) return null;
       return (
         <div className="flex w-[100px] items-center">
           {status.icon && (

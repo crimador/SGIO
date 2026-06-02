@@ -1,40 +1,32 @@
 'use client';
 
 import { useFormStatus } from 'react-dom';
-
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 interface FormSubmitProps {
   children: React.ReactNode;
   disabled?: boolean;
   className?: string;
-  variant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link';
 }
 
 export const FormSubmit = ({
   children,
   disabled,
   className,
-  variant = 'default',
 }: FormSubmitProps) => {
   const { pending } = useFormStatus();
 
   return (
-    <Button
+    <button
       disabled={pending || disabled}
       type="submit"
-      variant={variant}
-      size="sm"
-      className={cn(className)}
+      className={cn(
+        'flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60',
+        className,
+      )}
+      style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
     >
       {children}
-    </Button>
+    </button>
   );
 };

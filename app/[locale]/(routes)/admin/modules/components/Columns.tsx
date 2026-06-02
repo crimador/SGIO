@@ -17,11 +17,11 @@ export const columns: ColumnDef<ModuleColumn>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: 'Module',
   },
   {
     accessorKey: 'enabled',
-    header: 'Status',
+    header: 'Statut',
   },
   {
     id: 'actions',

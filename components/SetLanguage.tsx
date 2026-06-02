@@ -1,159 +1,53 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { toast } from '@/components/ui/use-toast';
-
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import LoadingModal from './modals/loading-modal';
+import { usePathname } from 'next/navigation';
+
+const LOCALES = ['en', 'fr', 'de', 'cz', 'uk', 'ko', 'tr'];
 
 const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'Czech', value: 'cz' },
-  { label: 'German', value: 'de' },
-  { label: 'Ukrainian', value: 'uk' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Turkish', value: 'tr' },
-] as const;
+  { label: 'Français', value: 'fr' },
+  { label: 'English',  value: 'en' },
+  { label: 'Deutsch',  value: 'de' },
+  { label: 'Čeština',  value: 'cz' },
+  { label: 'Українська', value: 'uk' },
+  { label: '한국어',   value: 'ko' },
+  { label: 'Türkçe',  value: 'tr' },
+];
 
-const FormSchema = z.object({
-  language: z.string({
-    required_error: 'Please select a language.',
-  }),
-});
-
-type Props = {
-  userId: string;
-};
+type Props = { userId: string };
 
 export function SetLanguage({ userId }: Props) {
-  const router = useRouter();
+  const pathname = usePathname();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
+  const current = LOCALES.find((l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`) ?? 'fr';
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
+  const handleChange = async (lang: string) => {
     try {
-      await axios.put(`/api/user/${userId}/set-language`, data);
-      toast({
-        title: 'Success',
-        description: 'You change user language to: ' + data.language,
-      });
-    } catch (e) {
-      console.log(e, 'error');
-      toast({
-        title: 'Error',
-        description: 'Something went wrong.',
-        variant: 'destructive',
-      });
-    } finally {
-      router.refresh();
-      setIsLoading(false);
+      await axios.put(`/api/user/${userId}/set-language`, { language: lang });
+    } catch {
+      // on continue quand même — la navigation suffit
     }
-  }
-
-  if (isLoading) {
-    return (
-      <LoadingModal isOpen={isLoading} description="Changing SaasHQ language" />
-    );
-  }
+    // Remplace le segment de locale dans l'URL
+    const segments = pathname.split('/');
+    if (segments[1] && LOCALES.includes(segments[1])) {
+      segments[1] = lang;
+    } else {
+      segments.splice(1, 0, lang);
+    }
+    // Rechargement complet pour que le middleware prenne la nouvelle locale
+    window.location.assign(segments.join('/') || '/');
+  };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="hidden space-y-6 lg:block"
-      >
-        <FormField
-          control={form.control}
-          name="language"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        'w-[200px] justify-between',
-                        !field.value && 'text-muted-foreground'
-                      )}
-                    >
-                      {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
-                          )?.label
-                        : 'Select language'}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search language ..." />
-                    <CommandEmpty>No language found.</CommandEmpty>
-                    <CommandGroup>
-                      {languages.map((language) => (
-                        <CommandItem
-                          value={language.value}
-                          key={language.value}
-                          onSelect={(value) => {
-                            form.setValue('language', value);
-                            onSubmit(form.getValues());
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              'mr-2 h-4 w-4',
-                              language.value === field.value
-                                ? 'opacity-100'
-                                : 'opacity-0'
-                            )}
-                          />
-                          {language.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </form>
-    </Form>
+    <select
+      value={current}
+      onChange={(e) => handleChange(e.target.value)}
+      className="rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+    >
+      {languages.map((l) => (
+        <option key={l.value} value={l.value}>{l.label}</option>
+      ))}
+    </select>
   );
 }

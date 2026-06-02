@@ -1,9 +1,8 @@
 'use client';
 
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { MoreHorizontal } from 'lucide-react';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +19,7 @@ import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import axios, { AxiosError } from 'axios';
 import { UpdateLeadForm } from '../components/UpdateLeadForm';
+import { ConvertLeadForm } from '../components/ConvertLeadForm';
 import RightViewModalNoTrigger from '@/components/modals/right-view-notrigger';
 
 interface DataTableRowActionsProps<TData> {
@@ -35,6 +35,7 @@ export function DataTableRowActions<TData>({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [convertOpen, setConvertOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -43,16 +44,16 @@ export function DataTableRowActions<TData>({
     try {
       await axios.delete(`/api/crm/leads/${lead?.id}`);
       toast({
-        title: 'Success',
-        description: 'Opportunity has been deleted',
+        title: 'Succès',
+        description: 'Le prospect a été supprimé.',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description:
-            'Something went wrong while deleting opportunity. Please try again.',
+            'Une erreur est survenue lors de la suppression. Veuillez réessayer.',
         });
       }
     } finally {
@@ -71,35 +72,47 @@ export function DataTableRowActions<TData>({
         loading={loading}
       />
       <RightViewModalNoTrigger
-        title={'Update lead' + ' - ' + lead?.firstName + ' ' + lead?.lastName}
-        description="Update contact details"
+        title={'Modifier le prospect' + ' - ' + lead?.firstName + ' ' + lead?.lastName}
+        description="Modifier les informations du prospect"
         open={updateOpen}
         setOpen={setUpdateOpen}
       >
         <UpdateLeadForm initialData={row.original} setOpen={setUpdateOpen} />
       </RightViewModalNoTrigger>
+      <RightViewModalNoTrigger
+        title={'Convertir - ' + (lead?.firstName ?? '') + ' ' + lead?.lastName}
+        description="Créez automatiquement un compte, un contact et une opportunité à partir de ce prospect."
+        open={convertOpen}
+        setOpen={setConvertOpen}
+      >
+        <ConvertLeadForm lead={row.original} setOpen={setConvertOpen} />
+      </RightViewModalNoTrigger>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Ouvrir le menu</span>
+          </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[160px]">
+        <DropdownMenuContent align="end" className="w-[180px]">
           <DropdownMenuItem
             onClick={() => router.push(`/crm/leads/${lead?.id}`)}
           >
-            View
+            Voir
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setUpdateOpen(true)}>
-            Update
+            Modifier
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => setConvertOpen(true)}
+            className="font-medium text-green-600 focus:text-green-600"
+          >
+            Convertir en client
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Delete
+            Supprimer
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

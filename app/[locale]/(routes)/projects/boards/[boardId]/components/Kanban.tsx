@@ -32,7 +32,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import AlertModal from '@/components/modals/alert-modal';
 import LoadingComponent from '@/components/LoadingComponent';
@@ -118,10 +117,7 @@ const Kanban = (props: any) => {
         resourceSectionId: sourceSectionId,
         destinationSectionId: destinationSectionId,
       });
-      toast({
-        title: 'Task moved',
-        description: 'New task position saved in database',
-      });
+      toast({ title: 'Tâche déplacée', description: 'La nouvelle position a été sauvegardée.' });
     } catch (err) {
       alert(err);
     }
@@ -133,17 +129,10 @@ const Kanban = (props: any) => {
       await axios.delete(`/api/projects/sections/delete-section/${sectionId}`);
       const newData = [...data].filter((e) => e.id !== sectionId);
       setData(newData);
-      toast({
-        title: 'Section deleted',
-        description: 'Section deleted successfully',
-      });
+      toast({ title: 'Section supprimée', description: 'La section a été supprimée avec succès.' });
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong, during deleting section',
-        });
+        toast({ variant: 'destructive', title: 'Erreur', description: 'Une erreur est survenue lors de la suppression.' });
       }
     } finally {
       setIsLoadingSection(false);
@@ -170,10 +159,7 @@ const Kanban = (props: any) => {
         await axios.put(`/api/projects/sections/update-title/${sectionId}`, {
           newTitle,
         });
-        toast({
-          title: 'Section title updated',
-          description: 'New section title saved in database',
-        });
+        toast({ title: 'Section renommée', description: 'Le titre a été sauvegardé.' });
       } catch (err) {
         alert(err);
       }
@@ -197,17 +183,10 @@ const Kanban = (props: any) => {
       const index = newData.findIndex((e) => e.id === sectionId);
       newData[index].tasks.unshift(task);
       setData(newData);
-      toast({
-        title: 'Task created',
-        description: 'New task saved in database',
-      });
+      toast({ title: 'Tâche créée', description: 'La nouvelle tâche a été sauvegardée.' });
     } catch (error) {
       console.log(error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Something went wrong, during creating task',
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Une erreur est survenue lors de la création.' });
     } finally {
       setIsLoading(false);
       router.refresh();
@@ -218,15 +197,10 @@ const Kanban = (props: any) => {
     setIsLoading(true);
     try {
       await getTaskDone(id);
-      toast({
-        title: 'Success, task marked as done.',
-      });
+      toast({ title: 'Tâche terminée.' });
     } catch (error) {
       if (error instanceof AxiosError) {
-        toast({
-          variant: 'destructive',
-          title: 'Error, task not marked as done.',
-        });
+        toast({ variant: 'destructive', title: 'Erreur', description: 'Impossible de marquer la tâche comme terminée.' });
       }
     } finally {
       setIsLoading(false);
@@ -238,11 +212,7 @@ const Kanban = (props: any) => {
     setOpen(false);
     setIsLoading(true);
     if (!selectedTask || !selectedTask.id || !selectedTask.section) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Invalid task. Please select a valid task to delete.',
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Tâche invalide. Veuillez sélectionner une tâche valide.' });
       setIsLoading(false);
       return;
     }
@@ -253,17 +223,10 @@ const Kanban = (props: any) => {
           section: selectedTask.section,
         },
       });
-      toast({
-        title: 'Task deleted',
-        description: 'Task deleted successfully',
-      });
+      toast({ title: 'Tâche supprimée.' });
     } catch (error) {
       console.log(error);
-      toast({
-        variant: 'destructive',
-        title: 'Task deleted',
-        description: 'Something went wrong, during deleting task',
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: 'Une erreur est survenue lors de la suppression.' });
     } finally {
       setIsLoading(false);
       router.refresh();
@@ -297,9 +260,9 @@ const Kanban = (props: any) => {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="p-2">Create new section</DialogTitle>
+              <DialogTitle className="p-2">Nouvelle section</DialogTitle>
               <DialogDescription className="p-2">
-                Fill out the form below to create a new section to this project.
+                Remplissez le formulaire ci-dessous pour ajouter une section à ce projet.
               </DialogDescription>
             </DialogHeader>
             <NewSectionForm
@@ -326,7 +289,13 @@ const Kanban = (props: any) => {
             />
             <div className="flex w-full justify-end pt-2">
               <SheetTrigger asChild>
-                <Button variant={'destructive'}>Close</Button>
+                <button
+                  type="button"
+                  className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                  style={{ color: '#dc2626' }}
+                >
+                  Fermer
+                </button>
               </SheetTrigger>
             </div>
           </SheetContent>
@@ -336,7 +305,7 @@ const Kanban = (props: any) => {
         }
 
         <div className="p-2 text-xs">
-          <p>{data?.length} Sections</p>
+          <p>{data?.length} section(s)</p>
         </div>
         <div className="flex">
           <DragDropContext onDragEnd={onDragEnd}>
@@ -422,7 +391,7 @@ const Kanban = (props: any) => {
                                               <ExclamationTriangleIcon className="h-4 w-4 text-red-500" />
                                             </HoverCardTrigger>
                                             <HoverCardContent>
-                                              Attention! This task is overdue!
+                                              Attention ! Cette tâche est en retard.
                                             </HoverCardContent>
                                           </HoverCard>
                                         )}
@@ -432,7 +401,7 @@ const Kanban = (props: any) => {
                                             <Check className="h-4 w-4 text-green-500" />
                                           </HoverCardTrigger>
                                           <HoverCardContent>
-                                            This task is done!
+                                            Tâche terminée !
                                           </HoverCardContent>
                                         </HoverCard>
                                       )}
@@ -454,7 +423,7 @@ const Kanban = (props: any) => {
                                           }
                                         >
                                           <EyeIcon className="h-4 w-4 opacity-50" />
-                                          View
+                                          Voir
                                         </DropdownMenuItem>
                                         {task.taskStatus !== 'COMPLETE' && (
                                           <DropdownMenuItem
@@ -465,18 +434,16 @@ const Kanban = (props: any) => {
                                             }}
                                           >
                                             <Pencil className="h-4 w-4 opacity-50" />
-                                            Edit
+                                            Modifier
                                           </DropdownMenuItem>
                                         )}
                                         {task.taskStatus !== 'COMPLETE' && (
                                           <DropdownMenuItem
                                             className="gap-2"
-                                            onClick={() => {
-                                              onDone(task.id);
-                                            }}
+                                            onClick={() => { onDone(task.id); }}
                                           >
                                             <Check className="h-4 w-4 opacity-50" />
-                                            Mark as done
+                                            Marquer terminée
                                           </DropdownMenuItem>
                                         )}
                                         <DropdownMenuItem
@@ -487,16 +454,14 @@ const Kanban = (props: any) => {
                                           }}
                                         >
                                           <TrashIcon className="h-4 w-4 opacity-50" />
-                                          Delete
+                                          Supprimer
                                         </DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
                                   <div className="py-1">
-                                    Due date:{' '}
-                                    {moment(task.dueDateAt).format(
-                                      'YYYY-MM-DD'
-                                    )}
+                                    Échéance :{' '}
+                                    {moment(task.dueDateAt).format('DD/MM/YYYY')}
                                   </div>
                                   <div className="my-2">
                                     <p
@@ -510,7 +475,7 @@ const Kanban = (props: any) => {
                                               : `text-slate-600`
                                       }
                                     >
-                                      Priority: {task.priority}
+                                      Priorité : {task.priority}
                                     </p>
                                   </div>
                                   <HoverCard>

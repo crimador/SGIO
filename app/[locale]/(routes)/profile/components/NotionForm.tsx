@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -105,9 +104,14 @@ export function NotionForm({ userId }: { userId: string }) {
           )}
         />
 
-        <Button className="w-[150px]" type="submit">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex h-9 w-[150px] items-center justify-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
           Activate
-        </Button>
+        </button>
       </form>
     </Form>
   );

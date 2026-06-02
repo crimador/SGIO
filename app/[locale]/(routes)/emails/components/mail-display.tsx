@@ -18,7 +18,6 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
   DropdownMenu,
@@ -30,7 +29,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -53,82 +51,82 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         <div className="flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <Archive className="h-4 w-4" />
                 <span className="sr-only">Archive</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Archive</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <ArchiveX className="h-4 w-4" />
                 <span className="sr-only">Move to junk</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Move to junk</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Move to trash</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Move to trash</TooltipContent>
           </Tooltip>
-          <Separator orientation="vertical" className="mx-1 h-6" />
+          <div className="mx-1 h-6 w-px bg-gray-200" />
           <Tooltip>
             <Popover>
               <PopoverTrigger asChild>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" disabled={!mail}>
+                  <button
+                    disabled={!mail}
+                    className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+                  >
                     <Clock className="h-4 w-4" />
                     <span className="sr-only">Snooze</span>
-                  </Button>
+                  </button>
                 </TooltipTrigger>
               </PopoverTrigger>
               <PopoverContent className="flex w-[535px] p-0">
                 <div className="flex flex-col gap-2 border-r px-2 py-4">
                   <div className="px-4 text-sm font-medium">Snooze until</div>
                   <div className="grid min-w-[250px] gap-1">
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    <button className="flex w-full items-center justify-start rounded-md px-2 py-1.5 text-sm font-normal transition-colors hover:bg-gray-100" style={{ color: '#1E1D3D' }}>
                       Later today{' '}
-                      <span className="ml-auto text-muted-foreground">
+                      <span className="ml-auto text-gray-400">
                         {format(addHours(today, 4), 'E, h:m b')}
                       </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    </button>
+                    <button className="flex w-full items-center justify-start rounded-md px-2 py-1.5 text-sm font-normal transition-colors hover:bg-gray-100" style={{ color: '#1E1D3D' }}>
                       Tomorrow
-                      <span className="ml-auto text-muted-foreground">
+                      <span className="ml-auto text-gray-400">
                         {format(addDays(today, 1), 'E, h:m b')}
                       </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    </button>
+                    <button className="flex w-full items-center justify-start rounded-md px-2 py-1.5 text-sm font-normal transition-colors hover:bg-gray-100" style={{ color: '#1E1D3D' }}>
                       This weekend
-                      <span className="ml-auto text-muted-foreground">
+                      <span className="ml-auto text-gray-400">
                         {format(nextSaturday(today), 'E, h:m b')}
                       </span>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      className="justify-start font-normal"
-                    >
+                    </button>
+                    <button className="flex w-full items-center justify-start rounded-md px-2 py-1.5 text-sm font-normal transition-colors hover:bg-gray-100" style={{ color: '#1E1D3D' }}>
                       Next week
-                      <span className="ml-auto text-muted-foreground">
+                      <span className="ml-auto text-gray-400">
                         {format(addDays(today, 7), 'E, h:m b')}
                       </span>
-                    </Button>
+                    </button>
                   </div>
                 </div>
                 <div className="p-2">
@@ -142,39 +140,51 @@ export function MailDisplay({ mail }: MailDisplayProps) {
         <div className="ml-auto flex items-center gap-2">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <Reply className="h-4 w-4" />
                 <span className="sr-only">Reply</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Reply</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <ReplyAll className="h-4 w-4" />
                 <span className="sr-only">Reply all</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Reply all</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
+              <button
+                disabled={!mail}
+                className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+              >
                 <Forward className="h-4 w-4" />
                 <span className="sr-only">Forward</span>
-              </Button>
+              </button>
             </TooltipTrigger>
             <TooltipContent>Forward</TooltipContent>
           </Tooltip>
         </div>
-        <Separator orientation="vertical" className="mx-2 h-6" />
+        <div className="mx-2 h-6 w-px bg-gray-200" />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" disabled={!mail}>
+            <button
+              disabled={!mail}
+              className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50"
+            >
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">More</span>
-            </Button>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>Mark as unread</DropdownMenuItem>
@@ -184,7 +194,7 @@ export function MailDisplay({ mail }: MailDisplayProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Separator />
+      <div className="h-px bg-gray-100" />
       {mail ? (
         <div className="flex flex-1 flex-col">
           <div className="flex items-start p-4">
@@ -207,16 +217,16 @@ export function MailDisplay({ mail }: MailDisplayProps) {
               </div>
             </div>
             {mail.date && (
-              <div className="ml-auto text-xs text-muted-foreground">
+              <div className="ml-auto text-xs text-gray-400">
                 {format(new Date(mail.date), 'PPpp')}
               </div>
             )}
           </div>
-          <Separator />
+          <div className="h-px bg-gray-100" />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">
             {mail.text}
           </div>
-          <Separator className="mt-auto" />
+          <div className="mt-auto h-px bg-gray-100" />
           <div className="p-4">
             <form>
               <div className="grid gap-4">
@@ -232,16 +242,20 @@ export function MailDisplay({ mail }: MailDisplayProps) {
                     <Switch id="mute" aria-label="Mute thread" /> Mute this
                     thread
                   </Label>
-                  <Button size="sm" className="ml-auto">
+                  <button
+                    type="submit"
+                    className="ml-auto flex h-8 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                    style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+                  >
                     Send
-                  </Button>
+                  </button>
                 </div>
               </div>
             </form>
           </div>
         </div>
       ) : (
-        <div className="p-8 text-center text-muted-foreground">
+        <div className="p-8 text-center text-gray-400">
           No message selected
         </div>
       )}

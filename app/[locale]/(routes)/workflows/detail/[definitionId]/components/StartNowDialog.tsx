@@ -3,7 +3,6 @@
 import type { ElementRef, FC } from 'react';
 import { useRef, useState } from 'react';
 import { LoadingButton } from '@/components/ui/loading-button';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useTheme } from 'next-themes';
@@ -121,10 +120,15 @@ const StartNowDialog: FC<Props> = ({ workflowDefinitionId }) => {
 
   return (
     <>
-      <Button variant="outline" onClick={handleDialogOpen}>
+      <button
+        type="button"
+        onClick={handleDialogOpen}
+        className="flex h-9 items-center gap-1.5 rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50"
+        style={{ color: '#1E1D3D' }}
+      >
         Start Now&nbsp;
         <PlayCircle width="15" height="15" />
-      </Button>
+      </button>
       <Dialog open={open}>
         <DialogTitle>Start Now</DialogTitle>
         <DialogContent className="w-full max-w-md">
@@ -147,9 +151,14 @@ const StartNowDialog: FC<Props> = ({ workflowDefinitionId }) => {
           </div>
         </DialogContent>
         <DialogFooter>
-          <Button variant="outline" onClick={handleDialogClose}>
+          <button
+            type="button"
+            onClick={handleDialogClose}
+            className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: '#1E1D3D' }}
+          >
             Cancel
-          </Button>
+          </button>
           <LoadingButton
             loading={startWorkflowLoading}
             variant="default"

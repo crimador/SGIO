@@ -53,5 +53,10 @@
       "name": "openai",
       "enabled": true,
       "position": 11
+    },
+    {
+      "name": "finance",
+      "enabled": true,
+      "position": 12
     }
   ]

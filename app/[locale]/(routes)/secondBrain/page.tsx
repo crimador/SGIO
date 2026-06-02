@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
+import { getDictionary } from '@/dictionaries';
 
 import Container from '../components/ui/Container';
 
@@ -14,14 +15,14 @@ import { SecondBrainDataTable } from './table-components/data-table';
 import { getNotions } from '@/actions/get-notions';
 import { getActiveUsers } from '@/actions/get-users';
 import { getBoards } from '@/actions/projects/get-boards';
-import { Button } from '@/components/ui/button';
 import Youtube from './components/Youtube';
 
-const SecondBrainPage = async () => {
+const SecondBrainPage = async ({ params }: { params: { locale: string } }) => {
+  const session = await getServerSession(authOptions);
+  const dict = await getDictionary(params.locale as 'en' | 'cz' | 'de' | 'uk' | 'ko' | 'fr');
   const notions = await getNotions();
   const users = await getActiveUsers();
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  const userId = session?.user.id;
   const boards = await getBoards(userId);
 
   if (!notions || 'error' in notions) {
@@ -41,7 +42,7 @@ const SecondBrainPage = async () => {
             </Link>
           </ol>
           <ol>
-            3. Create SaasHQ integration in Notion (
+            3. Create KEKELI GROUP integration in Notion (
             <a href="https://www.notion.so/my-integrations">
               https://www.notion.so/my-integrations
             </a>
@@ -64,9 +65,13 @@ const SecondBrainPage = async () => {
             </span>
             ?v=e563b6c36b6649bba29eaad6b4c52ab4)
           </ol>
-          <Button asChild className="my-3">
-            <Link href="/profile">Enable Second Brain </Link>
-          </Button>
+          <Link
+            href="/profile"
+            className="my-3 flex h-9 w-fit items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            Enable Second Brain
+          </Link>
         </div>
         <div className="w-full">
           <Youtube />
@@ -78,8 +83,8 @@ const SecondBrainPage = async () => {
     <>
       <NewTask users={users} boards={boards} />
       <Container
-        title="Second Brain"
-        description={'Everything you need to know about your notions'}
+        title="Second Cerveau"
+        description={'Tout ce quil faut savoir sur vos notions'}
       >
         <SecondBrainDataTable columns={columns} data={notions} />
       </Container>

@@ -2,40 +2,37 @@
 
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ResultPage from '../search/components/ResultPage';
+import { Loader2 } from 'lucide-react';
 
 const SearchResult = () => {
   const searchParams = useSearchParams();
+  const search = searchParams?.get('q') ?? null;
 
-  const search = searchParams?.get('q');
-
-  const [results, setResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [results, setResults] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (!search) return;
     setIsLoading(true);
-    try {
-      axios.post(`/api/fulltext-search`, { data: search }).then((res) => {
-        setResults(res.data);
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+    axios
+      .post('/api/fulltext-search', { data: search })
+      .then((res) => setResults(res.data))
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, [search]);
 
-  if (!search) return <div>Search for something</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16 gap-2 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Recherche en cours…</span>
+      </div>
+    );
+  }
 
-  if (isLoading) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <h1>Search query: {search}</h1>
-      <ResultPage search={search} results={results} />
-    </div>
-  );
+  return <ResultPage search={search} results={results} />;
 };
 
 export default SearchResult;

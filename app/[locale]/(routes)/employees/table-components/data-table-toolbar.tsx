@@ -3,7 +3,6 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from './data-table-view-options';
 
@@ -20,7 +19,7 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="Filter in last name ..."
+          placeholder="Rechercher par nom..."
           value={
             (table.getColumn('last_name')?.getFilterValue() as string) ?? ''
           }
@@ -30,14 +29,14 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {isFiltered && (
-          <Button
-            variant="ghost"
+          <button
             onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            className="flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium transition-colors hover:bg-gray-100 lg:px-3"
+            style={{ color: '#1E1D3D' }}
           >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
+            Réinitialiser
+            <Cross2Icon className="ml-1 h-4 w-4" />
+          </button>
         )}
       </div>
       <DataTableViewOptions table={table} />

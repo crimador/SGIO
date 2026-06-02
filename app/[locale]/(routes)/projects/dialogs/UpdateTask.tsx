@@ -1,8 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-
 import {
   Form,
   FormControl,
@@ -13,11 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -31,9 +25,9 @@ import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -48,19 +42,18 @@ type Props = {
 
 const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
-
   const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
   const { toast } = useToast();
 
   const formSchema = z.object({
-    title: z.string().min(3).max(255),
-    user: z.string().min(3).max(255),
+    title:    z.string().min(3).max(255),
+    user:     z.string().min(3).max(255),
     dueDateAt: z.date(),
     priority: z.string().min(3).max(10),
-    content: z.string().min(3).max(500),
-    boardId: z.string().min(3).max(255),
+    content:  z.string().min(3).max(500),
+    boardId:  z.string().min(3).max(255),
   });
 
   type UpdatedTaskForm = z.infer<typeof formSchema>;
@@ -68,43 +61,25 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
   const form = useForm<UpdatedTaskForm>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: initialData.title,
-      user: initialData.user,
+      title:    initialData.title,
+      user:     initialData.user,
       dueDateAt: initialData.dueDateAt,
       priority: initialData.priority,
-      content: initialData.content,
-      boardId: boardId,
+      content:  initialData.content,
+      boardId:  boardId,
     },
   });
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
-  //Actions
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const onSubmit = async (data: UpdatedTaskForm) => {
-    console.log(data);
     setIsLoading(true);
     try {
-      await axios.put(
-        `/api/projects/tasks/update-task/${initialData.id}`,
-        data
-      );
-      toast({
-        title: 'Success',
-        description: `Task: ${data.title}, updated successfully`,
-      });
+      await axios.put(`/api/projects/tasks/update-task/${initialData.id}`, data);
+      toast({ title: 'Tâche mise à jour', description: `La tâche "${data.title}" a été modifiée avec succès.` });
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error?.response?.data,
-      });
+      toast({ variant: 'destructive', title: 'Erreur', description: error?.response?.data });
     } finally {
       setIsLoading(false);
       onDone && onDone();
@@ -114,35 +89,17 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
 
   return (
     <div className="flex w-full">
-      {/*       <div>
-        <pre>
-          {JSON.stringify(
-            {
-              boards,
-            },
-            null,
-            2
-          )}
-        </pre>
-      </div> */}
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="h-full w-full space-y-3"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full space-y-3">
           <div className="flex flex-col space-y-3">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Update task - Id: {initialData.id}</FormLabel>
+                  <FormLabel>Modifier la tâche</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="Enter task name"
-                      {...field}
-                    />
+                    <Input disabled={isLoading} placeholder="Nom de la tâche" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,13 +110,9 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Task description</FormLabel>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="Enter task description"
-                      {...field}
-                    />
+                    <Textarea disabled={isLoading} placeholder="Décrire la tâche" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,24 +123,20 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
               name="dueDateAt"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Due date</FormLabel>
+                  <FormLabel>Date d&apos;échéance</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button
-                          variant={'outline'}
+                        <button
+                          type="button"
                           className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            'flex w-[240px] items-center rounded-md border px-3 py-2 text-left text-sm transition-colors hover:bg-[#FF7E00]/[0.06]',
+                            !field.value && 'text-gray-400'
                           )}
                         >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a expected close date</span>
-                          )}
+                          {field.value ? format(field.value, 'PPP', { locale: fr }) : <span>Choisir une date</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
+                        </button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -195,10 +144,10 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
                         mode="single"
                         selected={field.value}
                         //@ts-ignore
-                        //TODO: fix this
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date('1900-01-01')}
                         initialFocus
+                        locale={fr}
                       />
                     </PopoverContent>
                   </Popover>
@@ -211,21 +160,16 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
               name="user"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assigned to</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Assigné à</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select assigned user" />
+                        <SelectValue placeholder="Sélectionner un utilisateur" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="h-56 overflow-y-auto">
                       {users.map((user: any) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name}
-                        </SelectItem>
+                        <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -233,27 +177,23 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="priority"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Choose task priority</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Priorité</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select tasks priority" />
+                        <SelectValue placeholder="Choisir la priorité" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="low">Faible</SelectItem>
+                      <SelectItem value="medium">Moyenne</SelectItem>
+                      <SelectItem value="high">Haute</SelectItem>
+                      <SelectItem value="critical">Critique</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -262,13 +202,14 @@ const UpdateTaskDialog = ({ users, boardId, initialData, onDone }: Props) => {
             />
           </div>
           <div className="flex w-full justify-end space-x-2 pt-2">
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? (
-                <Icons.spinner className="animate-spin" />
-              ) : (
-                'Update'
-              )}
-            </Button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            >
+              {isLoading ? <Icons.spinner className="animate-spin" /> : 'Enregistrer'}
+            </button>
           </div>
         </form>
       </Form>

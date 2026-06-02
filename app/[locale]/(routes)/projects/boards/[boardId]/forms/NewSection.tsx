@@ -17,7 +17,6 @@ import {
 
 import { Input } from '@/components/ui/input';
 import { Icons } from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { DialogClose } from '@radix-ui/react-dialog';
 
@@ -28,7 +27,6 @@ type NewSectionFormProps = {
 
 const NewSectionForm = ({ boardId, onClose }: NewSectionFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-
   const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
@@ -44,44 +42,34 @@ const NewSectionForm = ({ boardId, onClose }: NewSectionFormProps) => {
     resolver: zodResolver(formSchema),
   });
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-  //Actions
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const onSubmit = async (data: NewAccountFormValues) => {
     setIsLoading(true);
     try {
       await axios.post(`/api/projects/sections/${boardId}`, data);
       toast({
-        title: 'Success',
-        description: `New project: ${data.title}, created successfully`,
+        title: 'Succès',
+        description: `Section "${data.title}" créée avec succès.`,
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erreur',
         description: error?.response?.data,
       });
     } finally {
-      form.reset({
-        title: '',
-      });
+      form.reset({ title: '' });
       setIsLoading(false);
       router.refresh();
       onClose();
     }
   };
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="h-full w-full space-y-3"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full space-y-3">
         <div className="flex flex-col space-y-3">
           <FormField
             control={form.control}
@@ -89,11 +77,7 @@ const NewSectionForm = ({ boardId, onClose }: NewSectionFormProps) => {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input
-                    disabled={isLoading}
-                    placeholder="Enter section name"
-                    {...field}
-                  />
+                  <Input disabled={isLoading} placeholder="Nom de la section" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -102,17 +86,26 @@ const NewSectionForm = ({ boardId, onClose }: NewSectionFormProps) => {
         </div>
         <div className="flex w-full justify-end space-x-2 pt-2">
           <DialogClose asChild>
-            <Button variant={'destructive'}>Cancel</Button>
+            <button
+              type="button"
+              className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-red-50"
+              style={{ color: '#dc2626' }}
+            >
+              Annuler
+            </button>
           </DialogClose>
-          <Button type="submit" disabled={isLoading}>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
             {isLoading ? (
-              <div className="flex space-x-5">
-                <Icons.spinner className="animate-spin" />
-              </div>
+              <Icons.spinner className="animate-spin" />
             ) : (
-              <span>Create</span>
+              'Créer'
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

@@ -1,9 +1,8 @@
 'use client';
 
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { MoreHorizontal } from 'lucide-react';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,16 +42,16 @@ export function DataTableRowActions<TData>({
     try {
       await axios.delete(`/api/crm/opportunity/${opportunity?.id}`);
       toast({
-        title: 'Success',
-        description: 'Opportunity has been deleted',
+        title: 'Succès',
+        description: "L'opportunité a été supprimée.",
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
+          title: 'Erreur',
           description:
-            'Something went wrong while deleting opportunity. Please try again.',
+            'Une erreur est survenue lors de la suppression. Veuillez réessayer.',
         });
       }
     } finally {
@@ -71,8 +70,8 @@ export function DataTableRowActions<TData>({
         loading={loading}
       />
       <RightViewModalNoTrigger
-        title={'Update Opportunity' + ' - ' + opportunity?.name}
-        description="Update contact details"
+        title={"Modifier l'opportunité" + ' - ' + opportunity?.name}
+        description="Modifier les informations de l'opportunité"
         open={updateOpen}
         setOpen={setUpdateOpen}
       >
@@ -83,26 +82,23 @@ export function DataTableRowActions<TData>({
       </RightViewModalNoTrigger>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Ouvrir le menu</span>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DropdownMenuItem
             onClick={() => router.push(`/crm/opportunities/${opportunity?.id}`)}
           >
-            View
+            Voir
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setUpdateOpen(true)}>
-            Update
+            Modifier
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            Delete
+            Supprimer
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
@@ -9,8 +8,6 @@ import type { Users } from '@prisma/client';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
 } from '@/components/ui/card';
 
 const PendingPage = async () => {
@@ -29,13 +26,13 @@ const PendingPage = async () => {
 
   return (
     <Card className="space-y- m-10 p-10">
-      <CardTitle className="flex justify-center py-10">
+      <p className="flex justify-center py-10 text-base font-bold" style={{ color: '#1E1D3D' }}>
         Your account has been deactivated by Admin
-      </CardTitle>
-      <CardDescription className="py-3">
+      </p>
+      <p className="py-3 text-sm text-gray-400">
         Hi, your {process.env.NEXT_PUBLIC_APP_NAME} account has been disabled.
         Ask someone in your organization to activate your account again.
-      </CardDescription>
+      </p>
       <CardContent>
         <h2 className="flex justify-center text-xl">Admin List</h2>
         <div className="flex flex-wrap justify-center">
@@ -56,9 +53,13 @@ const PendingPage = async () => {
         </div>
 
         <div className="flex flex-col items-center justify-center space-x-2 pt-5 md:flex-row">
-          <Button asChild>
-            <Link href="/sign-in">Log-in with another account</Link>
-          </Button>
+          <Link
+            href="/sign-in"
+            className="flex h-9 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            Log-in with another account
+          </Link>
           <p>or</p>
           <TryAgain />
         </div>

@@ -6,54 +6,38 @@ import type { Contact } from '../table-data/schema';
 import { DataTableColumnHeader } from './data-table-column-header';
 import { DataTableRowActions } from './data-table-row-actions';
 import moment from 'moment';
+import Link from 'next/link';
 
 export const columns: ColumnDef<Contact>[] = [
-  /*   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-        className="translate-y-[2px]"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        className="translate-y-[2px]"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }, */
   {
     accessorKey: 'created_on',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date created" />
+      <DataTableColumnHeader column={column} title="Créé le" />
     ),
     cell: ({ row }) => (
       <div className="w-[80px]">
-        {moment(row.getValue('created_on')).format('YY-MM-DD')}
+        {moment(row.getValue('created_on')).format('DD/MM/YY')}
       </div>
     ),
     enableSorting: false,
     enableHiding: false,
+    filterFn: (row, id, value: { from: string; to: string }) => {
+      const d = new Date(row.getValue(id) as string);
+      if (value.from && d < new Date(value.from)) return false;
+      if (value.to && d > new Date(value.to + 'T23:59:59')) return false;
+      return true;
+    },
   },
   {
     accessorKey: 'assigned_to_user',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned to" />
+      <DataTableColumnHeader column={column} title="Responsable" />
     ),
-
     cell: ({ row }) => (
       <div className="w-[150px]">
         {
           //@ts-ignore
-          //TODO: fix this
-          row.getValue('assigned_to_user')?.name ?? 'Unassigned'
+          row.getValue('assigned_to_user')?.name ?? 'Non assigné'
         }
       </div>
     ),
@@ -63,14 +47,13 @@ export const columns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'assigned_account',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assigned account" />
+      <DataTableColumnHeader column={column} title="Compte associé" />
     ),
-
     cell: ({ row }) => (
       <div className="min-w-[150px]">
         {
           //@ts-ignore
-          row.original.assigned_accounts?.name ?? 'Unassigned'
+          row.original.assigned_accounts?.name ?? '—'
         }
       </div>
     ),
@@ -80,19 +63,27 @@ export const columns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'first_name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title="Prénom" />
     ),
-
-    cell: ({ row }) => <div className="">{row.getValue('first_name')}</div>,
+    cell: ({ row }) => (
+      <Link
+        href={`/crm/contacts/${row.original.id}`}
+        className="font-medium hover:underline"
+        style={{ color: '#1E1D3D' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#FF7E00')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#1E1D3D')}
+      >
+        {row.getValue('first_name')}
+      </Link>
+    ),
     enableSorting: true,
     enableHiding: true,
   },
   {
     accessorKey: 'last_name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Sure name" />
+      <DataTableColumnHeader column={column} title="Nom de famille" />
     ),
-
     cell: ({ row }) => <div className="">{row.getValue('last_name')}</div>,
     enableSorting: true,
     enableHiding: true,
@@ -102,7 +93,6 @@ export const columns: ColumnDef<Contact>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="E-mail" />
     ),
-
     cell: ({ row }) => <div className="">{row.getValue('email')}</div>,
     enableSorting: true,
     enableHiding: true,
@@ -110,9 +100,8 @@ export const columns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'mobile_phone',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Mobile" />
+      <DataTableColumnHeader column={column} title="Téléphone" />
     ),
-
     cell: ({ row }) => <div className="">{row.getValue('mobile_phone')}</div>,
     enableSorting: true,
     enableHiding: true,
@@ -120,11 +109,10 @@ export const columns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'status',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title="Statut" />
     ),
-
     cell: ({ row }) => (
-      <div className="">{row.original.status ? 'Active' : 'Inactive'}</div>
+      <div className="">{row.original.status ? 'Actif' : 'Inactif'}</div>
     ),
     enableSorting: true,
     enableHiding: true,

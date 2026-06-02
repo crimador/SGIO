@@ -4,24 +4,30 @@ import { DocumentsDataTable } from './components/data-table';
 import { columns } from './components/columns';
 import ModalDropzone from './components/modal-dropzone';
 import type { Documents } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { getDictionary } from '@/dictionaries';
 
-const DocumentsPage = async () => {
+const DocumentsPage = async ({ params }: { params: { locale: string } }) => {
+  const session = await getServerSession(authOptions);
+  const dict = await getDictionary(params.locale as 'en' | 'cz' | 'de' | 'uk' | 'ko' | 'fr');
+  
   const documents: Documents[] = await getDocuments();
 
   if (!documents) {
-    return <div>Something went wrong</div>;
+    return <div>Une erreur est survenue</div>;
   }
 
   return (
     <Container
-      title="Documents"
-      description={'Everything you need to know about company documents'}
+      title={dict.ModuleMenu.documents}
+      description={'Tout ce quil faut savoir sur les documents de lentreprise'}
     >
       <div className="flex space-x-5 py-5">
-        <ModalDropzone buttonLabel="Upload pdf" fileType="pdfUploader" />
-        <ModalDropzone buttonLabel="Upload images" fileType="imageUploader" />
+        <ModalDropzone buttonLabel="Téléverser un PDF" fileType="pdfUploader" />
+        <ModalDropzone buttonLabel="Téléverser des images" fileType="imageUploader" />
         <ModalDropzone
-          buttonLabel="Upload other files"
+          buttonLabel="Téléverser d'autres fichiers"
           fileType="docUploader"
         />
       </div>

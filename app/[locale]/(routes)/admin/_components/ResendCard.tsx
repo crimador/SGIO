@@ -1,102 +1,36 @@
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Mail, CheckCircle2, XCircle } from 'lucide-react';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
-import { z } from 'zod';
-
-import { prismadb } from '@/lib/prisma';
-
-import { revalidatePath } from 'next/cache';
-import { Input } from '@/components/ui/input';
-import CopyKeyComponent from './copy-key';
-
-const ResendCard = async () => {
-  const setSMTP = async (formData: FormData) => {
-    'use server';
-    const schema = z.object({
-      id: z.string(),
-      serviceKey: z.string(),
-    });
-    const parsed = schema.parse({
-      id: formData.get('id'),
-      serviceKey: formData.get('serviceKey'),
-    });
-
-    //console.log(parsed.id, "id");
-    //console.log(parsed.serviceKey, "serviceKey");
-
-    if (!parsed.id) {
-      await prismadb.systemServices.create({
-        data: {
-          name: 'resend_smtp',
-          serviceKey: parsed.serviceKey,
-        },
-      });
-      revalidatePath('/admin');
-    } else {
-      await prismadb.systemServices.update({
-        where: {
-          id: parsed.id,
-        },
-        data: {
-          serviceKey: parsed.serviceKey,
-        },
-      });
-      revalidatePath('/admin');
-    }
-  };
-
-  const resend_key = await prismadb.systemServices.findFirst({
-    where: {
-      name: 'resend_smtp',
-    },
-  });
+const ResendCard = () => {
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+  const configured = !!(gmailUser && gmailPass);
 
   return (
-    <Card className="min-w-[350px] max-w-[450px]">
-      <CardHeader className="text-lg">
-        <CardTitle>Resend.com - API Key</CardTitle>
-        <CardDescription className="text-xs">
-          <p>ENV API key:</p>
-          <p>
-            {process.env.RESEND_API_KEY ? (
-              <CopyKeyComponent
-                keyValue={process.env.RESEND_API_KEY}
-                message="Resend - API Key"
-              />
-            ) : (
-              'not enabled'
-            )}
-          </p>
-          <p>API key from DB:</p>
-          <p>
-            {resend_key?.serviceKey ? (
-              <CopyKeyComponent
-                keyValue={resend_key?.serviceKey}
-                message="Resend - API Key"
-              />
-            ) : (
-              'not enabled'
-            )}
-          </p>
-        </CardDescription>
+    <Card className="min-w-[350px] max-w-[450px] overflow-hidden">
+      <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+      <CardHeader className="pb-3 pt-5">
+        <p className="flex items-center gap-2 text-sm font-semibold" style={{ color: '#1E1D3D' }}>
+          <Mail className="h-4 w-4" style={{ color: '#FF7E00' }} />
+          Email (Gmail SMTP)
+        </p>
+        <p className="mt-0.5 text-xs text-gray-400">
+          Configuration de l&apos;envoi d&apos;emails via Gmail.
+        </p>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <form action={setSMTP}>
-          <div>
-            <input type="hidden" name="id" value={resend_key?.id} />
-            <Input type="text" name="serviceKey" placeholder="Your API key" />
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type={'reset'}>Reset</Button>
-            <Button type="submit">Set Resend key</Button>
-          </div>
-        </form>
+      <CardContent className="space-y-2 text-sm">
+        <div className="flex items-center gap-2">
+          {configured ? (
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-500" />
+          )}
+          <span className="text-gray-500">
+            {configured
+              ? `Configuré — ${gmailUser}`
+              : 'Non configuré — ajoutez GMAIL_USER et GMAIL_APP_PASSWORD dans .env.local'}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,0 +1,114 @@
+{
+  "RootLayout": {
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Système ERP de gestion d'entreprise."
+  },
+  "ModuleMenu": {
+    "dashboard": "Tableau de bord",
+    "crm": {
+      "title": "Ventes",
+      "accounts": "Sociétés",
+      "opportunities": "Opportunités",
+      "contacts": "Contacts",
+      "leads": "Pistes"
+    },
+    "projects": "Projets",
+    "emails": "E-mails",
+    "tasks": "Tâches",
+    "invoices": "Factures",
+    "employees": "Employés",
+    "hr": "Ressources Humaines",
+    "reports": "Rapports",
+    "documents": "Documents",
+    "storage": "Stockage",
+    "settings": "Administration"
+  },
+  "DashboardPage": {
+    "containerTitle": "Tableau de bord",
+    "totalRevenue": "Revenu total",
+    "containerDescription": "Bienvenue sur KEKELI GROUP ERP, ici vous pouvez voir toutes les informations importantes sur votre entreprise.",
+    "expectedRevenue": "Revenu attendu",
+    "activeUsers": "Utilisateurs actifs",
+    "accounts": "Sociétés",
+    "opportunities": "Affaires",
+    "contacts": "Contacts",
+    "leads": "Pistes",
+    "projects": "Projets",
+    "tasks": "Tâches",
+    "myTasks": "Mes tâches",
+    "invoices": "Factures",
+    "documents": "Documents",
+    "storage": "Stockage"
+  },
+  "RegisterComponent": {
+    "cardTitle": "Créer un nouveau compte",
+    "cardDescription": "Créez un compte en vous connectant avec",
+    "label": "Langue",
+    "locale": "{locale, select, de {Allemand} en {Anglais} cz {Tchèque} fr {Français} uk {Ukrainien} other {Inconnu}}"
+  },
+  "CrmModuleMenuComponent": {
+    "menuTitle": "Ventes",
+    "cardDescription": "Créez un compte en vous connectant avec",
+    "label": "Langue",
+    "locale": "{locale, select, de {Allemand} en {Anglais} cz {Tchèque} fr {Français} uk {Ukrainien} other {Inconnu}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "Télécharger PDF",
+    "myInvoices": "Mes factures",
+    "settings": "Paramètres",
+    "companySettings": "Paramètres de votre entreprise",
+    "companySettingsDescription": "Ces données seront utilisées comme valeurs par défaut pour vos factures. Vous pouvez les modifier à tout moment. Il est très important de définir l'email du compte qui recevra les fichiers pour l'importation dans les ERP",
+    "filterByInvoiceNumber": "Filtrer par numéro de facture...",
+    "dueDate": "Date d'échéance",
+    "number": "Numéro",
+    "amount": "Montant",
+    "partner": "Partenaire",
+    "rossumState": "État Rossum",
+    "status": "Statut",
+    "noResults": "Aucun résultat.",
+    "rowsSelected": "ligne(s) sélectionnée(s).",
+    "rowsPerPage": "Lignes par page",
+    "view": "Voir"
+  },
+  "EmployeePage": {
+    "title": "Employés",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "officePhone": "Téléphone bureau",
+    "email": "E-mail",
+    "position": "Poste",
+    "salary": "Salaire",
+    "onBoarding": "Date d'embauche",
+    "pickExpectedCloseDate": "Sélectionner une date",
+    "iban": "IBAN",
+    "assignedUser": "Utilisateur assigné",
+    "taxId": "Numéro fiscal",
+    "insurance": "Assurance",
+    "address": "Adresse",
+    "close": "Fermer",
+    "createEmployee": "Créer un employé",
+    "noEmployeesFound": "Aucun employé assigné trouvé"
+  },
+  "HRPage": {
+    "title": "Ressources Humaines",
+    "description": "Gestion complète des ressources humaines",
+    "employees": "Employés",
+    "timekeeping": "Pointage",
+    "schedule": "Planning",
+    "payslip": "Paie",
+    "training": "Formations",
+    "scheduleDescription": "Gestion des plannings et horaires",
+    "payslipDescription": "Bulletins de paie et rémunération",
+    "trainingDescription": "Suivi des formations et compétences",
+    "comingSoon": "Bientôt disponible"
+  },
+  "TimekeepingPage": {
+    "title": "Pointage",
+    "employee": "Employé",
+    "timeIn": "Heure d'arrivée",
+    "timeOut": "Heure de départ",
+    "verified": "Vérifié",
+    "createTimekeeping": "Créer un pointage",
+    "noTimekeepingFound": "Aucun pointage trouvé"
+  }
+}

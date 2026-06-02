@@ -1,12 +1,6 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -28,73 +22,64 @@ interface DocumentsViewProps {
 const DocumentsView = ({ data }: DocumentsViewProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
+  useEffect(() => { setIsMounted(true); }, []);
+  if (!isMounted) return null;
 
   const onAddNew = () => {
     alert('Actions - not yet implemented');
   };
 
-  if (!data) return <div>No documents found</div>;
-  console.log(data, 'data');
+  if (!data) return <div>Aucun document trouvé</div>;
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex justify-between">
+    <Card className="overflow-hidden">
+      <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+      <CardHeader className="pb-4 pt-5">
+        <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Documents</CardTitle>
-            <CardDescription></CardDescription>
+            <p className="text-base font-bold" style={{ color: '#1E1D3D' }}>Documents</p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {(data as any)?.length ?? 0} document{((data as any)?.length ?? 0) > 1 ? 's' : ''}
+            </p>
           </div>
-          <div>
-            <Button onClick={onAddNew}>
-              <PlusIcon className="h-5 w-5" />
-            </Button>
-          </div>
+          <button
+            onClick={onAddNew}
+            className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
+            <PlusIcon className="h-4 w-4" /> Ajouter
+          </button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div>
-          {data.map((document: { id: string; document_name: string }) => (
-            <div key={data.id}>
-              <div className="-mx-2 flex items-center space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <File className="mt-px h-5 w-5" />
+      <CardContent className="pt-0">
+        {!(data as any)?.length ? (
+          <p className="py-6 text-center text-sm text-gray-400">Aucun document associé.</p>
+        ) : (
+          <div>
+            {(data as any).map((document: { id: string; document_name: string }) => (
+              <div key={document.id} className="-mx-2 flex items-center space-x-4 rounded-md p-2 transition-all hover:bg-[#FF7E00]/[0.05]">
+                <File className="mt-px h-5 w-5 shrink-0" style={{ color: '#FF7E00' }} />
                 <div className="flex w-full justify-between">
                   <div className="flex items-center justify-start space-x-5">
-                    <p className="text-sm font-medium leading-none">
-                      {document.id}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {document.document_name}
-                    </p>
+                    <p className="text-sm font-medium" style={{ color: '#1E1D3D' }}>{document.document_name}</p>
                   </div>
-                  <div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <Button
-                          variant="ghost"
-                          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                        >
-                          <DotsHorizontalIcon className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[160px]">
-                        <DropdownMenuItem>View</DropdownMenuItem>
-                        <DropdownMenuItem>Unlink</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>{' '}
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex h-8 w-8 items-center justify-center rounded-md p-0 hover:bg-[#FF7E00]/[0.08]">
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                        <span className="sr-only">Ouvrir le menu</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                      <DropdownMenuItem>Voir</DropdownMenuItem>
+                      <DropdownMenuItem>Délier</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

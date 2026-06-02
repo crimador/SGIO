@@ -3,8 +3,6 @@ import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 import type { Column } from '@tanstack/react-table';
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -19,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
@@ -42,49 +39,45 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+        <button
+          className="flex h-8 items-center gap-1.5 rounded-md border border-dashed px-2 text-sm font-medium transition-colors hover:bg-gray-50 lg:px-3"
+          style={{ color: '#1E1D3D' }}
+        >
+          <PlusCircledIcon className="mr-1 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
-              <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge
-                variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
-              >
+              <div className="mx-2 h-4 w-px bg-gray-200" />
+              <span className="inline-flex items-center rounded-sm bg-gray-100 px-1 text-xs font-normal lg:hidden">
                 {selectedValues.size}
-              </Badge>
+              </span>
               <div className="hidden space-x-1 lg:flex">
                 {selectedValues.size > 2 ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {selectedValues.size} selected
-                  </Badge>
+                  <span className="inline-flex items-center rounded-sm bg-gray-100 px-1 text-xs font-normal">
+                    {selectedValues.size} sélectionné(s)
+                  </span>
                 ) : (
                   options
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
-                      <Badge
-                        variant="secondary"
+                      <span
                         key={option.value}
-                        className="rounded-sm px-1 font-normal"
+                        className="inline-flex items-center rounded-sm bg-gray-100 px-1 text-xs font-normal"
                       >
                         {option.label}
-                      </Badge>
+                      </span>
                     ))
                 )}
               </div>
             </>
           )}
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>Aucun résultat.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
@@ -105,16 +98,17 @@ export function DataTableFacetedFilter<TData, TValue>({
                   >
                     <div
                       className={cn(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
                         isSelected
-                          ? 'bg-primary text-primary-foreground'
+                          ? 'text-white'
                           : 'opacity-50 [&_svg]:invisible'
                       )}
+                      style={isSelected ? { background: '#FF7E00', borderColor: '#FF7E00' } : { borderColor: '#1E1D3D' }}
                     >
                       <CheckIcon className={cn('h-4 w-4')} />
                     </div>
                     {option.icon && (
-                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <option.icon className="mr-2 h-4 w-4 text-gray-400" />
                     )}
                     <span>{option.label}</span>
                     {facets?.get(option.value) && (
@@ -134,7 +128,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => column?.setFilterValue(undefined)}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    Effacer les filtres
                   </CommandItem>
                 </CommandGroup>
               </>

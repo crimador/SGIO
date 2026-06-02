@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ is an open source CRM build on top of NextJS."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Enterprise ERP management system."
   },
   "ModuleMenu": {
     "dashboard": "Dashboard",
@@ -16,6 +16,8 @@
     "emails": "E-mails",
     "tasks": "Tasks",
     "invoices": "Invoices",
+    "employees": "Employees",
+    "hr": "Human Resources",
     "reports": "Reports",
     "documents": "Documents",
     "storage": "Storage",
@@ -24,7 +26,7 @@
   "DashboardPage": {
     "containerTitle": "Dashboard",
     "totalRevenue": "Total revenue",
-    "containerDescription": "Welcome to SaasHQ, here you can see all important information about your business.",
+    "containerDescription": "Welcome to KEKELI GROUP, here you can see all important information about your business.",
     "expectedRevenue": "Expected revenue",
     "activeUsers": "Active users",
     "accounts": "Companies",
@@ -49,5 +51,64 @@
     "cardDescription": "Create an account by signing in with",
     "label": "Language",
     "locale": "{locale, select, de {German} en {English} cz {Czech} uk {Ukrainian} other {Unknown}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "Upload PDF",
+    "myInvoices": "My Invoices",
+    "settings": "Settings",
+    "companySettings": "Company Settings",
+    "companySettingsDescription": "This data will be used as default values for your invoices. You can change them at any time. It is very important to set the account email that will receive files for import into ERP systems",
+    "filterByInvoiceNumber": "Filter by invoice number...",
+    "dueDate": "Due Date",
+    "number": "Number",
+    "amount": "Amount",
+    "partner": "Partner",
+    "rossumState": "Rossum State",
+    "status": "Status",
+    "noResults": "No results.",
+    "rowsSelected": "row(s) selected.",
+    "rowsPerPage": "Rows per page",
+    "view": "View"
+  },
+  "EmployeePage": {
+    "title": "Employees",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "officePhone": "Office Phone",
+    "email": "E-mail",
+    "position": "Position",
+    "salary": "Salary",
+    "onBoarding": "Onboarding",
+    "pickExpectedCloseDate": "Pick expected close date",
+    "iban": "IBAN",
+    "assignedUser": "Assigned user",
+    "taxId": "Tax ID",
+    "insurance": "Insurance",
+    "address": "Address",
+    "close": "Close",
+    "createEmployee": "Create Employee",
+    "noEmployeesFound": "No assigned employees found"
+  },
+  "HRPage": {
+    "title": "Human Resources",
+    "description": "Complete human resources management",
+    "employees": "Employees",
+    "timekeeping": "Timekeeping",
+    "schedule": "Schedule",
+    "payslip": "Pay Slip",
+    "training": "Training",
+    "scheduleDescription": "Schedule and hours management",
+    "payslipDescription": "Pay slips and compensation",
+    "trainingDescription": "Training and skills tracking",
+    "comingSoon": "Coming soon"
+  },
+  "TimekeepingPage": {
+    "title": "Timekeeping",
+    "employee": "Employee",
+    "timeIn": "Time In",
+    "timeOut": "Time Out",
+    "verified": "Verified",
+    "createTimekeeping": "Add Entry",
+    "noTimekeepingFound": "No timekeeping entries found"
   }
 }

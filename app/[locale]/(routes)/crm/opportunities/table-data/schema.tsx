@@ -6,9 +6,9 @@ export const opportunitySchema = z.object({
   //TODO: fix all the types and nullable
   id: z.string(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   next_step: z.string().nullable(),
-  close_date: z.date(),
+  close_date: z.coerce.date().nullable().optional(),
   status: z.string().nullable(),
   budget: z.number().nullable(),
   expected_revenue: z.number().nullable(),

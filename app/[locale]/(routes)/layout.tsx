@@ -60,6 +60,10 @@ export default async function AppLayout({
     return redirect('/inactive');
   }
 
+  if (user?.mustChangePassword) {
+    return redirect('/change-password');
+  }
+
   const build = await getAllCommits();
 
   //console.log(typeof build, "build");
@@ -72,7 +76,6 @@ export default async function AppLayout({
           name={session.user.name as string}
           email={session.user.email as string}
           avatar={session.user.image as string}
-          lang={session.user.userLanguage as string}
         />
         <div className="h-full flex-grow overflow-y-auto p-5">{children}</div>
         <Footer />

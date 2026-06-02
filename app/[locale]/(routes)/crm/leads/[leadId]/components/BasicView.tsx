@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   CalendarDays,
   CoinsIcon,
@@ -12,7 +6,7 @@ import {
   Globe2,
   Landmark,
   Medal,
-  MoreHorizontal,
+  Megaphone,
   Phone,
   User,
 } from 'lucide-react';
@@ -25,192 +19,99 @@ interface OppsViewProps {
   data: any;
 }
 
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value?: React.ReactNode;
+}) {
+  if (!value) return null;
+  return (
+    <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-[#FF7E00]/[0.05]">
+      <Icon className="mt-px h-5 w-5 shrink-0" style={{ color: '#FF7E00' }} />
+      <div className="space-y-1">
+        <p className="text-sm font-medium leading-none" style={{ color: '#1E1D3D' }}>{label}</p>
+        <p className="text-sm text-gray-500">{value}</p>
+      </div>
+    </div>
+  );
+}
+
 export async function BasicView({ data }: OppsViewProps) {
-  //console.log(data, "data");
   const users = await prismadb.users.findMany();
-  if (!data) return <div>Opportunity not found</div>;
+  if (!data) return <div>Prospect introuvable</div>;
+
+  const responsable = users.find((u) => u.id === data.assigned_to)?.name ?? '—';
+  const createdBy   = users.find((u) => u.id === data.createdBy)?.name ?? '—';
+  const updatedBy   = users.find((u) => u.id === data.updatedBy)?.name ?? '—';
+
   return (
     <div className="space-y-5 pb-3">
-      {/*      <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex w-full justify-between">
-            <div>
-              <CardTitle>
-                {data.firstName} {data.lastName}
-              </CardTitle>
-              <CardDescription>ID:{data.id}</CardDescription>
-            </div>
-            <div>
-              {
-                //TODO: Add menu
-                //TODO: Add edit button
-              }
-              <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-            </div>
-          </div>
+      <Card className="overflow-hidden">
+        <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+        <CardHeader className="pb-3 pt-5">
+          <p className="text-lg font-bold" style={{ color: '#1E1D3D' }}>
+            {data.firstName} {data.lastName}
+          </p>
+          {data.company && (
+            <p className="mt-0.5 text-sm text-gray-400">{data.company}</p>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid w-full grid-cols-2 gap-5">
+            {/* Colonne gauche */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <User className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Name</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.firstName} {data.lastName}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Landmark className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Company name
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.company}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Medal className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Job title</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.jobTitle ? data.jobTitle : 'N/A'}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <File className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Description
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.description}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start justify-between space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <div className="mt-px flex gap-5">
-                  <EnvelopeClosedIcon className="mt-px h-5 w-5" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Email</p>
-                    {data?.email ? (
-                      <Link
-                        href={`mailto:${data.email}`}
-                        className="flex items-center gap-5 text-sm text-muted-foreground"
-                      >
-                        {data.email}
-                        <EnvelopeClosedIcon />
-                      </Link>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Globe2 className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Website</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data?.website ? (
-                      <Link href={data.website}>{data.website}</Link>
-                    ) : (
-                      'N/A'
-                    )}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Phone className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Phone</p>
-                  <p className="text-sm text-muted-foreground">{data.phone}</p>
-                </div>
-              </div>
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Informations
+              </p>
+              <InfoRow icon={User} label="Nom complet" value={`${data.firstName} ${data.lastName}`} />
+              <InfoRow icon={Landmark} label="Entreprise" value={data.company} />
+              <InfoRow icon={Medal} label="Poste" value={data.jobTitle} />
+              <InfoRow icon={File} label="Description" value={data.description} />
+              <InfoRow
+                icon={EnvelopeClosedIcon as React.ElementType}
+                label="E-mail"
+                value={
+                  data.email ? (
+                    <Link href={`mailto:${data.email}`} className="hover:underline" style={{ color: '#FF7E00' }}>
+                      {data.email}
+                    </Link>
+                  ) : null
+                }
+              />
+              <InfoRow icon={Globe2} label="Site web" value={data.website} />
+              <InfoRow icon={Phone} label="Téléphone" value={data.phone} />
             </div>
+
+            {/* Colonne droite */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <User className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Assigned to
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.assigned_to)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created</p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.created_on).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created by</p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.createdBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.updatedAt).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update by
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.updatedBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <LightningBoltIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Status</p>
-                  <p className="text-sm text-muted-foreground">{data.status}</p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Type</p>
-                  <p className="text-sm text-muted-foreground">{data.type}</p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Lead source
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.lead_source}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">refered_by</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.refered_by}
-                  </p>
-                </div>
-              </div>
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Suivi
+              </p>
+              <InfoRow icon={User} label="Responsable" value={responsable} />
+              <InfoRow
+                icon={CalendarDays}
+                label="Créé le"
+                value={data.createdAt ? `${moment(data.createdAt).format('DD/MM/YYYY')} par ${createdBy}` : null}
+              />
+              <InfoRow
+                icon={CalendarDays}
+                label="Dernière mise à jour"
+                value={data.updatedAt ? `${moment(data.updatedAt).format('DD/MM/YYYY')} par ${updatedBy}` : null}
+              />
+              <InfoRow icon={LightningBoltIcon as React.ElementType} label="Statut" value={data.status} />
+              <InfoRow icon={CoinsIcon} label="Source" value={data.lead_source} />
+              <InfoRow icon={CoinsIcon} label="Référé par" value={data.refered_by} />
+              <InfoRow icon={Megaphone} label="Campagne" value={data.campaign} />
             </div>
           </div>
         </CardContent>

@@ -1,261 +1,142 @@
 import { Suspense } from 'react';
-import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
-import type { LucideIcon } from 'lucide-react';
-import {
-  CoinsIcon,
-  Contact,
-  DollarSignIcon,
-  GitFork,
-  HeartHandshakeIcon,
-  LandmarkIcon,
-  UserIcon,
-  Users2Icon,
-} from 'lucide-react';
-import Link from 'next/link';
-
+import { authOptions } from '@/lib/auth';
 import { getDictionary } from '@/dictionaries';
-
-import Container from './components/ui/Container';
-import NotionsBox from './components/dasboard/notions';
-import LoadingBox from './components/dasboard/loading-box';
-import StorageQuota from './components/dasboard/storage-quota';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-import {
-  getTasksCount,
-  getUsersTasksCount,
-} from '@/actions/dashboard/get-tasks-count';
 import { getModules } from '@/actions/get-modules';
+import { getGlobalDashboard } from '@/actions/dashboard/get-global-dashboard';
+import SuspenseLoading from '@/components/loadings/suspense';
+import GlobalDashboard from './components/dashboard/GlobalDashboard';
 
-import { getLeadsCount } from '@/actions/dashboard/get-leads-count';
-import { getBoardsCount } from '@/actions/dashboard/get-boards-count';
-import { getStorageSize } from '@/actions/documents/get-storage-size';
-import { getContactCount } from '@/actions/dashboard/get-contacts-count';
-import { getAccountsCount } from '@/actions/dashboard/get-accounts-count';
-import { getInvoicesCount } from '@/actions/dashboard/get-invoices-count';
-import { getDocumentsCount } from '@/actions/dashboard/get-documents-count';
-import { getActiveUsersCount } from '@/actions/dashboard/get-active-users-count';
-import { getOpportunitiesCount } from '@/actions/dashboard/get-opportunities-count';
-import { getExpectedRevenue } from '@/actions/crm/opportunity/get-expected-revenue';
-import { getEmployeeCount } from '@/actions/dashboard/get-employee-count';
-import { getWorkflowCount } from '@/actions/dashboard/get-workflow-count';
+/* ── Soleil décoratif (version réduite pour le hero) ── */
+const HeroSun = () => (
+  <svg
+    viewBox="0 0 200 170"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="absolute -right-6 -top-4 h-44 w-auto opacity-20"
+    aria-hidden="true"
+  >
+    <defs>
+      <linearGradient id="heroSunBody" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#FAC731" />
+        <stop offset="100%" stopColor="#FF7E00" />
+      </linearGradient>
+      <linearGradient id="heroHorizon" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FF7E00" stopOpacity="0" />
+        <stop offset="25%" stopColor="#FF7E00" />
+        <stop offset="75%" stopColor="#FF7E00" />
+        <stop offset="100%" stopColor="#FF7E00" stopOpacity="0" />
+      </linearGradient>
+    </defs>
+    <line x1="100" y1="95" x2="100" y2="38" stroke="#FAC731" strokeWidth="5" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="136" y2="46" stroke="#FAC731" strokeWidth="4.5" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="160" y2="64" stroke="#FAC731" strokeWidth="4" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="170" y2="90" stroke="#FAC731" strokeWidth="3.5" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="64"  y2="46" stroke="#FAC731" strokeWidth="4.5" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="40"  y2="64" stroke="#FAC731" strokeWidth="4" strokeLinecap="round" />
+    <line x1="100" y1="95" x2="30"  y2="90" stroke="#FAC731" strokeWidth="3.5" strokeLinecap="round" />
+    <path d="M55,95 A45,45 0 0 1 145,95 Z" fill="url(#heroSunBody)" />
+    <path d="M28,100 Q100,94 172,100" stroke="url(#heroHorizon)" strokeWidth="5" strokeLinecap="round" fill="none" />
+  </svg>
+);
 
-const DashboardPage = async () => {
+const DashboardPage = async ({ params }: { params: { locale: string } }) => {
   const session = await getServerSession(authOptions);
-
   if (!session) return null;
 
-  const userId = session?.user?.id;
+  const dict = await getDictionary(params.locale as 'en' | 'cz' | 'de' | 'uk' | 'ko' | 'fr');
 
-  //Get user language
-  const lang = session?.user?.userLanguage;
+  const [modules, dashboardData] = await Promise.all([
+    getModules(),
+    getGlobalDashboard(),
+  ]);
 
-  //Fetch translations from dictionary
-  const dict = await getDictionary(lang as 'en' | 'cz' | 'de' | 'uk' | 'ko'); //Fetch data for dashboard
+  const firstName = session.user?.name
+    ? session.user.name.split(' ')[0]
+    : session.user?.email?.split('@')[0] ?? '';
 
-  const modules = await getModules();
-  const leads = await getLeadsCount();
-  const tasks = await getTasksCount();
-  const employees = await getEmployeeCount();
-  const workflows = await getWorkflowCount();
-  const storage = await getStorageSize();
-  const projects = await getBoardsCount();
-  const contacts = await getContactCount();
-  const users = await getActiveUsersCount();
-  const accounts = await getAccountsCount();
-  const invoices = await getInvoicesCount();
-  const revenue = await getExpectedRevenue();
-  const documents = await getDocumentsCount();
-  const opportunities = await getOpportunitiesCount();
-  const usersTasks = await getUsersTasksCount(userId);
+  const today = new Date().toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 
-  //Find which modules are enabled
-  const crmModule = modules.find((module) => module.name === 'crm');
-  const invoiceModule = modules.find((module) => module.name === 'invoice');
-  const projectsModule = modules.find((module) => module.name === 'projects');
-  const documentsModule = modules.find((module) => module.name === 'documents');
-  const employeesModule = modules.find((module) => module.name === 'employee');
-  const workflowsModule = modules.find((module) => module.name === 'workflows');
-  const secondBrainModule = modules.find(
-    (module) => module.name === 'secondBrain'
-  );
+  const capitalToday = today.charAt(0).toUpperCase() + today.slice(1);
 
   return (
-    <Container
-      title={dict.DashboardPage.containerTitle}
-      description={dict.DashboardPage.containerDescription}
-    >
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Suspense fallback={<LoadingBox />}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {dict.DashboardPage.totalRevenue}
-              </CardTitle>
-              <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-medium">{'0'}</div>
-            </CardContent>
-          </Card>
-        </Suspense>
-        <Suspense fallback={<LoadingBox />}>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {dict.DashboardPage.expectedRevenue}
-              </CardTitle>
-              <DollarSignIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-medium">
-                {
-                  //I need revenue value in format 1.000.000
-                  revenue.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                  })
-                }
-              </div>
-            </CardContent>
-          </Card>
-        </Suspense>
+    <div className="h-full flex-1 overflow-hidden p-6 pt-5 lg:p-8 lg:pt-6">
 
-        <DashboardCard
-          href="/admin/users"
-          title={dict.DashboardPage.activeUsers}
-          IconComponent={UserIcon}
-          content={users}
+      {/* ── Bandeau d'accueil ─────────────────────────────────────────────── */}
+      <div
+        className="relative mb-6 overflow-hidden rounded-2xl px-7 py-6"
+        style={{ background: 'linear-gradient(135deg, #1E1D3D 0%, #36355F 100%)' }}
+      >
+        {/* Rayons décoratifs en fond */}
+        <svg
+          className="absolute inset-0 h-full w-full opacity-[0.05]"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <defs>
+            <pattern id="heroRays" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+              <line x1="60" y1="60" x2="60"  y2="10"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="95"  y2="25"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="110" y2="60"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="95"  y2="95"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="60"  y2="110" stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="25"  y2="95"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="10"  y2="60"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+              <line x1="60" y1="60" x2="25"  y2="25"  stroke="#FAC731" strokeWidth="2" strokeLinecap="round" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#heroRays)" />
+        </svg>
+
+        {/* Soleil décoratif à droite */}
+        <HeroSun />
+
+        {/* Barre orange en bas */}
+        <div
+          className="absolute bottom-0 left-0 h-[3px] w-full"
+          style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731, transparent)' }}
         />
-        {
-          //show employee module only if enabled is true
-          employeesModule?.enabled && (
-            <DashboardCard
-              href="/employees"
-              title="Employees"
-              IconComponent={Users2Icon}
-              content={employees}
-            />
-          )
-        }
-        {
-          //show workflow module only if enabled is true
-          workflowsModule?.enabled && (
-            <DashboardCard
-              href="/workflows"
-              title="Workflows"
-              IconComponent={GitFork}
-              content={workflows}
-            />
-          )
-        }
-        {
-          //show crm module only if enabled is true
-          crmModule?.enabled && (
-            <>
-              <DashboardCard
-                href="/crm/accounts"
-                title={dict.DashboardPage.accounts}
-                IconComponent={LandmarkIcon}
-                content={accounts}
-              />
-              <DashboardCard
-                href="/crm/opportunities"
-                title={dict.DashboardPage.opportunities}
-                IconComponent={HeartHandshakeIcon}
-                content={opportunities}
-              />
-              <DashboardCard
-                href="/crm/contacts"
-                title={dict.DashboardPage.contacts}
-                IconComponent={Contact}
-                content={contacts}
-              />
-              <DashboardCard
-                href="/crm/leads"
-                title={dict.DashboardPage.leads}
-                IconComponent={CoinsIcon}
-                content={leads}
-              />
-            </>
-          )
-        }
-        {projectsModule?.enabled && (
-          <>
-            <DashboardCard
-              href="/projects"
-              title={dict.DashboardPage.projects}
-              IconComponent={CoinsIcon}
-              content={projects}
-            />
-            <DashboardCard
-              href="/projects/tasks"
-              title={dict.DashboardPage.tasks}
-              IconComponent={CoinsIcon}
-              content={tasks}
-            />
-            <DashboardCard
-              href={`/projects/tasks/${userId}`}
-              title={dict.DashboardPage.myTasks}
-              IconComponent={CoinsIcon}
-              content={usersTasks}
-            />
-          </>
-        )}
-        {invoiceModule?.enabled && (
-          <DashboardCard
-            href="/invoice"
-            title={dict.DashboardPage.invoices}
-            IconComponent={CoinsIcon}
-            content={invoices}
-          />
-        )}
-        {documentsModule?.enabled && (
-          <DashboardCard
-            href="/documents"
-            title={dict.DashboardPage.documents}
-            IconComponent={CoinsIcon}
-            content={documents}
-          />
-        )}
 
-        <StorageQuota actual={storage} title={dict.DashboardPage.storage} />
+        {/* Contenu */}
+        <div className="relative z-10">
+          <p
+            className="mb-1 text-xs font-semibold uppercase tracking-widest"
+            style={{ color: '#FAC731' }}
+          >
+            {process.env.NEXT_PUBLIC_APP_NAME ?? 'KEKELI Group ERP'}
+          </p>
+          <h1 className="text-2xl font-bold text-white">
+            {firstName ? `Bonjour, ${firstName}` : 'Tableau de bord'}
+          </h1>
+          <p className="mt-1 text-sm text-white/55">{capitalToday}</p>
 
-        {secondBrainModule?.enabled && (
-          <Suspense fallback={<LoadingBox />}>
-            <NotionsBox />
-          </Suspense>
-        )}
+          {/* Séparateur + description */}
+          <div className="mt-4 flex items-center gap-3">
+            <div
+              className="h-px w-8 rounded-full"
+              style={{ background: '#FF7E00' }}
+            />
+            <p className="text-xs font-medium text-white/40">
+              {dict.DashboardPage.containerDescription}
+            </p>
+          </div>
+        </div>
       </div>
-    </Container>
+
+      {/* ── Contenu principal ─────────────────────────────────────────────── */}
+      <div className="h-full overflow-auto pb-32 text-sm">
+        <Suspense fallback={<SuspenseLoading />}>
+          <GlobalDashboard data={dashboardData} modules={modules} />
+        </Suspense>
+      </div>
+
+    </div>
   );
 };
 
 export default DashboardPage;
-
-const DashboardCard = ({
-  href,
-  title,
-  IconComponent,
-  content,
-}: {
-  href?: string;
-  title: string;
-  IconComponent: LucideIcon;
-  content: number;
-}) => (
-  <Link href={href || '#'}>
-    <Suspense fallback={<LoadingBox />}>
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <IconComponent className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-medium">{content}</div>
-        </CardContent>
-      </Card>
-    </Suspense>
-  </Link>
-);

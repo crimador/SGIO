@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ ist ein Open-Source-CRM, das auf NextJS aufbaut."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Enterprise ERP-Managementsystem."
   },
   "ModuleMenu": {
     "dashboard": "Armaturenbrett",
@@ -16,6 +16,7 @@
     "emails": "E-mails",
     "tasks": "Aufgaben",
     "invoices": "Rechnungen",
+    "employees": "Mitarbeiter",
     "reports": "Berichte",
     "documents": "Dokumente",
     "storage": "Speicher",
@@ -24,7 +25,7 @@
   "DashboardPage": {
     "containerTitle": "Armaturenbrett",
     "totalRevenue": "Gesamtumsatz",
-    "containerDescription": "Willkommen bei SaasHQ, hier können Sie alle wichtigen Informationen über Ihr Unternehmen sehen.",
+    "containerDescription": "Willkommen bei KEKELI GROUP, hier können Sie alle wichtigen Informationen über Ihr Unternehmen sehen.",
     "expectedRevenue": "Erwarteter Umsatz",
     "activeUsers": "Aktive Benutzer",
     "accounts": "Unternehmen",
@@ -49,5 +50,51 @@
     "cardDescription": "Erstellen Sie ein Konto, indem Sie sich anmelden mit",
     "label": "Sprache",
     "locale": "{locale, select, de {Deutsch} en {Englisch} cz {Tschechisch} uk {Ukrainian} other {Unbekannt}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "PDF hochladen",
+    "myInvoices": "Meine Rechnungen",
+    "settings": "Einstellungen",
+    "companySettings": "Unternehmenseinstellungen",
+    "companySettingsDescription": "Diese Daten werden als Standardwerte für Ihre Rechnungen verwendet. Sie können sie jederzeit ändern. Sehr wichtig ist die Einstellung der Konto-E-Mail, die Dateien für den Import in ERPs empfängt",
+    "filterByInvoiceNumber": "Nach Rechnungsnummer filtern...",
+    "dueDate": "Fälligkeitsdatum",
+    "number": "Nummer",
+    "amount": "Betrag",
+    "partner": "Partner",
+    "rossumState": "Rossum Status",
+    "status": "Status",
+    "noResults": "Keine Ergebnisse.",
+    "rowsSelected": "Zeile(n) ausgewählt.",
+    "rowsPerPage": "Zeilen pro Seite",
+    "view": "Anzeigen"
+  },
+  "EmployeePage": {
+    "title": "Mitarbeiter",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "officePhone": "Bürotelefon",
+    "email": "E-Mail",
+    "position": "Position",
+    "salary": "Gehalt",
+    "onBoarding": "Onboarding",
+    "pickExpectedCloseDate": "Erwartetes Enddatum auswählen",
+    "iban": "IBAN",
+    "assignedUser": "Zugewiesener Benutzer",
+    "taxId": "Steuer-ID",
+    "insurance": "Versicherung",
+    "address": "Adresse",
+    "close": "Schließen",
+    "createEmployee": "Mitarbeiter erstellen",
+    "noEmployeesFound": "Keine zugewiesenen Mitarbeiter gefunden"
+  },
+  "TimekeepingPage": {
+    "title": "Zeiterfassung",
+    "employee": "Mitarbeiter",
+    "timeIn": "Ankunftszeit",
+    "timeOut": "Abgangszeit",
+    "verified": "Verifiziert",
+    "createTimekeeping": "Eintrag hinzufügen",
+    "noTimekeepingFound": "Keine Zeiteinträge gefunden"
   }
 }

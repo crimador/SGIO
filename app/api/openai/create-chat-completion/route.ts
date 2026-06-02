@@ -26,16 +26,20 @@ export async function POST(req: Request) {
       },
     });
 
-    //console.log("Active GPT Model:", gptModel[0].model);
+    const isGroqKey =
+      (process.env.GROQ_API_KEY && !process.env.OPENAI_API_KEY) ||
+      gptModel[0]?.model?.startsWith('llama') ||
+      gptModel[0]?.model?.startsWith('mixtral') ||
+      gptModel[0]?.model?.startsWith('gemma');
 
-    //console.log(prompt, "prompt");
-    // Ask OpenAI for a chats completion given the prompt
+    const model = isGroqKey ? 'llama-3.3-70b-versatile' : gptModel[0]?.model ?? 'gpt-3.5-turbo';
+
     const response = await openai.chat.completions.create({
       messages: [
         { role: 'system', content: 'You are a helpful assistant.' },
         { role: 'user', content: prompt },
       ],
-      model: gptModel[0].model,
+      model,
       temperature: 0,
     });
 

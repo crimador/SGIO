@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -88,7 +87,13 @@ const SetGptModel: FC<{
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <button
+          type="submit"
+          className="flex h-10 items-center rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+          style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+        >
+          Appliquer
+        </button>
       </form>
     </Form>
   );

@@ -1,12 +1,9 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle,
 } from '@/components/ui/card';
 import {
   Form,
@@ -63,14 +60,14 @@ export function TeamConversations({
       setIsLoading(true);
       await axios.post(`/api/crm/tasks/addCommentToTask/${taskId}`, data);
       toast({
-        title: 'Success, comment added.',
+        title: 'Commentaire ajouté.',
       });
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
           variant: 'destructive',
-          title: 'Error',
-          description: 'Something went wrong while sending comment to the DB',
+          title: 'Erreur',
+          description: 'Une erreur est survenue lors de l&apos;envoi du commentaire.',
         });
       }
     } finally {
@@ -97,7 +94,7 @@ export function TeamConversations({
                 <FormControl>
                   <Input
                     disabled={isLoading}
-                    placeholder="Your comment ..."
+                    placeholder="Votre commentaire..."
                     {...field}
                   />
                 </FormControl>
@@ -106,24 +103,25 @@ export function TeamConversations({
             )}
           />
 
-          <Button className="w-[80px]" disabled={isLoading} type="submit">
-            Add
-          </Button>
+          <button
+            className="flex h-9 items-center gap-1.5 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+            disabled={isLoading}
+            type="submit"
+          >
+            Envoyer
+          </button>
         </form>
       </Form>
-      <Card className="w-full">
+      <Card className="w-full overflow-hidden">
+        <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
         <CardHeader>
-          <CardTitle>Team conversation</CardTitle>
-          <CardDescription>
-            Invite your team members to collaborate.
-          </CardDescription>
+          <p className="text-base font-bold" style={{ color: '#1E1D3D' }}>Discussion d&apos;équipe</p>
+          <p className="mt-0.5 text-xs text-gray-400">Échangez avec votre équipe.</p>
         </CardHeader>
         <CardContent className="grid gap-6">
           {comments?.map((comment: any) => (
             <>
-              {/*               <pre>
-                <code>{JSON.stringify(comment, null, 2)}</code>
-              </pre> */}
               <div key={comment.id} className="flex items-center space-x-4">
                 <Avatar>
                   <AvatarImage
@@ -136,7 +134,7 @@ export function TeamConversations({
                     <p className="text-sm font-medium leading-none">
                       {comment.assigned_user?.name}
                     </p>
-                    <p className="py-2 text-xs text-muted-foreground">
+                    <p className="py-2 text-xs text-gray-400">
                       {comment.comment}
                     </p>
                   </div>

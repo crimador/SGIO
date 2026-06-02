@@ -8,62 +8,21 @@ import {
 } from '@radix-ui/react-icons';
 
 export const labels = [
-  {
-    value: 'bug',
-    label: 'Bug',
-  },
-  {
-    value: 'feature',
-    label: 'Feature',
-  },
-  {
-    value: 'documentation',
-    label: 'Documentation',
-  },
+  { value: 'bug',           label: 'Bug' },
+  { value: 'feature',       label: 'Fonctionnalité' },
+  { value: 'documentation', label: 'Documentation' },
 ];
 
 export const statuses = [
-  {
-    value: 'ACTIVE',
-    label: 'Active',
-    icon: QuestionMarkCircledIcon,
-  },
-  {
-    value: 'PENDING',
-    label: 'Pending',
-    icon: CircleIcon,
-  },
-  {
-    value: 'COMPLETE',
-    label: 'Complete',
-    icon: StopwatchIcon,
-  },
+  { value: 'ACTIVE',   label: 'Actif',    icon: QuestionMarkCircledIcon },
+  { value: 'PENDING',  label: 'En attente', icon: CircleIcon },
+  { value: 'COMPLETE', label: 'Terminé',  icon: StopwatchIcon },
 ];
 
 export const priorities = [
-  {
-    label: 'Low',
-    value: 'low',
-    icon: ArrowDownIcon,
-  },
-  {
-    label: 'Normal',
-    value: 'normal',
-    icon: ArrowRightIcon,
-  },
-  {
-    label: 'Medium',
-    value: 'medium',
-    icon: ArrowRightIcon,
-  },
-  {
-    label: 'High',
-    value: 'high',
-    icon: ArrowUpIcon,
-  },
-  {
-    label: 'Critical',
-    value: 'critical',
-    icon: ArrowUpIcon,
-  },
+  { label: 'Faible',   value: 'low',      icon: ArrowDownIcon },
+  { label: 'Normale',  value: 'normal',   icon: ArrowRightIcon },
+  { label: 'Moyenne',  value: 'medium',   icon: ArrowRightIcon },
+  { label: 'Haute',    value: 'high',     icon: ArrowUpIcon },
+  { label: 'Critique', value: 'critical', icon: ArrowUpIcon },
 ];

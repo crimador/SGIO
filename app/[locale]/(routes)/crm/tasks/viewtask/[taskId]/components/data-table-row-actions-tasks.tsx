@@ -1,9 +1,8 @@
 'use client';
 
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { MoreHorizontal } from 'lucide-react';
 import type { Row } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,8 +33,6 @@ export function DataTableRowActionsTasks<TData>({
   const router = useRouter();
   const params = useParams();
 
-  //console.log(params, "params");
-
   const { toast } = useToast();
 
   const onDisconnect = async () => {
@@ -47,14 +44,14 @@ export function DataTableRowActionsTasks<TData>({
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Error',
+        title: 'Erreur',
         description:
-          'Something went wrong, while disconnecting document from task',
+          'Une erreur est survenue lors de la dissociation du document.',
       });
     } finally {
       toast({
-        title: 'Success',
-        description: 'Document was disconnected from task',
+        title: 'Succès',
+        description: 'Document dissocié de la tâche.',
       });
       router.refresh();
       setLoading(false);
@@ -71,20 +68,17 @@ export function DataTableRowActionsTasks<TData>({
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-          >
-            <DotsHorizontalIcon className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
+          <button className="flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-[#FF7E00]/[0.08]">
+            <MoreHorizontal className="h-4 w-4 text-gray-500" />
+            <span className="sr-only">Ouvrir le menu</span>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[260px]">
           <DropdownMenuItem onClick={onDisconnect}>
-            Disconnect from task
+            Dissocier de la tâche
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
-            View
+            Voir
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -13,6 +13,18 @@ export const getDocuments = async () => {
           name: true,
         },
       },
+      accounts: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      tasks: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
     },
     orderBy: {
       date_created: 'desc',

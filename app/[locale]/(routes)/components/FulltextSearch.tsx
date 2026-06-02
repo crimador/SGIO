@@ -1,5 +1,4 @@
 'use client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SearchIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -18,14 +17,19 @@ const FulltextSearch = () => {
     <div className="flex w-full max-w-sm items-center space-x-2">
       <Input
         type="text"
-        placeholder={'Search something ...'}
+        placeholder={'Rechercher...'}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <Button type="submit" className="gap-2" onClick={handleSearch}>
-        <span className="hidden sm:flex">Search</span>
-        <SearchIcon />
-      </Button>
+      <button
+        type="submit"
+        onClick={handleSearch}
+        className="flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-white transition-all active:scale-[0.98]"
+        style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+      >
+        <span className="hidden sm:flex">Rechercher</span>
+        <SearchIcon className="h-4 w-4" />
+      </button>
     </div>
   );
 };

@@ -2,73 +2,65 @@
 
 import { Cross2Icon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
+import { format } from 'date-fns';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableViewOptions } from './data-table-view-options';
-
 import { statuses } from '../table-data/data';
 import { DataTableFacetedFilter } from './data-table-faceted-filter';
+import { ExportCsvButton } from '@/components/ui/export-csv-button';
+import { DateRangeFilter } from '@/components/ui/date-range-filter';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTableToolbar<TData>({
-  table,
-}: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
         <Input
-          placeholder="Filter leads ..."
+          placeholder="Filtrer par entreprise..."
           value={(table.getColumn('company')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('company')?.setFilterValue(event.target.value)
-          }
+          onChange={(e) => table.getColumn('company')?.setFilterValue(e.target.value)}
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {/*         <Input
-          placeholder="Filter by assigned user ..."
-          value={
-            (table.getColumn("assigned_to_user")?.getFilterValue() as string) ??
-            ""
-          }
-          onChange={(event) =>
-            table
-              .getColumn("assigned_to_user")
-              ?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        /> */}
         {table.getColumn('status') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('status')}
-            title="Status"
-            options={statuses}
-          />
+          <DataTableFacetedFilter column={table.getColumn('status')} title="Statut" options={statuses} />
         )}
-        {/*        {table.getColumn("priority") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("priority")}
-            title="Priority"
-            options={priorities}
-          />
-        )} */}
+        <DateRangeFilter column={table.getColumn('createdAt')} title="Période" />
         {isFiltered && (
-          <Button
-            variant="ghost"
+          <button
             onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            className="flex h-8 items-center gap-1.5 rounded-md border px-2 text-sm font-medium transition-colors hover:bg-gray-50 lg:px-3"
+            style={{ color: '#1E1D3D' }}
           >
-            Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
-          </Button>
+            Réinitialiser <Cross2Icon className="h-4 w-4" />
+          </button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className="flex items-center gap-2">
+        <ExportCsvButton
+          table={table}
+          filename={`prospects_${format(new Date(), 'yyyy-MM-dd')}`}
+          getExportRow={(row: any) => ({
+            'Prénom': row.firstName ?? '',
+            'Nom': row.lastName ?? '',
+            'Entreprise': row.company ?? '',
+            'Poste': row.jobTitle ?? '',
+            'Email': row.email ?? '',
+            'Téléphone': row.phone ?? '',
+            'Statut': row.status ?? '',
+            'Source': row.lead_source ?? '',
+            'Référé par': row.refered_by ?? '',
+            'Responsable': row.assigned_to_user?.name ?? '',
+            'Créé le': row.createdAt ? format(new Date(row.createdAt), 'dd/MM/yyyy') : '',
+          })}
+        />
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }

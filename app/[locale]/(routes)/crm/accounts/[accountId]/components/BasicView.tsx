@@ -1,468 +1,198 @@
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
+  BadgePercent,
+  Building2,
+  CalendarCheck,
   CalendarDays,
-  CoinsIcon,
-  File,
-  Globe2,
+  ClipboardList,
+  Coins,
+  Factory,
+  FileText,
   Landmark,
-  MoreHorizontal,
-  Percent,
+  Mail,
+  MapPin,
+  Phone,
   User,
 } from 'lucide-react';
 import moment from 'moment';
 import { prismadb } from '@/lib/prisma';
 import Link from 'next/link';
-import { EnvelopeClosedIcon, LightningBoltIcon } from '@radix-ui/react-icons';
+import { LightningBoltIcon } from '@radix-ui/react-icons';
 
-interface OppsViewProps {
+interface BasicViewProps {
   data: any;
 }
 
-export async function BasicView({ data }: OppsViewProps) {
-  //console.log(data, "data");
+const REGIME_FISCAL_LABELS: Record<string, string> = {
+  reel_tva: 'Réel avec TVA',
+  reel_sans_tva: 'Réel sans TVA',
+  tpu: 'TPU',
+};
+
+function InfoRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value?: React.ReactNode;
+}) {
+  if (!value) return null;
+  return (
+    <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-[#FF7E00]/[0.05]">
+      <Icon className="mt-px h-5 w-5 shrink-0" style={{ color: '#FF7E00' }} />
+      <div className="space-y-1">
+        <p className="text-sm font-medium leading-none" style={{ color: '#1E1D3D' }}>{label}</p>
+        <p className="text-sm text-gray-500">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+export async function BasicView({ data }: BasicViewProps) {
   const users = await prismadb.users.findMany();
-  if (!data) return <div>Opportunity not found</div>;
+  if (!data) return <div>Client introuvable</div>;
+
+  const assignedUser = data.assigned_to_user?.name ?? '—';
+  const createdByUser = users.find((u) => u.id === data.createdBy)?.name ?? '—';
+  const updatedByUser = users.find((u) => u.id === data.updatedBy)?.name ?? '—';
+  const regimeFiscalLabel = data.regimeFiscal
+    ? (REGIME_FISCAL_LABELS[data.regimeFiscal] ?? data.regimeFiscal)
+    : null;
+
   return (
     <div className="space-y-5 pb-3">
-      {/*      <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <Card>
-        <CardHeader className="pb-3">
+      {/* Carte principale */}
+      <Card className="overflow-hidden">
+        <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+        <CardHeader className="pb-3 pt-5">
           <div className="flex w-full justify-between">
             <div>
-              <CardTitle>{data.name}</CardTitle>
-              <CardDescription>ID:{data.id}</CardDescription>
-            </div>
-            <div>
-              {
-                //TODO: Add menu
-                //TODO: Add edit button
-              }
-              <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+              <p className="text-lg font-bold" style={{ color: '#1E1D3D' }}>{data.name}</p>
+              <div className="mt-1 flex items-center gap-3 text-sm text-gray-400">
+                {data.status && (
+                  <span className="inline-flex items-center gap-1">
+                    <LightningBoltIcon className="h-3 w-3" />
+                    {data.status}
+                  </span>
+                )}
+                {data.industry_type?.name && (
+                  <span>{data.industry_type.name}</span>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid w-full grid-cols-2 gap-5">
+          <div className="grid w-full grid-cols-2 gap-2">
+            {/* Colonne gauche — Informations de contact */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Annual revenue
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.annual_revenue}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Landmark className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Company ID</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.company_id}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Percent className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">VAT number</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.vat ? data.vat : 'Not assigned'}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <File className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Description
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.description}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start justify-between space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <div className="mt-px flex gap-5">
-                  <EnvelopeClosedIcon className="mt-px h-5 w-5" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Email</p>
-
-                    <Link
-                      href={`mailto:${data.email}`}
-                      className="flex items-center gap-5 text-sm text-muted-foreground"
-                    >
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Contact
+              </p>
+              <InfoRow icon={Phone} label="Téléphone" value={data.office_phone} />
+              <InfoRow
+                icon={Mail}
+                label="E-mail"
+                value={
+                  data.email ? (
+                    <Link href={`mailto:${data.email}`} className="hover:underline" style={{ color: '#FF7E00' }}>
                       {data.email}
-                      <EnvelopeClosedIcon />
                     </Link>
-                  </div>
-                </div>
-                <p className="pr-20"></p>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <Globe2 className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Website</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data?.website ? (
-                      <Link href={data.website}>{data.website}</Link>
-                    ) : (
-                      'N/A'
-                    )}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Office phone
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.office_phone}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Fax</p>
-                  <p className="text-sm text-muted-foreground">{data.fax}</p>
-                </div>
-              </div>
+                  ) : null
+                }
+              />
+              <InfoRow icon={User} label="Responsable du dossier" value={assignedUser} />
+              <InfoRow
+                icon={Coins}
+                label="Chiffre d'affaires annuel"
+                value={
+                  data.annual_revenue
+                    ? `${Number(data.annual_revenue).toLocaleString('fr-FR')} FCFA`
+                    : null
+                }
+              />
+              <InfoRow icon={FileText} label="Notes internes" value={data.description} />
             </div>
+
+            {/* Colonne droite — Traçabilité */}
             <div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <User className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Assigned to
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.assigned_to_user.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created</p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.created_on).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Created by</p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.createdBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CalendarDays className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {moment(data.updatedAt).format('MMM DD YYYY')}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    Last update by
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {users.find((user) => user.id === data.updatedBy)?.name}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <LightningBoltIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Status</p>
-                  <p className="text-sm text-muted-foreground">{data.status}</p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Type</p>
-                  <p className="text-sm text-muted-foreground">{data.type}</p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Member of</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.member_of}
-                  </p>
-                </div>
-              </div>
-              <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-                <CoinsIcon className="mt-px h-5 w-5" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">Industry</p>
-                  <p className="text-sm text-muted-foreground">
-                    {data.industry}
-                  </p>
-                </div>
-              </div>
+              <p
+                className="mb-2 border-l-[3px] pl-3 text-xs font-semibold uppercase tracking-wide text-gray-400"
+                style={{ borderColor: '#FF7E00' }}
+              >
+                Historique
+              </p>
+              <InfoRow
+                icon={CalendarDays}
+                label="Créé le"
+                value={
+                  data.createdAt
+                    ? `${moment(data.createdAt).format('DD/MM/YYYY')} par ${createdByUser}`
+                    : null
+                }
+              />
+              <InfoRow
+                icon={CalendarDays}
+                label="Dernière modification"
+                value={
+                  data.updatedAt
+                    ? `${moment(data.updatedAt).format('DD/MM/YYYY')} par ${updatedByUser}`
+                    : null
+                }
+              />
             </div>
           </div>
         </CardContent>
       </Card>
+
       <div className="grid w-full grid-cols-2 gap-3">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>Billing Address</CardTitle>
+        {/* Carte informations légales */}
+        <Card className="overflow-hidden">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <CardHeader className="pb-3 pt-5">
+            <p className="flex items-center gap-2 text-sm font-semibold" style={{ color: '#1E1D3D' }}>
+              <Landmark className="h-4 w-4" style={{ color: '#FF7E00' }} />
+              Informations légales (Togo)
+            </p>
           </CardHeader>
-          <CardContent className="gap-1">
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Billing street
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_street}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Billing postal code
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_postal_code}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Billing city</p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_city}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Billing state
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_state}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Billing country
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.billing_country}
-                </p>
-              </div>
-            </div>
+          <CardContent className="space-y-1">
+            <InfoRow icon={ClipboardList} label="NIF" value={data.nif} />
+            <InfoRow icon={Building2} label="RCCM" value={data.rccm} />
+            <InfoRow icon={BadgePercent} label="Régime fiscal" value={regimeFiscalLabel} />
+            <InfoRow icon={Landmark} label="Centre des impôts" value={data.centreImpots} />
+            <InfoRow
+              icon={CalendarCheck}
+              label="Date de clôture d'exercice"
+              value={
+                data.dateCloture
+                  ? moment(data.dateCloture).format('DD/MM/YYYY')
+                  : null
+              }
+            />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle>Shipping Address</CardTitle>
+
+        {/* Carte adresse */}
+        <Card className="overflow-hidden">
+          <div className="h-[3px]" style={{ background: 'linear-gradient(to right, #FF7E00, #FAC731)' }} />
+          <CardHeader className="pb-3 pt-5">
+            <p className="flex items-center gap-2 text-sm font-semibold" style={{ color: '#1E1D3D' }}>
+              <MapPin className="h-4 w-4" style={{ color: '#FF7E00' }} />
+              Adresse
+            </p>
           </CardHeader>
-          <CardContent className="gap-1">
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Shipping street
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.shipping_street}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Shipping postal code
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.shipping_postal_code}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Shipping city
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.shipping_city}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Shipping state
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.shipping_state}
-                </p>
-              </div>
-            </div>
-            <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  Shipping country
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {data.shipping_country}
-                </p>
-              </div>
-            </div>
+          <CardContent className="space-y-1">
+            <InfoRow icon={MapPin} label="Rue / Quartier" value={data.billing_street} />
+            <InfoRow icon={MapPin} label="Ville" value={data.billing_city} />
+            <InfoRow icon={Factory} label="Pays" value={data.billing_country} />
           </CardContent>
         </Card>
       </div>
     </div>
-    /*     <Card>
-      <CardHeader className="pb-3">
-        <CardTitle>{data.name}</CardTitle>
-        <CardDescription>ID:{data.id}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 gap-1">
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-        <div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                Opportunity amount
-              </p>
-              <p className="text-sm text-muted-foreground">{data.budget}</p>
-            </div>
-          </div>
-
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <SquareStack className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Sales stage</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Combine className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Next step</p>
-              <p className="text-sm text-muted-foreground">{data.next_step}</p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <ClipboardList className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Description</p>
-              <p className="text-sm text-muted-foreground">
-                {data.description}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <User className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Assigned to</p>
-              <p className="text-sm text-muted-foreground">
-                {data.assigned_to_user.name}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Landmark className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Account name</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">
-                Expected close date
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.close_date).format("MMM DD YYYY")}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Created</p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.created_on).format("MMM DD YYYY")}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Created by</p>
-              <p className="text-sm text-muted-foreground">
-                {users.find((user) => user.id === data.created_by)?.name}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <CalendarDays className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Last update</p>
-              <p className="text-sm text-muted-foreground">
-                {moment(data.last_activity).format("MMM DD YYYY")}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Last update by</p>
-              <p className="text-sm text-muted-foreground">
-                {users.find((user) => user.id === data.last_activity_by)?.name}
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <List className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Type</p>
-              <p className="text-sm text-muted-foreground"></p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Landmark className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Lead source</p>
-              <p className="text-sm text-muted-foreground">
-                Will be added in the future
-              </p>
-            </div>
-          </div>
-          <div className="-mx-2 flex items-start space-x-4 rounded-md p-2 transition-all hover:bg-accent hover:text-accent-foreground">
-            <Clapperboard className="mt-px h-5 w-5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium leading-none">Campaign</p>
-              <p className="text-sm text-muted-foreground">
-                Will be added in the future
-              </p>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card> */
   );
 }

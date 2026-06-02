@@ -12,7 +12,6 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Form,
@@ -40,7 +39,6 @@ import SuspenseLoading from '@/components/loadings/suspense';
 import fetcher from '@/lib/fetcher';
 import useSWR from 'swr';
 
-//TODO: fix all the types
 type NewTaskFormProps = {
   initialData: any;
   setOpen: (value: boolean) => void;
@@ -93,16 +91,15 @@ export function UpdateOpportunityForm({
   const onSubmit = async (data: NewAccountFormValues) => {
     setIsLoading(true);
     try {
-      //Convert data.budget and data.expected_revenue to number
       await axios.put('/api/crm/opportunity', data);
       toast({
-        title: 'Success',
-        description: 'Opportunity updated successfully',
+        title: 'Succès',
+        description: 'Opportunité mise à jour avec succès.',
       });
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erreur',
         description: error?.response?.data,
       });
     } finally {
@@ -118,29 +115,16 @@ export function UpdateOpportunityForm({
         <SuspenseLoading />
       </div>
     );
-  //console.log(opportunities, "opportunities");
+
   const { users, accounts, contacts, saleTypes, saleStages, campaigns } =
     opportunities;
 
   if (!users || !accounts || !initialData)
-    return <div>Something went wrong, there is no data for form</div>;
+    return <div>Une erreur est survenue, données du formulaire introuvables.</div>;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="h-full px-10">
-        {/*        <div>
-          <pre>
-            <code>{JSON.stringify(form.formState.errors, null, 2)}</code>
-          </pre>
-        </div> */}
-        {/*     <pre>
-          <code>{JSON.stringify(initialData, null, 2)}</code>
-        </pre> */}
-        {/*        <div>
-          <pre>
-            <code>{JSON.stringify(form.watch(), null, 2)}</code>
-          </pre>
-        </div> */}
         <div className="w-[800px] text-sm">
           <div className="space-y-2 pb-5">
             <FormField
@@ -148,13 +132,9 @@ export function UpdateOpportunityForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Oportunity name</FormLabel>
+                  <FormLabel>Nom de l'opportunité</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="New SaasHQ functionality"
-                      {...field}
-                    />
+                    <Input disabled={isLoading} placeholder="Ex : Contrat Entreprise ABC" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,24 +145,24 @@ export function UpdateOpportunityForm({
               name="close_date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Expected close date</FormLabel>
+                  <FormLabel>Date de clôture prévue</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button
-                          variant={'outline'}
+                        <button
+                          type="button"
                           className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
+                            'flex h-9 w-[240px] items-center rounded-lg border px-3 text-left text-sm font-normal transition-colors hover:bg-gray-50',
+                            !field.value && 'text-gray-400'
                           )}
                         >
                           {field.value ? (
                             format(field.value, 'PPP')
                           ) : (
-                            <span>Pick a expected close date</span>
+                            <span>Choisir une date</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
+                        </button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -190,7 +170,6 @@ export function UpdateOpportunityForm({
                         mode="single"
                         selected={field.value}
                         //@ts-ignore
-                        //TODO: fix this
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date('1900-01-01')}
                         initialFocus
@@ -208,11 +187,7 @@ export function UpdateOpportunityForm({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      disabled={isLoading}
-                      placeholder="New SaasHQ functionality"
-                      {...field}
-                    />
+                    <Textarea disabled={isLoading} placeholder="Description de l'opportunité" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -225,14 +200,11 @@ export function UpdateOpportunityForm({
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Sales type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Type de vente</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Choose type " />
+                            <SelectValue placeholder="Choisir un type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="flex h-56 overflow-y-auto">
@@ -252,14 +224,11 @@ export function UpdateOpportunityForm({
                   name="sales_stage"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Sale stage</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Étape commerciale</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Choose actual stage " />
+                            <SelectValue placeholder="Choisir une étape" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="flex h-56 overflow-y-auto">
@@ -279,14 +248,9 @@ export function UpdateOpportunityForm({
                   name="budget"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bugdget</FormLabel>
+                      <FormLabel>Budget (FCFA)</FormLabel>
                       <FormControl>
-                        <Input
-                          type={'number'}
-                          disabled={isLoading}
-                          placeholder="1000000"
-                          {...field}
-                        />
+                        <Input type={'number'} disabled={isLoading} placeholder="1000000" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -297,13 +261,9 @@ export function UpdateOpportunityForm({
                   name="currency"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Currency</FormLabel>
+                      <FormLabel>Devise</FormLabel>
                       <FormControl>
-                        <Input
-                          disabled={isLoading}
-                          placeholder="USD"
-                          {...field}
-                        />
+                        <Input disabled={isLoading} placeholder="FCFA" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -314,14 +274,9 @@ export function UpdateOpportunityForm({
                   name="expected_revenue"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Expected revenue</FormLabel>
+                      <FormLabel>Revenu attendu (FCFA)</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          disabled={isLoading}
-                          placeholder="500000"
-                          {...field}
-                        />
+                        <Input type="number" disabled={isLoading} placeholder="500000" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -332,13 +287,9 @@ export function UpdateOpportunityForm({
                   name="next_step"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Next step</FormLabel>
+                      <FormLabel>Prochaine étape</FormLabel>
                       <FormControl>
-                        <Textarea
-                          disabled={isLoading}
-                          placeholder="Describe the next step"
-                          {...field}
-                        />
+                        <Textarea disabled={isLoading} placeholder="Décrire la prochaine action" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -351,14 +302,11 @@ export function UpdateOpportunityForm({
                   name="assigned_to"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned to</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Responsable</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a user to assign the account" />
+                            <SelectValue placeholder="Assigner à..." />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="h-56 overflow-y-auto">
@@ -378,14 +326,11 @@ export function UpdateOpportunityForm({
                   name="account"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned Account</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Client associé</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Choose account " />
+                            <SelectValue placeholder="Choisir un client" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -405,14 +350,11 @@ export function UpdateOpportunityForm({
                   name="contact"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assigned Contact</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Contact associé</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a user to assign the account" />
+                            <SelectValue placeholder="Choisir un contact" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="flex h-56 overflow-y-auto">
@@ -432,14 +374,11 @@ export function UpdateOpportunityForm({
                   name="campaign"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>From campaign</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel>Campagne</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a campaign" />
+                            <SelectValue placeholder="Choisir une campagne" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="flex h-56 overflow-y-auto">
@@ -459,15 +398,18 @@ export function UpdateOpportunityForm({
           </div>
         </div>
         <div className="grid gap-2 py-5">
-          <Button disabled={isLoading} type="submit">
+          <button
+            disabled={isLoading}
+            type="submit"
+            className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'linear-gradient(135deg, #FF7E00, #e8950a)' }}
+          >
             {isLoading ? (
-              <span className="flex animate-pulse items-center">
-                Saving data ...
-              </span>
+              <span className="flex animate-pulse items-center">Enregistrement...</span>
             ) : (
-              'Updates opportunity'
+              'Mettre à jour'
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </Form>

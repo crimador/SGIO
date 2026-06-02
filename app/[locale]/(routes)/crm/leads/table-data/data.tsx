@@ -1,19 +1,19 @@
-import { QuestionMarkCircledIcon, StopwatchIcon } from '@radix-ui/react-icons';
+import { QuestionMarkCircledIcon, StopwatchIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 
 export const statuses = [
   {
     value: 'NEW',
-    label: 'New',
+    label: 'Nouveau',
     icon: QuestionMarkCircledIcon,
   },
   {
     value: 'IN_PROGRESS',
-    label: 'In progress',
+    label: 'En cours',
     icon: StopwatchIcon,
   },
   {
     value: 'COMPLETED',
-    label: 'Completed',
-    icon: StopwatchIcon,
+    label: 'Complété',
+    icon: CheckCircledIcon,
   },
 ];

@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
@@ -33,9 +32,14 @@ const OnTestButton = () => {
   return (
     <div className="flex flex-col space-y-2">
       <Label>Send test</Label>
-      <Button onClick={onTest} disabled={loading}>
-        {loading ? <Icons.spinner className="animate-spin" /> : 'Test'}
-      </Button>
+      <button
+        onClick={onTest}
+        disabled={loading}
+        className="flex h-9 items-center rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-[#FF7E00]/[0.06] disabled:opacity-60"
+        style={{ color: '#1E1D3D' }}
+      >
+        {loading ? <Icons.spinner className="animate-spin" /> : 'Tester'}
+      </button>
     </div>
   );
 };

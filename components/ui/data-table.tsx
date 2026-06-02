@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 import type {
@@ -85,9 +84,12 @@ export function DataTable<TData, TValue>({
         {/* Visibility */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <button
+              className="ml-auto flex h-8 items-center rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50"
+              style={{ color: '#1E1D3D' }}
+            >
               Columns
-            </Button>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {table
@@ -156,22 +158,22 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
+        <button
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="flex h-8 items-center rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
+          style={{ color: '#1E1D3D' }}
         >
           Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
+        </button>
+        <button
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="flex h-8 items-center rounded-md border px-3 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
+          style={{ color: '#1E1D3D' }}
         >
           Next
-        </Button>
+        </button>
       </div>
     </div>
   );

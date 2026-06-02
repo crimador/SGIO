@@ -1,27 +1,27 @@
 import Container from '@/app/[locale]/(routes)/components/ui/Container';
-import { BasicView } from './components/BasicView';
 import { getEmployeesData } from '@/actions/employees/get-employees';
+import EmployeeProfile from './components/EmployeeProfile';
 
-interface EmployeeDetailPageProps {
-  params: {
-    employeeId: string;
-  };
+interface Props {
+  params: { employeeId: string };
 }
 
-const EmployeeViewPage = async ({ params }: EmployeeDetailPageProps) => {
-  const { employeeId } = params;
-  const employee: any = await getEmployeesData(employeeId);
+const EmployeeViewPage = async ({ params }: Props) => {
+  const result = await getEmployeesData(params.employeeId);
 
-  if (!employee) return <div>Employee not found</div>;
+  if (!result) return <div>Employé introuvable</div>;
 
   return (
     <Container
-      title={`Employee detail view: ${employee?.firstName} ${employee?.lastName}`}
-      description={'Everything you need to know about employees'}
+      title={`${result.employee.firstName} ${result.employee.lastName}`}
+      description={result.employee.position ?? 'Employé'}
     >
-      <div className="space-y-5">
-        <BasicView data={employee} />
-      </div>
+      <EmployeeProfile
+        employee={result.employee as any}
+        payslips={result.payslips}
+        requests={result.requests}
+        timekeeping={result.timekeeping as any}
+      />
     </Container>
   );
 };

@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ je open source CRM vytvořené na frameworku NextJS."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — Podnikový systém ERP."
   },
   "ModuleMenu": {
     "dashboard": "Přehled",
@@ -16,6 +16,7 @@
     "emails": "Pošta",
     "tasks": "Úkoly",
     "invoices": "Faktury",
+    "employees": "Zaměstnanci",
     "reports": "Reporty",
     "documents": "Dokumenty",
     "storage": "Úložiště",
@@ -23,7 +24,7 @@
   },
   "DashboardPage": {
     "containerTitle": "Přehled",
-    "containerDescription": "Vítejte v SaasHQ, zde můžete vidět všechny důležité informace o vašem podniku.",
+    "containerDescription": "Vítejte v KEKELI GROUP, zde můžete vidět všechny důležité informace o vašem podniku.",
     "totalRevenue": "Celkový obrat",
     "expectedRevenue": "Očekávaný obrat",
     "activeUsers": "Aktivní uživatelé",
@@ -49,5 +50,51 @@
     "cardDescription": "Vytvořte si účet přihlášením pomocí",
     "label": "Jazyk",
     "locale": "{locale, select, de {Němčina} en {Angličtina} cz {Čeština} uk {Ukrainian} other {Neznámý}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "Nahrát PDF",
+    "myInvoices": "Moje faktury",
+    "settings": "Nastavení",
+    "companySettings": "Nastavení společnosti",
+    "companySettingsDescription": "Tato data budou použita jako výchozí hodnoty pro vaše faktury. Můžete je kdykoli změnit. Velmi důležité je nastavit e-mail účtu, který bude přijímat soubory pro import do ERP systémů",
+    "filterByInvoiceNumber": "Filtrovat podle čísla faktury...",
+    "dueDate": "Datum splatnosti",
+    "number": "Číslo",
+    "amount": "Částka",
+    "partner": "Partner",
+    "rossumState": "Stav Rossum",
+    "status": "Stav",
+    "noResults": "Žádné výsledky.",
+    "rowsSelected": "řádek(ů) vybráno.",
+    "rowsPerPage": "Řádků na stránku",
+    "view": "Zobrazit"
+  },
+  "EmployeePage": {
+    "title": "Zaměstnanci",
+    "firstName": "Jméno",
+    "lastName": "Příjmení",
+    "officePhone": "Telefon do kanceláře",
+    "email": "E-mail",
+    "position": "Pozice",
+    "salary": "Plat",
+    "onBoarding": "Onboarding",
+    "pickExpectedCloseDate": "Vyberte očekávané datum ukončení",
+    "iban": "IBAN",
+    "assignedUser": "Přiřazený uživatel",
+    "taxId": "Daňové ID",
+    "insurance": "Pojištění",
+    "address": "Adresa",
+    "close": "Zavřít",
+    "createEmployee": "Vytvořit zaměstnance",
+    "noEmployeesFound": "Žádní přiřazení zaměstnanci nenalezeni"
+  },
+  "TimekeepingPage": {
+    "title": "Docházka",
+    "employee": "Zaměstnanec",
+    "timeIn": "Příchod",
+    "timeOut": "Odchod",
+    "verified": "Ověřeno",
+    "createTimekeeping": "Přidat záznam",
+    "noTimekeepingFound": "Žádné záznamy docházky"
   }
 }

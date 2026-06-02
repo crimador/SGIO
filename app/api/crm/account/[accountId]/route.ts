@@ -15,10 +15,9 @@ export async function DELETE(
   }
 
   try {
-    await prismadb.crm_Accounts.delete({
-      where: {
-        id: params.accountId,
-      },
+    await prismadb.crm_Accounts.update({
+      where: { id: params.accountId },
+      data: { deletedAt: new Date() },
     });
 
     return NextResponse.json({ message: 'Account deleted' }, { status: 200 });

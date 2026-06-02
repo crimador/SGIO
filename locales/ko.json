@@ -1,7 +1,7 @@
 {
   "RootLayout": {
-    "title": "SaasHQ",
-    "description": "SaasHQ는 NextJS 위에 구축된 오픈 소스 CRM입니다."
+    "title": "KEKELI GROUP",
+    "description": "KEKELI GROUP — 기업 ERP 관리 시스템."
   },
   "ModuleMenu": {
     "dashboard": "대시보드",
@@ -16,6 +16,7 @@
     "emails": "이메일",
     "tasks": "작업",
     "invoices": "송장",
+    "employees": "직원",
     "reports": "보고서",
     "documents": "문서",
     "storage": "저장소",
@@ -24,7 +25,7 @@
   "DashboardPage": {
     "containerTitle": "대시보드",
     "totalRevenue": "총 수익",
-    "containerDescription": "SaasHQ에 오신 것을 환영합니다, 여기에서 귀하의 비즈니스에 대한 모든 중요한 정보를 볼 수 있습니다.",
+    "containerDescription": "KEKELI GROUP에 오신 것을 환영합니다, 여기에서 귀하의 비즈니스에 대한 모든 중요한 정보를 볼 수 있습니다.",
     "expectedRevenue": "예상 수익",
     "activeUsers": "활성 사용자",
     "accounts": "회사",
@@ -49,5 +50,51 @@
     "cardDescription": "로그인하여 계정 생성",
     "label": "언어",
     "locale": "{locale, select, de {독일어} en {영어} cz {체코어} uk {우크라이나어} other {기타 언어}}"
+  },
+  "InvoicePage": {
+    "uploadPdf": "PDF 업로드",
+    "myInvoices": "내 송장",
+    "settings": "설정",
+    "companySettings": "회사 설정",
+    "companySettingsDescription": "이 데이터는 송장의 기본값으로 사용됩니다. 언제든지 변경할 수 있습니다. ERP 가져오기 파일을 받을 계정 이메일을 설정하는 것이 매우 중요합니다",
+    "filterByInvoiceNumber": "송장 번호로 필터링...",
+    "dueDate": "만료일",
+    "number": "번호",
+    "amount": "금액",
+    "partner": "파트너",
+    "rossumState": "Rossum 상태",
+    "status": "상태",
+    "noResults": "결과가 없습니다.",
+    "rowsSelected": "행 선택됨.",
+    "rowsPerPage": "페이지당 행 수",
+    "view": "보기"
+  },
+  "EmployeePage": {
+    "title": "직원",
+    "firstName": "이름",
+    "lastName": "성",
+    "officePhone": "사무실 전화",
+    "email": "이메일",
+    "position": "직책",
+    "salary": "급여",
+    "onBoarding": "온보딩",
+    "pickExpectedCloseDate": "예상 종료일 선택",
+    "iban": "IBAN",
+    "assignedUser": "할당된 사용자",
+    "taxId": "세금 ID",
+    "insurance": "보험",
+    "address": "주소",
+    "close": "닫기",
+    "createEmployee": "직원 생성",
+    "noEmployeesFound": "할당된 직원을 찾을 수 없습니다"
+  },
+  "TimekeepingPage": {
+    "title": "근태 관리",
+    "employee": "직원",
+    "timeIn": "출근 시간",
+    "timeOut": "퇴근 시간",
+    "verified": "확인됨",
+    "createTimekeeping": "항목 추가",
+    "noTimekeepingFound": "근태 기록이 없습니다"
   }
 }

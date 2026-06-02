@@ -17,23 +17,20 @@ const ProfilePage = async () => {
 
   return (
     <Container
-      title="Profile"
-      description={'Here you can edit your user profile'}
+      title="Mon profil"
+      description="Modifiez vos informations personnelles et votre mot de passe."
     >
       <div>
-        {/*         <pre>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre> */}
-        <H4Title>Profile photo</H4Title>
+        <H4Title>Photo de profil</H4Title>
         <ProfilePhotoForm data={data} />
 
-        <H4Title>Profile</H4Title>
+        <H4Title>Informations personnelles</H4Title>
         <ProfileForm data={data} />
 
-        <H4Title>Password change</H4Title>
+        <H4Title>Changer le mot de passe</H4Title>
         <PasswordChangeForm userId={data.id} />
 
-        <H4Title>Notion Integration</H4Title>
+        <H4Title>Intégration Notion</H4Title>
         <NotionForm userId={data.id} />
       </div>
     </Container>

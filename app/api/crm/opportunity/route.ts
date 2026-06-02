@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { canWrite } from '@/lib/permissions';
 import sendEmail from '@/lib/sendmail';
 
 export async function POST(req: Request) {
@@ -9,6 +10,7 @@ export async function POST(req: Request) {
   if (!session) {
     return new NextResponse('Unauthenticated', { status: 401 });
   }
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
   try {
     const body = await req.json();
     const userId = session.user.id;
@@ -37,23 +39,23 @@ export async function POST(req: Request) {
 
     const newOpportunity = await prismadb.crm_Opportunities.create({
       data: {
-        account: account,
-        assigned_to: assigned_to,
-        budget: Number(budget),
-        campaign: campaign,
+        budget: Number(budget) || 0,
         close_date: close_date,
-        contact: contact,
-        created_by: userId,
+        contact: contact || null,
+        createdBy: userId,
         updatedBy: userId,
         last_activity_by: userId,
         currency: currency,
-        description: description,
-        expected_revenue: Number(expected_revenue),
+        description: description || null,
+        expected_revenue: Number(expected_revenue) || 0,
         name: name,
-        next_step: next_step,
-        sales_stage: sales_stage,
+        next_step: next_step || null,
         status: 'ACTIVE',
-        type: type,
+        ...(type ? { assigned_type: { connect: { id: type } } } : {}),
+        ...(sales_stage ? { assigned_sales_stage: { connect: { id: sales_stage } } } : {}),
+        ...(account ? { assigned_account: { connect: { id: account } } } : {}),
+        ...(assigned_to ? { assigned_to_user: { connect: { id: assigned_to } } } : {}),
+        ...(campaign ? { assigned_campaings: { connect: { id: campaign } } } : {}),
       },
     });
 
@@ -83,9 +85,12 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ newOpportunity }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.log('[NEW_OPPORTUNITY_POST]', error);
-    return new NextResponse('Initial error', { status: 500 });
+    return new NextResponse(
+      error?.message ?? 'Initial error',
+      { status: 500 }
+    );
   }
 }
 export async function PUT(req: Request) {
@@ -93,6 +98,7 @@ export async function PUT(req: Request) {
   if (!session) {
     return new NextResponse('Unauthenticated', { status: 401 });
   }
+  if (!canWrite(session.user.userRole, 'crm')) return new NextResponse('Forbidden', { status: 403 });
   try {
     const body = await req.json();
     const userId = session.user.id;
@@ -123,21 +129,21 @@ export async function PUT(req: Request) {
     const updatedOpportunity = await prismadb.crm_Opportunities.update({
       where: { id },
       data: {
-        account: account,
-        assigned_to: assigned_to,
-        budget: Number(budget),
-        campaign: campaign,
+        budget: Number(budget) || 0,
         close_date: close_date,
-        contact: contact,
+        contact: contact || null,
         updatedBy: userId,
         currency: currency,
-        description: description,
-        expected_revenue: Number(expected_revenue),
+        description: description || null,
+        expected_revenue: Number(expected_revenue) || 0,
         name: name,
-        next_step: next_step,
-        sales_stage: sales_stage,
+        next_step: next_step || null,
         status: 'ACTIVE',
-        type: type,
+        type: type || null,
+        ...(sales_stage ? { assigned_sales_stage: { connect: { id: sales_stage } } } : {}),
+        ...(account ? { assigned_account: { connect: { id: account } } } : {}),
+        ...(assigned_to ? { assigned_to_user: { connect: { id: assigned_to } } } : {}),
+        ...(campaign ? { assigned_campaings: { connect: { id: campaign } } } : {}),
       },
     });
 
@@ -167,9 +173,12 @@ export async function PUT(req: Request) {
     } */
 
     return NextResponse.json({ updatedOpportunity }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     console.log('[UPDATED_OPPORTUNITY_PUT]', error);
-    return new NextResponse('Initial error', { status: 500 });
+    return new NextResponse(
+      error?.message ?? 'Initial error',
+      { status: 500 }
+    );
   }
 }
 

@@ -3,8 +3,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-
 import * as Dialog from '@radix-ui/react-dialog';
 import { Cross1Icon } from '@radix-ui/react-icons';
 
@@ -60,10 +58,14 @@ const RightViewModalNoTrigger = ({
               {children}
             </div>
             <div className="flex justify-end p-3">
-              <Dialog.Close className="" asChild>
-                <Button variant={'destructive'} onClick={() => setOpen(false)}>
+              <Dialog.Close asChild>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="flex h-9 items-center rounded-lg border border-red-200 px-4 text-sm font-medium transition-colors hover:bg-red-50"
+                  style={{ color: '#dc2626' }}
+                >
                   Close
-                </Button>
+                </button>
               </Dialog.Close>
             </div>
           </div>

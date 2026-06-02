@@ -1,6 +1,6 @@
 import './globals.css';
 
-import { Inter } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
@@ -10,7 +10,11 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as SonnerToaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-montserrat',
+});
 
 type Props = {
   children: ReactNode;
@@ -69,26 +73,22 @@ export default async function RootLayout({
           name="viewport"
           content="width=device-width, height=device-height, initial-scale=1"
         />
-        <meta property="og:url" content="https://www.saashq.org" />
+        <meta property="og:url" content={process.env.NEXT_PUBLIC_APP_URL} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="SaasHQ" />
+        <meta property="og:title" content="KEKELI GROUP" />
         <meta
           property="og:description"
-          content="SaasHQ is an open source CRM/ERP starter built on top of NextJS. Technology stack: NextJS with Typescrtipt, Postgresql, TailwindCSS, React, Prisma, shadCN, resend.com, react.email and more."
+          content="KEKELI GROUP — Système ERP de gestion d'entreprise."
         />
-        <meta property="og:image" content="https://saashq.org/api/og" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="saashq.org" />
-        <meta property="twitter:url" content="https://www.saashq.org" />
-        <meta name="twitter:title" content="SaasHQ" />
+        <meta name="twitter:title" content="KEKELI GROUP" />
         <meta
           name="twitter:description"
-          content="SaasHQ is an open source CRM/ERP starter built on top of NextJS. Technology stack: NextJS with Typescrtipt, Postgresql, TailwindCSS, React, Prisma, shadCN, resend.com, react.email and more."
+          content="KEKELI GROUP — Système ERP de gestion d'entreprise."
         />
-        <meta name="twitter:image" content="https://saashq.org/api/og" />
       </head>
-      <body className={inter.className + 'h-screen overflow-hidden'}>
+      <body className={`${montserrat.variable} font-sans h-screen overflow-hidden`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}

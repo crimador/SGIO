@@ -7,7 +7,6 @@ import {
 import type { Column } from '@tanstack/react-table';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,11 +34,7 @@ export function DataTableColumnHeader<TData, TValue>({
     <div className={cn('flex items-center space-x-2', className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="-ml-3 h-8 data-[state=open]:bg-accent"
-          >
+          <button className="-ml-3 flex h-8 items-center gap-1 rounded-md px-3 text-sm font-medium transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100">
             <span>{title}</span>
             {column.getIsSorted() === 'desc' ? (
               <ArrowDownIcon className="ml-2 h-4 w-4" />
@@ -48,20 +43,20 @@ export function DataTableColumnHeader<TData, TValue>({
             ) : (
               <CaretSortIcon className="ml-2 h-4 w-4" />
             )}
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUpIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <ArrowUpIcon className="mr-2 h-3.5 w-3.5 text-gray-400" />
             Asc
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowDownIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <ArrowDownIcon className="mr-2 h-3.5 w-3.5 text-gray-400" />
             Desc
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeNoneIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+            <EyeNoneIcon className="mr-2 h-3.5 w-3.5 text-gray-400" />
             Hide
           </DropdownMenuItem>
         </DropdownMenuContent>

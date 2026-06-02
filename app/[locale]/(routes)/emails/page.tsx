@@ -8,7 +8,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getDictionary } from '@/dictionaries';
 
-const EmailRoute = async () => {
+const EmailRoute = async ({ params }: { params: { locale: string } }) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -19,11 +19,8 @@ const EmailRoute = async () => {
       },
     };
   }
-  //Get user language
-  const lang = session.user.userLanguage;
 
-  //Fetch translations from dictionary
-  const dict = await getDictionary(lang as 'en' | 'cz' | 'de' | 'ko');
+  const dict = await getDictionary(params.locale as 'en' | 'cz' | 'de' | 'uk' | 'ko' | 'fr');
 
   const layout = cookies().get('react-resizable-panels:layout');
   const collapsed = cookies().get('react-resizable-panels:collapsed');

@@ -14,7 +14,7 @@ export const labels = [
   },
   {
     value: 'feature',
-    label: 'Feature',
+    label: 'Fonctionnalité',
   },
   {
     value: 'documentation',
@@ -25,39 +25,39 @@ export const labels = [
 export const statuses = [
   {
     value: 'ACTIVE',
-    label: 'Active',
+    label: 'Actif',
     icon: QuestionMarkCircledIcon,
   },
   {
     value: 'PENDING',
-    label: 'Pending',
+    label: 'En attente',
     icon: CircleIcon,
   },
   {
     value: 'COMPLETE',
-    label: 'Complete',
+    label: 'Terminé',
     icon: StopwatchIcon,
   },
 ];
 
 export const priorities = [
   {
-    label: 'Low',
+    label: 'Faible',
     value: 'low',
     icon: ArrowDownIcon,
   },
   {
-    label: 'Normal',
+    label: 'Normale',
     value: 'normal',
     icon: ArrowRightIcon,
   },
   {
-    label: 'High',
+    label: 'Haute',
     value: 'high',
     icon: ArrowUpIcon,
   },
   {
-    label: 'Critical',
+    label: 'Critique',
     value: 'critical',
     icon: ArrowUpIcon,
   },
