@@ -2,7 +2,7 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { utapi } from '@/lib/server/uploadthings';
+import { utapi, toSafeFile } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Téléversement vers UploadThing (stockage cloud) au lieu du disque local
-    const uploaded = await utapi.uploadFiles(file);
+    // Le nom est nettoyé en ASCII (UploadThing rejette les accents/puces dans les en-têtes)
+    const uploaded = await utapi.uploadFiles(toSafeFile(file));
 
     if (uploaded.error || !uploaded.data) {
       console.log('[DOCUMENTS_UPLOAD_POST] UploadThing error', uploaded.error);

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { utapi } from '@/lib/server/uploadthings';
+import { utapi, toSafeFile } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     return new NextResponse('Fichier trop volumineux (max 4 Mo)', { status: 400 });
 
   // Téléversement vers UploadThing (stockage cloud)
-  const uploaded = await utapi.uploadFiles(file);
+  const uploaded = await utapi.uploadFiles(toSafeFile(file));
 
   if (uploaded.error || !uploaded.data) {
     console.log('[UPLOAD_AVATAR] UploadThing error', uploaded.error);

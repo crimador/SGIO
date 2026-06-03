@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { utapi } from "@/lib/server/uploadthings";
+import { utapi, toSafeFile } from "@/lib/server/uploadthings";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ export async function POST(
     if (!file) return new NextResponse("Aucun fichier", { status: 400 });
 
     // Téléversement vers UploadThing (stockage cloud)
-    const uploaded = await utapi.uploadFiles(file);
+    const uploaded = await utapi.uploadFiles(toSafeFile(file));
 
     if (uploaded.error || !uploaded.data) {
       console.log("[EMPLOYEE_PHOTO_POST] UploadThing error", uploaded.error);
