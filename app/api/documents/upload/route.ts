@@ -23,11 +23,16 @@ export async function POST(req: NextRequest) {
 
     // Téléversement vers UploadThing (stockage cloud) au lieu du disque local
     // Le nom est nettoyé en ASCII (UploadThing rejette les accents/puces dans les en-têtes)
-    const uploaded = await utapi.uploadFiles(toSafeFile(file));
+    const safeFile = toSafeFile(file);
+    const uploaded = await utapi.uploadFiles(safeFile);
 
     if (uploaded.error || !uploaded.data) {
-      console.log('[DOCUMENTS_UPLOAD_POST] UploadThing error', uploaded.error);
-      return new NextResponse('Erreur lors du téléversement', { status: 500 });
+      const detail = JSON.stringify(uploaded.error ?? 'no data');
+      console.log('[DOCUMENTS_UPLOAD_POST] UploadThing error:', detail);
+      return NextResponse.json(
+        { error: 'Erreur lors du téléversement', detail },
+        { status: 500 }
+      );
     }
 
     const { url, key } = uploaded.data;
@@ -50,7 +55,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ documentId: doc.id, url });
   } catch (error) {
-    console.log('[DOCUMENTS_UPLOAD_POST]', error);
-    return new NextResponse('Erreur serveur', { status: 500 });
+    const detail =
+      error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : JSON.stringify(error);
+    console.log('[DOCUMENTS_UPLOAD_POST]', detail);
+    return NextResponse.json({ error: 'Erreur serveur', detail }, { status: 500 });
   }
 }
