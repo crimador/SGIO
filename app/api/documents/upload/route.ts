@@ -2,8 +2,7 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { utapi } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,24 +21,22 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Aucun fichier fourni', { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Téléversement vers UploadThing (stockage cloud) au lieu du disque local
+    const uploaded = await utapi.uploadFiles(file);
 
-    const ext = file.name.split('.').pop() ?? 'bin';
-    const filename = `${crypto.randomUUID()}.${ext}`;
+    if (uploaded.error || !uploaded.data) {
+      console.log('[DOCUMENTS_UPLOAD_POST] UploadThing error', uploaded.error);
+      return new NextResponse('Erreur lors du téléversement', { status: 500 });
+    }
 
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(join(uploadDir, filename), buffer);
-
-    const url = `/uploads/${filename}`;
+    const { url, key } = uploaded.data;
 
     const doc = await prismadb.documents.create({
       data: {
         document_name: documentName || file.name,
         description: description || null,
         document_file_url: url,
-        key: filename,
+        key,
         size: file.size,
         document_file_mimeType: file.type || 'application/octet-stream',
         document_system_type: (documentType as any) || null,

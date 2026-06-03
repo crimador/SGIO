@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { utapi } from "@/lib/server/uploadthings";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,15 +18,15 @@ export async function POST(
     const file = formData.get("file") as File | null;
     if (!file) return new NextResponse("Aucun fichier", { status: 400 });
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Téléversement vers UploadThing (stockage cloud)
+    const uploaded = await utapi.uploadFiles(file);
 
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const filename = `${params.employeeId}.${ext}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "employees");
-    await writeFile(path.join(uploadDir, filename), buffer);
+    if (uploaded.error || !uploaded.data) {
+      console.log("[EMPLOYEE_PHOTO_POST] UploadThing error", uploaded.error);
+      return new NextResponse("Erreur lors du téléversement", { status: 500 });
+    }
 
-    const photoUrl = `/uploads/employees/${filename}`;
+    const photoUrl = uploaded.data.url;
     await prismadb.employee.update({
       where: { id: params.employeeId },
       data: { photo: photoUrl },

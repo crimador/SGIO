@@ -2,16 +2,14 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { unlink } from 'fs/promises';
-import { join } from 'path';
+import { utapi } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
-async function deleteLocalFile(key: string | null) {
+async function deleteStoredFile(key: string | null) {
   if (!key) return;
   try {
-    const filepath = join(process.cwd(), 'public', 'uploads', key);
-    await unlink(filepath);
+    await utapi.deleteFiles(key);
   } catch {
     // fichier absent ou déjà supprimé — pas bloquant
   }
@@ -80,8 +78,8 @@ export async function DELETE(
 
     await prismadb.documents.delete({ where: { id: params.documentId } });
 
-    // Suppression du fichier local (ignorée si stockage distant)
-    await deleteLocalFile(document.key);
+    // Suppression du fichier sur UploadThing
+    await deleteStoredFile(document.key);
 
     return NextResponse.json({ success: true });
   } catch (error) {

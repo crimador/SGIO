@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { randomUUID } from 'crypto';
+import { utapi } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,13 +21,13 @@ export async function POST(req: Request) {
   if (file.size > 4 * 1024 * 1024)
     return new NextResponse('Fichier trop volumineux (max 4 Mo)', { status: 400 });
 
-  const ext = file.name.split('.').pop() ?? 'jpg';
-  const filename = `${randomUUID()}.${ext}`;
-  const uploadDir = join(process.cwd(), 'public', 'uploads', 'avatars');
-  await mkdir(uploadDir, { recursive: true });
-  const bytes = await file.arrayBuffer();
+  // Téléversement vers UploadThing (stockage cloud)
+  const uploaded = await utapi.uploadFiles(file);
 
-  await writeFile(join(uploadDir, filename), Buffer.from(bytes));
+  if (uploaded.error || !uploaded.data) {
+    console.log('[UPLOAD_AVATAR] UploadThing error', uploaded.error);
+    return new NextResponse('Erreur lors du téléversement', { status: 500 });
+  }
 
-  return NextResponse.json({ url: `/uploads/avatars/${filename}` });
+  return NextResponse.json({ url: uploaded.data.url });
 }
