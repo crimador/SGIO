@@ -45,9 +45,18 @@ export async function POST(req: NextRequest) {
       }
       url = uploaded.data.url;
       key = uploaded.data.key;
-    } catch (upErr) {
-      const msg = upErr instanceof Error ? upErr.message : JSON.stringify(upErr);
-      const detail = `UPLOAD THREW · original="${file.name}" safe="${safeName}" · ${msg}`;
+    } catch (upErr: any) {
+      // On extrait un maximum de détails de l'erreur UploadThing
+      const parts: string[] = [];
+      if (upErr?.message) parts.push(`message=${upErr.message}`);
+      if (upErr?.code) parts.push(`code=${upErr.code}`);
+      if (upErr?.data) parts.push(`data=${JSON.stringify(upErr.data)}`);
+      if (upErr?.cause) {
+        const c = upErr.cause;
+        parts.push(`cause=${typeof c === 'object' ? JSON.stringify(c, Object.getOwnPropertyNames(c)) : String(c)}`);
+      }
+      const all = JSON.stringify(upErr, Object.getOwnPropertyNames(upErr ?? {}));
+      const detail = `UPLOAD THREW · ${parts.join(' · ')} · raw=${all}`;
       console.log('[DOCUMENTS_UPLOAD_POST]', detail);
       return NextResponse.json({ error: 'Erreur upload', detail }, { status: 500 });
     }
