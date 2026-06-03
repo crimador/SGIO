@@ -31,7 +31,6 @@ export const ourFileRouter = {
           createdBy: metadata.userId,
           assigned_user: metadata.userId,
           localFile: file.url,
-          employeeID: metadata.userId,
         },
       });
       return { documentId: doc.id };
@@ -63,7 +62,6 @@ export const ourFileRouter = {
           createdBy: metadata.userId,
           assigned_user: metadata.userId,
           localFile: file.url,
-          employeeID: metadata.userId,
         },
       });
       return { documentId: doc.id };
@@ -87,7 +85,6 @@ export const ourFileRouter = {
           createdBy: metadata.userId,
           assigned_user: metadata.userId,
           localFile: file.url,
-          employeeID: metadata.userId,
         },
       });
       return { documentId: doc.id };
