@@ -2,7 +2,7 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { utapi, toSafeFile } from '@/lib/server/uploadthings';
+import { utapi, toAsciiFileName } from '@/lib/server/uploadthings';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,21 +21,36 @@ export async function POST(req: NextRequest) {
       return new NextResponse('Aucun fichier fourni', { status: 400 });
     }
 
-    // Téléversement vers UploadThing (stockage cloud) au lieu du disque local
-    // Le nom est nettoyé en ASCII (UploadThing rejette les accents/puces dans les en-têtes)
-    const safeFile = toSafeFile(file);
-    const uploaded = await utapi.uploadFiles(safeFile);
+    // Téléversement vers UploadThing (stockage cloud) au lieu du disque local.
+    // On reconstruit le fichier depuis un Buffer avec un nom 100% ASCII
+    // (UploadThing rejette les accents/puces dans les en-têtes HTTP).
+    const safeName = toAsciiFileName(file.name);
+    const arrayBuffer = await file.arrayBuffer();
+    const safeFile = new File([arrayBuffer], safeName, {
+      type: file.type || 'application/octet-stream',
+    });
 
-    if (uploaded.error || !uploaded.data) {
-      const detail = JSON.stringify(uploaded.error ?? 'no data');
-      console.log('[DOCUMENTS_UPLOAD_POST] UploadThing error:', detail);
-      return NextResponse.json(
-        { error: 'Erreur lors du téléversement', detail },
-        { status: 500 }
-      );
+    console.log(`[DOCUMENTS_UPLOAD_POST] original="${file.name}" safe="${safeName}"`);
+
+    let url: string;
+    let key: string;
+    try {
+      const uploaded = await utapi.uploadFiles(safeFile);
+      if (uploaded.error || !uploaded.data) {
+        const detail = `safe="${safeName}" error=${JSON.stringify(uploaded.error ?? 'no data')}`;
+        return NextResponse.json(
+          { error: 'Erreur lors du téléversement', detail },
+          { status: 500 }
+        );
+      }
+      url = uploaded.data.url;
+      key = uploaded.data.key;
+    } catch (upErr) {
+      const msg = upErr instanceof Error ? upErr.message : JSON.stringify(upErr);
+      const detail = `UPLOAD THREW · original="${file.name}" safe="${safeName}" · ${msg}`;
+      console.log('[DOCUMENTS_UPLOAD_POST]', detail);
+      return NextResponse.json({ error: 'Erreur upload', detail }, { status: 500 });
     }
-
-    const { url, key } = uploaded.data;
 
     const doc = await prismadb.documents.create({
       data: {
@@ -55,11 +70,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ documentId: doc.id, url });
   } catch (error) {
-    const detail =
+    const msg =
       error instanceof Error
         ? `${error.name}: ${error.message}`
         : JSON.stringify(error);
-    console.log('[DOCUMENTS_UPLOAD_POST]', detail);
-    return NextResponse.json({ error: 'Erreur serveur', detail }, { status: 500 });
+    console.log('[DOCUMENTS_UPLOAD_POST]', msg);
+    return NextResponse.json({ error: 'Erreur serveur', detail: msg }, { status: 500 });
   }
 }
