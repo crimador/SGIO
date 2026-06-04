@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 async function deleteStoredFile(url: string | null) {
   if (!url) return;
   try {
-    await del(url);
+    await del(url, { token: process.env.BLOB_READ_WRITE_TOKEN?.trim() });
   } catch {
     // fichier absent ou déjà supprimé — pas bloquant
   }

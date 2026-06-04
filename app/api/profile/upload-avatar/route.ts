@@ -26,6 +26,7 @@ export async function POST(req: Request) {
     const blob = await put(`avatars/${file.name}`, file, {
       access: 'public',
       addRandomSuffix: true,
+      token: process.env.BLOB_READ_WRITE_TOKEN?.trim(),
     });
     return NextResponse.json({ url: blob.url });
   } catch (error) {
