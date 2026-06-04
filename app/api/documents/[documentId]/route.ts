@@ -2,14 +2,14 @@ import { authOptions } from '@/lib/auth';
 import { prismadb } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { utapi } from '@/lib/server/uploadthings';
+import { del } from '@vercel/blob';
 
 export const dynamic = 'force-dynamic';
 
-async function deleteStoredFile(key: string | null) {
-  if (!key) return;
+async function deleteStoredFile(url: string | null) {
+  if (!url) return;
   try {
-    await utapi.deleteFiles(key);
+    await del(url);
   } catch {
     // fichier absent ou déjà supprimé — pas bloquant
   }
@@ -78,8 +78,8 @@ export async function DELETE(
 
     await prismadb.documents.delete({ where: { id: params.documentId } });
 
-    // Suppression du fichier sur UploadThing
-    await deleteStoredFile(document.key);
+    // Suppression du fichier sur Vercel Blob (via son URL)
+    await deleteStoredFile(document.document_file_url);
 
     return NextResponse.json({ success: true });
   } catch (error) {

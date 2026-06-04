@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { utapi, toSafeFile } from "@/lib/server/uploadthings";
+import { put } from "@vercel/blob";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,23 +18,22 @@ export async function POST(
     const file = formData.get("file") as File | null;
     if (!file) return new NextResponse("Aucun fichier", { status: 400 });
 
-    // Téléversement vers UploadThing (stockage cloud)
-    const uploaded = await utapi.uploadFiles(toSafeFile(file));
-
-    if (uploaded.error || !uploaded.data) {
-      console.log("[EMPLOYEE_PHOTO_POST] UploadThing error", uploaded.error);
-      return new NextResponse("Erreur lors du téléversement", { status: 500 });
-    }
-
-    const photoUrl = uploaded.data.url;
-    await prismadb.employee.update({
-      where: { id: params.employeeId },
-      data: { photo: photoUrl },
+    // Téléversement vers Vercel Blob (stockage cloud)
+    const blob = await put(`employees/${file.name}`, file, {
+      access: 'public',
+      addRandomSuffix: true,
     });
 
-    return NextResponse.json({ url: photoUrl });
+    await prismadb.employee.update({
+      where: { id: params.employeeId },
+      data: { photo: blob.url },
+    });
+
+    return NextResponse.json({ url: blob.url });
   } catch (error) {
-    console.log("[EMPLOYEE_PHOTO_POST]", error);
+    const detail =
+      error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
+    console.log("[EMPLOYEE_PHOTO_POST]", detail);
     return new NextResponse("Erreur serveur", { status: 500 });
   }
 }

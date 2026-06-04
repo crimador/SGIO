@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { utapi, toSafeFile } from '@/lib/server/uploadthings';
+import { put } from '@vercel/blob';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,13 +21,17 @@ export async function POST(req: Request) {
   if (file.size > 4 * 1024 * 1024)
     return new NextResponse('Fichier trop volumineux (max 4 Mo)', { status: 400 });
 
-  // Téléversement vers UploadThing (stockage cloud)
-  const uploaded = await utapi.uploadFiles(toSafeFile(file));
-
-  if (uploaded.error || !uploaded.data) {
-    console.log('[UPLOAD_AVATAR] UploadThing error', uploaded.error);
+  try {
+    // Téléversement vers Vercel Blob (stockage cloud)
+    const blob = await put(`avatars/${file.name}`, file, {
+      access: 'public',
+      addRandomSuffix: true,
+    });
+    return NextResponse.json({ url: blob.url });
+  } catch (error) {
+    const detail =
+      error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
+    console.log('[UPLOAD_AVATAR]', detail);
     return new NextResponse('Erreur lors du téléversement', { status: 500 });
   }
-
-  return NextResponse.json({ url: uploaded.data.url });
 }
