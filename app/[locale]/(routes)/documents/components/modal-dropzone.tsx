@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { upload } from '@vercel/blob/client';
 
 import UploadFileModal from '@/components/modals/upload-file-modal';
 import { Input } from '@/components/ui/input';
@@ -59,6 +60,7 @@ const ModalDropzone = ({ buttonLabel, fileType }: Props) => {
   const [documentName, setDocumentName] = useState('');
   const [description, setDescription] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -79,21 +81,34 @@ const ModalDropzone = ({ buttonLabel, fileType }: Props) => {
   const handleUpload = async (file: File) => {
     setUploading(true);
     setError(null);
+    setProgress(0);
     try {
-      const form = new FormData();
-      form.append('file', file);
-      if (documentType) form.append('documentType', documentType);
-      if (documentName) form.append('documentName', documentName);
-      if (description) form.append('description', description);
+      // 1) Upload DIRECT navigateur → Vercel Blob (avec progression)
+      const blob = await upload(`documents/${file.name}`, file, {
+        access: 'public',
+        handleUploadUrl: '/api/documents/blob-upload',
+        onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
+      });
 
-      const res = await fetch('/api/documents/upload', {
+      // 2) Enregistrement du document en base
+      const res = await fetch('/api/documents/register', {
         method: 'POST',
-        body: form,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: blob.url,
+          pathname: blob.pathname,
+          size: file.size,
+          mimeType: file.type,
+          documentType: documentType || null,
+          documentName: documentName || null,
+          description: description || null,
+          originalName: file.name,
+        }),
       });
 
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || 'Erreur lors du téléversement');
+        throw new Error(text || "Erreur lors de l'enregistrement");
       }
 
       setStep('success');
@@ -192,6 +207,25 @@ const ModalDropzone = ({ buttonLabel, fileType }: Props) => {
               onUpload={handleUpload}
               uploading={uploading}
             />
+
+            {uploading && (
+              <div className="space-y-1.5">
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+                  <div
+                    className="h-full rounded-full transition-all duration-200"
+                    style={{
+                      width: `${progress}%`,
+                      background: 'linear-gradient(135deg, #FF7E00, #FAC731)',
+                    }}
+                  />
+                </div>
+                <p className="text-center text-xs font-medium text-gray-500">
+                  {progress < 100
+                    ? `Téléversement… ${progress}%`
+                    : 'Finalisation…'}
+                </p>
+              </div>
+            )}
 
             {error && (
               <p className="text-sm text-destructive">{error}</p>

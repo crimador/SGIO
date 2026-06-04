@@ -2,20 +2,33 @@ import { NextResponse } from "next/server";
 import { prismadb } from "@/lib/prisma";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
-import { readFile } from "fs/promises";
-import path from "path";
 import BadgePDF from "@/app/[locale]/(routes)/hr/components/BadgePDF";
 
 export const dynamic = 'force-dynamic';
 
-async function photoToDataUrl(photoPath: string | null): Promise<string | null> {
-  if (!photoPath) return null;
+async function photoToDataUrl(photoUrl: string | null): Promise<string | null> {
+  if (!photoUrl) return null;
   try {
-    // photoPath = "/uploads/employees/xxx.jpg" — on lit depuis public/
-    const filePath = path.join(process.cwd(), "public", photoPath);
-    const buffer = await readFile(filePath);
-    const ext = photoPath.split(".").pop()?.toLowerCase() ?? "jpg";
-    const mime = ext === "png" ? "image/png" : ext === "webp" ? "image/webp" : "image/jpeg";
+    // La photo est désormais une URL Vercel Blob (https://...) :
+    // on la télécharge puis on la convertit en data URL pour le PDF.
+    if (!photoUrl.startsWith("http")) return null;
+
+    const res = await fetch(photoUrl);
+    if (!res.ok) return null;
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const contentType = res.headers.get("content-type") || "";
+    const ext = photoUrl.split(".").pop()?.toLowerCase() ?? "";
+    const mime =
+      contentType.startsWith("image/")
+        ? contentType
+        : ext === "png"
+          ? "image/png"
+          : ext === "webp"
+            ? "image/webp"
+            : "image/jpeg";
+
     return `data:${mime};base64,${buffer.toString("base64")}`;
   } catch {
     return null;
