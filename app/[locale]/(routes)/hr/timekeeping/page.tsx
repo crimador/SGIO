@@ -6,7 +6,7 @@ import SuspenseLoading from '@/components/loadings/suspense';
 import Container from '../../components/ui/Container';
 import TimekeepingView from './components/TimekeepingView';
 
-import { getAllCrmData } from '@/actions/crm/get-crm-data';
+import { getEmployee } from '@/actions/get-employee';
 import { getTimekeeping } from '@/actions/get-timekeeping';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -16,9 +16,9 @@ const TimekeepingPage = async ({ params }: { params: { locale: string } }) => {
   const session = await getServerSession(authOptions);
   if (!session || !['DG', 'COMPTABLE', 'RH'].includes(session.user.userRole)) redirect('/unauthorized');
 
-  const [dict, crmData, timekeeping] = await Promise.all([
+  const [dict, employees, timekeeping] = await Promise.all([
     getDictionary(params.locale as 'en' | 'cz' | 'de' | 'uk' | 'ko' | 'fr'),
-    getAllCrmData(),
+    getEmployee(),
     getTimekeeping(),
   ]);
 
@@ -28,7 +28,7 @@ const TimekeepingPage = async ({ params }: { params: { locale: string } }) => {
       description={'Suivi des heures de travail et pointage des employés'}
     >
       <Suspense fallback={<SuspenseLoading />}>
-        <TimekeepingView crmData={crmData} data={timekeeping} />
+        <TimekeepingView employees={employees} data={timekeeping} />
       </Suspense>
     </Container>
   );

@@ -754,15 +754,16 @@ enum Document {
 }
 
 model Training {
-  id         String   @id @default(uuid())
-  employee   Employee @relation(fields: [employeeID], references: [id])
+  id         String    @id @default(uuid())
+  employee   Employee  @relation(fields: [employeeID], references: [id])
   employeeID String
   type       String
   date       DateTime
+  endDate    DateTime?
   time       DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  localFile  String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  localFile  String?
 }
 
 model PaySlip {

@@ -30,7 +30,7 @@ const TRAINING_TYPES = [
 
 type Employee = { id: string; firstName: string; lastName: string; email: string };
 type Training = {
-  id: string; type: string; date: string; time: string;
+  id: string; type: string; date: string; endDate?: string | null; time: string;
   employee: Employee;
 };
 
@@ -68,7 +68,7 @@ export default function TrainingsView({
 
   const today = new Date().toISOString().split('T')[0];
   const [form, setForm] = useState({
-    employeeID: '', type: '', date: today, time: '09:00',
+    employeeID: '', type: '', date: today, endDate: '', time: '09:00',
   });
 
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
@@ -89,18 +89,30 @@ export default function TrainingsView({
     }
     setLoading(true);
     try {
+      if (form.endDate && form.endDate < form.date) {
+        toast({ variant: 'destructive', title: 'La date de fin doit être après la date de début' });
+        setLoading(false);
+        return;
+      }
       const res = await axios.post('/api/training', {
         employeeID: form.employeeID,
         type:       form.type,
         date:       `${form.date}T00:00:00`,
+        endDate:    form.endDate ? `${form.endDate}T00:00:00` : null,
         time:       `${form.date}T${form.time}:00`,
       });
       setData(prev => [res.data, ...prev]);
       setOpen(false);
-      setForm({ employeeID: '', type: '', date: today, time: '09:00' });
+      setForm({ employeeID: '', type: '', date: today, endDate: '', time: '09:00' });
       toast({ title: 'Formation enregistrée' });
-    } catch {
-      toast({ variant: 'destructive', title: 'Erreur', description: "Impossible d'enregistrer." });
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const serverMsg = error?.response?.data?.error || error?.response?.data;
+      const description =
+        status === 403
+          ? 'Action réservée aux rôles Directeur (DG) et Responsable RH.'
+          : serverMsg || "Impossible d'enregistrer.";
+      toast({ variant: 'destructive', title: 'Erreur', description });
     } finally {
       setLoading(false);
     }
@@ -191,15 +203,20 @@ export default function TrainingsView({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label>Date *</Label>
+                    <Label>Date de début *</Label>
                     <input type="date" value={form.date} onChange={e => set('date', e.target.value)}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
                   </div>
                   <div className="space-y-1">
-                    <Label>Heure</Label>
-                    <input type="time" value={form.time} onChange={e => set('time', e.target.value)}
+                    <Label>Date de fin</Label>
+                    <input type="date" value={form.endDate} min={form.date} onChange={e => set('endDate', e.target.value)}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
                   </div>
+                </div>
+                <div className="space-y-1">
+                  <Label>Heure</Label>
+                  <input type="time" value={form.time} onChange={e => set('time', e.target.value)}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
                 </div>
                 <button
                   onClick={handleAdd} disabled={loading}
@@ -243,7 +260,10 @@ export default function TrainingsView({
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                    {format(new Date(t.date), 'dd MMMM yyyy', { locale: fr })}
+                    {format(new Date(t.date), 'dd MMM yyyy', { locale: fr })}
+                    {t.endDate && (
+                      <> → {format(new Date(t.endDate), 'dd MMM yyyy', { locale: fr })}</>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
                     {format(new Date(t.time), 'HH:mm')}

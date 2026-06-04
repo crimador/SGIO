@@ -49,8 +49,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ newTimekeeping }, { status: 200 });
   } catch (error) {
-    console.log('[NEW_TIMEKEEPING_POST]', error);
-    return new NextResponse('Initial error', { status: 500 });
+    const detail =
+      error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
+    console.log('[NEW_TIMEKEEPING_POST]', detail);
+    return NextResponse.json({ error: 'Erreur serveur', detail }, { status: 500 });
   }
 }
 

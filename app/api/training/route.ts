@@ -25,22 +25,31 @@ export async function POST(req: Request) {
   if (!['DG', 'RH'].includes(session.user.userRole))
     return new NextResponse('Forbidden', { status: 403 });
 
-  const { employeeID, type, date, time } = await req.json();
+  const { employeeID, type, date, endDate, time } = await req.json();
 
   if (!employeeID || !type || !date || !time)
     return NextResponse.json({ error: 'Tous les champs sont requis.' }, { status: 400 });
 
-  const training = await prismadb.training.create({
-    data: {
-      employeeID,
-      type,
-      date: new Date(date),
-      time: new Date(time),
-    },
-    include: {
-      employee: { select: { id: true, firstName: true, lastName: true, email: true } },
-    },
-  });
+  try {
+    const training = await prismadb.training.create({
+      data: {
+        employeeID,
+        type,
+        date: new Date(date),
+        endDate: endDate ? new Date(endDate) : null,
+        time: new Date(time),
+        localFile: '',
+      },
+      include: {
+        employee: { select: { id: true, firstName: true, lastName: true, email: true } },
+      },
+    });
 
-  return NextResponse.json(training, { status: 201 });
+    return NextResponse.json(training, { status: 201 });
+  } catch (error) {
+    const detail =
+      error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
+    console.log('[TRAINING_POST]', detail);
+    return NextResponse.json({ error: 'Erreur serveur', detail }, { status: 500 });
+  }
 }

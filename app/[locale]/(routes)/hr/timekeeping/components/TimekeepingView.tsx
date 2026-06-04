@@ -25,14 +25,18 @@ type Entry = {
   employee: { firstName: string; lastName: string; email: string };
 };
 
-const TimekeepingView = ({ data, crmData }: { data: Entry[]; crmData: any }) => {
+const TimekeepingView = ({ data, employees }: { data: Entry[]; employees: any[] }) => {
   const t = useTranslations('TimekeepingPage');
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => { setIsMounted(true); }, []);
   if (!isMounted) return null;
 
-  const { users } = crmData;
+  // Le pointage référence un employé (table Employee), pas un utilisateur.
+  const users = (employees ?? []).map((e: any) => ({
+    id: e.id,
+    name: `${e.firstName ?? ''} ${e.lastName ?? ''}`.trim() || e.email || 'Employé',
+  }));
 
   const now = new Date();
   const thisMonth = data.filter((e) => {
