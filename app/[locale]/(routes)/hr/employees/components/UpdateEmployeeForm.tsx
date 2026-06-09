@@ -53,18 +53,32 @@ export function UpdateEmployeeForm({
     fetcher
   );
 
+  const optionalStringField = (min: number, max: number) =>
+    z
+      .union([
+        z.string().min(min).max(max),
+        z.literal(''),
+        z.null(),
+      ])
+      .optional()
+      .transform((value) => (value === '' || value === null ? undefined : value));
+
   const formSchema = z.object({
     id: z.string(),
     firstName: z.string().min(3).max(50),
     lastName: z.string().min(3).max(50),
     email: z.string().email(),
-    phone: z.string().optional(),
-    position: z.string().optional(),
-    IBAN: z.string().min(3).max(50),
-    taxid: z.string().min(2).max(30).optional(),
-    address: z.string().min(3).max(250).optional(),
-    onBoarding: z.date().default(new Date()).optional(),
-    insurance: z.string().min(3).max(50).optional(),
+    phone: z.string().optional().transform((value) =>
+      value === '' ? undefined : value
+    ),
+    position: z.string().optional().transform((value) =>
+      value === '' ? undefined : value
+    ),
+    IBAN: optionalStringField(3, 50),
+    taxid: optionalStringField(2, 30),
+    address: optionalStringField(3, 250),
+    onBoarding: z.date().nullable().optional(),
+    insurance: optionalStringField(3, 50),
     salary: z.coerce.number().positive(),
   });
 
