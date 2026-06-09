@@ -14,7 +14,7 @@ const TasksPage = async () => {
   const [tasks, activeUsers, boards] = await Promise.all([
     getTasks(),
     getActiveUsers(),
-    getBoards(session?.user?.id),
+    getBoards(session?.user?.id, session?.user?.userRole),
   ]);
 
   return (

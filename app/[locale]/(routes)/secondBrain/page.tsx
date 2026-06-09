@@ -23,7 +23,7 @@ const SecondBrainPage = async ({ params }: { params: { locale: string } }) => {
   const notions = await getNotions();
   const users = await getActiveUsers();
   const userId = session?.user.id;
-  const boards = await getBoards(userId);
+  const boards = await getBoards(userId, session?.user.userRole);
 
   if (!notions || 'error' in notions) {
     return (

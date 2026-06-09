@@ -27,7 +27,7 @@ const BoardPage = async ({ params }: BoardDetailProps) => {
   const user = session?.user;
   const { boardId } = params;
   const board: any = await getBoard(boardId);
-  const boards = await getBoards(user?.id!);
+  const boards = await getBoards(user?.id!, user?.userRole);
   const users: Users[] = await getActiveUsers();
   const sections: any = await getBoardSections(boardId);
   const kanbanData = await getKanbanData(boardId);

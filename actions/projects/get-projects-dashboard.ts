@@ -8,15 +8,19 @@ export async function getProjectsDashboard() {
   if (!session) return null;
 
   const userId = session.user.id;
+  const userRole = session.user.userRole;
   const today = new Date();
   const nextWeek = dayjs().add(7, 'day').endOf('day').toDate();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
   // Boards accessibles par l'utilisateur
   const boards = await prismadb.boards.findMany({
-    where: {
-      OR: [{ user: userId }, { visibility: 'public' }],
-    },
+    where:
+      userRole === 'DG'
+        ? undefined
+        : {
+            OR: [{ user: userId }, { visibility: 'public' }],
+          },
     select: { id: true, title: true },
   });
 

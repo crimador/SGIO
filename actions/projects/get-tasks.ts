@@ -5,18 +5,22 @@ import { getServerSession } from 'next-auth';
 export const getTasks = async () => {
   const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
+  const userRole = session?.user?.userRole;
 
   const boards = await prismadb.boards.findMany({
-    where: {
-      OR: [
-        {
-          user: userId,
-        },
-        {
-          visibility: 'public',
-        },
-      ],
-    },
+    where:
+      userRole === 'DG'
+        ? undefined
+        : {
+            OR: [
+              {
+                user: userId,
+              },
+              {
+                visibility: 'public',
+              },
+            ],
+          },
     include: {
       assigned_user: {
         select: {

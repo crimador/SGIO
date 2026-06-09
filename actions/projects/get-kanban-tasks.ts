@@ -7,11 +7,15 @@ export async function getKanbanTasks() {
   if (!session) return [];
 
   const userId = session.user.id;
+  const userRole = session.user.userRole;
 
   const boards = await prismadb.boards.findMany({
-    where: {
-      OR: [{ user: userId }, { visibility: 'public' }],
-    },
+    where:
+      userRole === 'DG'
+        ? undefined
+        : {
+            OR: [{ user: userId }, { visibility: 'public' }],
+          },
     select: { id: true, title: true },
   });
 

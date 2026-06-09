@@ -53,7 +53,7 @@ const TaskPage = async ({ params }: TaskPageProps) => {
   const documents: any = await getDocuments();
   const comments: any = await getTaskComments(taskId);
   const activeUsers: any = await getActiveUsers();
-  const boards = await getBoards(user?.id!);
+  const boards = await getBoards(user?.id!, user?.userRole);
 
   return (
     <div className="flex w-full flex-col space-x-2 px-2 md:flex-row">

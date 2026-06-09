@@ -30,7 +30,7 @@ const InvoicePage = async ({ params }: { params: { locale: string } }) => {
     getInvoices() as Promise<any>,
     getAccountSettings() as Promise<MyAccount | null>,
     getActiveUsers(),
-    getBoards(session?.user.id!),
+    getBoards(session?.user.id!, session?.user.userRole),
   ]);
 
   return (

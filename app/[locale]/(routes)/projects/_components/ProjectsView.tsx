@@ -22,10 +22,11 @@ const ProjectsView = async () => {
   if (!session) return null;
 
   const userId = session.user.id;
+  const userRole = session.user.userRole;
 
   const [users, boards] = await Promise.all([
     getActiveUsers(),
-    getBoards(userId!),
+    getBoards(userId!, userRole),
   ]);
 
   return (
